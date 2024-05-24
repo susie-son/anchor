@@ -3,4 +3,16 @@
     <string name="home_title">No voyages yet...</string>
     <string name="home_body">All aboard!</string>
     <string name="home_start_button">Embark</string>
+    <string name="home_top_bar_title">Anchor</string>
+    <string name="preparation_top_bar_title">Preparation</string>
+    <string name="preparation_title_label">Title</string>
+    <string name="preparation_description_label">Description</string>
+    <string name="preparation_thoughts_label">Negative Automatic Thoughts</string>
+    <string name="preparation_thoughts_body">List the thoughts you have about completing this exposure.</string>
+    <string name="preparation_interpretations_label">Other interpretations</string>
+    <string name="preparation_interpretations_body">List the ways you can think more flexibly about this exposure.</string>
+    <string name="preparation_behaviors_label">Emotional Behaviors</string>
+    <string name="preparation_behaviors_body">List emotional behaviors that might prevent you from fully experiencing the emotions brought up by the exposure.</string>
+    <string name="preparation_actions_label">Alternative Actions</string>
+    <string name="preparation_actions_body">Identify other behaviors that will allow you to fully engage with the emotions brought up by the exposure.</string>
 </resources>
