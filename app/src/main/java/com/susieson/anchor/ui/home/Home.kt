@@ -3,6 +3,7 @@ package com.susieson.anchor.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -49,14 +50,15 @@ fun EmptyVoyageList(modifier: Modifier = Modifier, onStart: () -> Unit) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.illustration_sailboat),
-            modifier = Modifier.padding(0.dp, 24.dp),
+            modifier = Modifier.padding(0.dp, 24.dp).weight(0.8f),
             contentDescription = null,
         )
         Text(stringResource(R.string.home_title), style = MaterialTheme.typography.titleLarge)
         Text(stringResource(R.string.home_body), style = MaterialTheme.typography.bodyLarge)
-        Button(onClick = onStart, modifier = Modifier.padding(0.dp, 24.dp)) {
+        Button(onClick = onStart, modifier = Modifier.padding(vertical = 24.dp)) {
             Text(stringResource(R.string.home_start_button))
         }
+        Spacer(modifier = Modifier.weight(0.2f))
     }
 }
 

@@ -22,9 +22,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -70,16 +69,16 @@ fun PreparationTopBar(
 
 @Composable
 fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
 
-    var thoughts by remember { mutableStateOf(listOf<String>()) }
-    var interpretations by remember { mutableStateOf(listOf<String>()) }
-    var behaviors by remember { mutableStateOf(listOf<String>()) }
-    var actions by remember { mutableStateOf(listOf<String>()) }
+    var thoughts by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var interpretations by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var behaviors by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var actions by rememberSaveable { mutableStateOf(listOf<String>()) }
 
-    var openDiscardDialog by remember { mutableStateOf(false) }
-    var openConfirmDialog by remember { mutableStateOf(false) }
+    var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
+    var openConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     val titleError = title.isBlank()
     val isValid = !titleError
@@ -194,7 +193,7 @@ fun DiscardDialog(onConfirm: () -> Unit = {}, onDismiss: () -> Unit = {}) {
 fun ConfirmDialog(
     modifier: Modifier = Modifier, onConfirm: () -> Unit = {}, onDismiss: () -> Unit = {}
 ) {
-    val checked = remember { mutableStateListOf(false, false) }
+    var checked by rememberSaveable { mutableStateOf(listOf(false, false)) }
 
     AlertDialog(icon = {
         Icon(
@@ -210,12 +209,12 @@ fun ConfirmDialog(
                 )
                 ListItem(headlineContent = { Text(stringResource(R.string.preparation_confirm_dialog_check_1)) },
                     trailingContent = {
-                        Checkbox(checked = checked[0], onCheckedChange = { checked[0] = it })
+                        Checkbox(checked = checked[0], onCheckedChange = { checked = listOf(it, checked[1]) })
                     })
                 HorizontalDivider()
                 ListItem(headlineContent = { Text(stringResource(R.string.preparation_confirm_dialog_check_2)) },
                     trailingContent = {
-                        Checkbox(checked = checked[1], onCheckedChange = { checked[1] = it })
+                        Checkbox(checked = checked[1], onCheckedChange = { checked = listOf(checked[0], it) })
                     })
             }
         },
