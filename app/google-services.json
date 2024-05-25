@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "993311884048",
+    "project_id": "anchor-397e4",
+    "storage_bucket": "anchor-397e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:993311884048:android:0afe5422253c6c5df09b95",
+        "android_client_info": {
+          "package_name": "com.susieson.anchor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqwvQCeksCfPg05XiflE7aI4SA7mFWg1g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
