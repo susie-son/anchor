@@ -39,11 +39,17 @@ import com.susieson.anchor.ui.theme.AnchorTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreparationTopBar(
-    modifier: Modifier = Modifier, onDiscard: () -> Unit = {}, onConfirm: () -> Unit = {}
+    modifier: Modifier = Modifier,
+    isValid: Boolean,
+    isEmpty: Boolean,
+    onBack: () -> Unit,
+    onDiscard: () -> Unit = {},
+    onConfirm: () -> Unit = {}
 ) {
-    TopAppBar(title = { Text(text = stringResource(R.string.preparation_top_bar_title)) },
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.preparation_top_bar_title)) },
         navigationIcon = {
-            IconButton(onClick = onDiscard) {
+            IconButton(onClick = { if (isEmpty) onBack() else onDiscard() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_close),
                     contentDescription = "Close"
@@ -51,7 +57,7 @@ fun PreparationTopBar(
             }
         },
         actions = {
-            IconButton(onClick = onConfirm) {
+            IconButton(onClick = onConfirm, enabled = isValid) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_done),
                     contentDescription = "Done"
@@ -66,12 +72,19 @@ fun PreparationTopBar(
 fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+
     var thoughts by remember { mutableStateOf(listOf<String>()) }
     var interpretations by remember { mutableStateOf(listOf<String>()) }
     var behaviors by remember { mutableStateOf(listOf<String>()) }
     var actions by remember { mutableStateOf(listOf<String>()) }
+
     var openDiscardDialog by remember { mutableStateOf(false) }
     var openConfirmDialog by remember { mutableStateOf(false) }
+
+    val titleError = title.isBlank()
+    val isValid = !titleError
+    val isEmpty =
+        title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     if (openDiscardDialog) {
         DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
@@ -80,8 +93,13 @@ fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
     }
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
-        PreparationTopBar(onDiscard = { openDiscardDialog = true },
-            onConfirm = { openConfirmDialog = true })
+        PreparationTopBar(
+            isValid = isValid,
+            isEmpty = isEmpty,
+            onBack = onBack,
+            onDiscard = { openDiscardDialog = true },
+            onConfirm = { openConfirmDialog = true }
+        )
     }) { innerPadding ->
         Column(
             modifier = modifier
@@ -95,7 +113,9 @@ fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
                 onValueChange = { title = it },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = titleError,
+                supportingText = { if (titleError) Text(stringResource(R.string.preparation_title_error)) }
             )
             OutlinedTextField(
                 value = description,
