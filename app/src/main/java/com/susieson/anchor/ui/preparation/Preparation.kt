@@ -32,7 +32,7 @@ import com.susieson.anchor.ui.theme.AnchorTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreparationTopBar(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
+fun PreparationTopBar(modifier: Modifier = Modifier, onBack: () -> Unit) {
     TopAppBar(title = { Text(text = stringResource(R.string.preparation_top_bar_title)) },
         navigationIcon = {
             IconButton(onClick = onBack) {
@@ -55,7 +55,7 @@ fun PreparationTopBar(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
 }
 
 @Composable
-fun Preparation(modifier: Modifier = Modifier) {
+fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var thoughts by remember { mutableStateOf(listOf<String>()) }
@@ -63,80 +63,85 @@ fun Preparation(modifier: Modifier = Modifier) {
     var behaviors by remember { mutableStateOf(listOf<String>()) }
     var actions by remember { mutableStateOf(listOf<String>()) }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        OutlinedTextField(value = title,
-            label = { Text(stringResource(R.string.preparation_title_label)) },
-            onValueChange = { title = it },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = description,
-            label = { Text(stringResource(R.string.preparation_description_label)) },
-            onValueChange = { description = it },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
-        )
-        Text(
-            text = stringResource(R.string.preparation_thoughts_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = stringResource(R.string.preparation_thoughts_body),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-        )
-        TextFieldColumn(texts = thoughts,
-            onAdd = { field -> thoughts = listOf(field) + thoughts },
-            onDelete = { text -> thoughts = thoughts.filter { it != text } })
-        Text(
-            text = stringResource(R.string.preparation_interpretations_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = stringResource(R.string.preparation_interpretations_body),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-        )
-        TextFieldColumn(texts = interpretations,
-            onAdd = { field -> interpretations = listOf(field) + interpretations },
-            onDelete = { text -> interpretations = interpretations.filter { it != text } })
-        Text(
-            text = stringResource(R.string.preparation_behaviors_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = stringResource(R.string.preparation_behaviors_body),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-        )
-        TextFieldColumn(texts = behaviors,
-            onAdd = { field -> behaviors = listOf(field) + behaviors },
-            onDelete = { text -> behaviors = behaviors.filter { it != text } })
-        Text(
-            text = stringResource(R.string.preparation_actions_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = stringResource(R.string.preparation_actions_body),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-        )
-        TextFieldColumn(texts = actions,
-            onAdd = { field -> actions = listOf(field) + actions },
-            onDelete = { text -> actions = actions.filter { it != text } })
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = { PreparationTopBar(onBack = onBack) }) { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            OutlinedTextField(value = title,
+                label = { Text(stringResource(R.string.preparation_title_label)) },
+                onValueChange = { title = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = description,
+                label = { Text(stringResource(R.string.preparation_description_label)) },
+                onValueChange = { description = it },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            )
+            Text(
+                text = stringResource(R.string.preparation_thoughts_label),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+            Text(
+                text = stringResource(R.string.preparation_thoughts_body),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+            )
+            TextFieldColumn(texts = thoughts,
+                onAdd = { field -> thoughts = listOf(field) + thoughts },
+                onDelete = { text -> thoughts = thoughts.filter { it != text } })
+            Text(
+                text = stringResource(R.string.preparation_interpretations_label),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+            Text(
+                text = stringResource(R.string.preparation_interpretations_body),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+            )
+            TextFieldColumn(texts = interpretations,
+                onAdd = { field -> interpretations = listOf(field) + interpretations },
+                onDelete = { text -> interpretations = interpretations.filter { it != text } })
+            Text(
+                text = stringResource(R.string.preparation_behaviors_label),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+            Text(
+                text = stringResource(R.string.preparation_behaviors_body),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+            )
+            TextFieldColumn(texts = behaviors,
+                onAdd = { field -> behaviors = listOf(field) + behaviors },
+                onDelete = { text -> behaviors = behaviors.filter { it != text } })
+            Text(
+                text = stringResource(R.string.preparation_actions_label),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+            Text(
+                text = stringResource(R.string.preparation_actions_body),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+            )
+            TextFieldColumn(texts = actions,
+                onAdd = { field -> actions = listOf(field) + actions },
+                onDelete = { text -> actions = actions.filter { it != text } })
+        }
     }
 }
 
@@ -144,14 +149,6 @@ fun Preparation(modifier: Modifier = Modifier) {
 @Composable
 fun PreparationPreview() {
     AnchorTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = { PreparationTopBar() }) { innerPadding ->
-            Preparation(
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
-        }
+        Preparation()
     }
 }

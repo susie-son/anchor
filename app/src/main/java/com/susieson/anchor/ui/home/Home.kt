@@ -31,7 +31,13 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 
 @Composable
 fun Home(modifier: Modifier = Modifier, onStart: () -> Unit = {}) {
-    EmptyVoyageList(modifier = modifier, onStart = onStart)
+    Scaffold(modifier = modifier.fillMaxSize(), topBar = { HomeTopBar() }) { innerPadding ->
+        EmptyVoyageList(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding), onStart = onStart
+        )
+    }
 }
 
 @Composable
@@ -58,12 +64,6 @@ fun EmptyVoyageList(modifier: Modifier = Modifier, onStart: () -> Unit) {
 @Composable
 fun HomePreview() {
     AnchorTheme {
-        Scaffold(modifier = Modifier.fillMaxSize(), topBar = { HomeTopBar() }) { innerPadding ->
-            Home(
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
-        }
+        Home()
     }
 }
