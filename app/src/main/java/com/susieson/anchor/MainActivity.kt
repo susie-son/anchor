@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.susieson.anchor.ui.home.Home
 import com.susieson.anchor.ui.preparation.Preparation
+import com.susieson.anchor.ui.review.Review
 import com.susieson.anchor.ui.theme.AnchorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,10 +35,13 @@ fun AnchorApp(modifier: Modifier = Modifier) {
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            Home(modifier = modifier, onStart = { navController.navigate("preparation") })
+            Home(modifier = modifier, onStart = { navController.navigate("preparation") }, onItemClick = { navController.navigate("review") })
         }
         composable("preparation") {
             Preparation(modifier = modifier, onBack = { navController.navigateUp() })
+        }
+        composable("review") {
+            Review(modifier = modifier, onBack = { navController.navigateUp() })
         }
     }
 }

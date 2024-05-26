@@ -11,5 +11,12 @@ data class Voyage(
     val thoughts: List<String> = emptyList(),
     val interpretations: List<String> = emptyList(),
     val behaviors: List<String> = emptyList(),
-    val actions: List<String> = emptyList()
+    val actions: List<String> = emptyList(),
+    val status: Status = Status.DRAFT
 )
+
+enum class Status {
+    DRAFT,
+    IN_PROGRESS,
+    COMPLETED
+}

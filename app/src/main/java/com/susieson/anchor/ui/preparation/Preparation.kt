@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Status
 import com.susieson.anchor.model.Voyage
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
@@ -104,7 +105,8 @@ fun Preparation(
                         thoughts = thoughts,
                         interpretations = interpretations,
                         behaviors = behaviors,
-                        actions = actions
+                        actions = actions,
+                        status = Status.IN_PROGRESS
                     )
                 )
                 onBack()

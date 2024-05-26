@@ -1,6 +1,7 @@
 package com.susieson.anchor.ui.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +45,7 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 fun Home(
     modifier: Modifier = Modifier,
     onStart: () -> Unit = {},
+    onItemClick: (Voyage) -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val voyages by homeViewModel.voyages.collectAsState(null)
@@ -80,7 +82,8 @@ fun Home(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    voyages = it
+                    voyages = it,
+                    onItemClick = onItemClick
                 )
             }
         }
@@ -112,12 +115,15 @@ fun EmptyVoyageList(modifier: Modifier = Modifier, onStart: () -> Unit) {
 }
 
 @Composable
-fun VoyageList(modifier: Modifier = Modifier, voyages: List<Voyage>) {
+fun VoyageList(modifier: Modifier = Modifier, voyages: List<Voyage>, onItemClick: (Voyage) -> Unit) {
     LazyColumn(modifier = modifier) {
         items(voyages.size) { index ->
             ListItem(
                 headlineContent = { Text(voyages[index].title) },
-                supportingContent = { Text(voyages[index].description) }
+                supportingContent = { Text(voyages[index].description) },
+                modifier = Modifier.clickable {
+                    onItemClick(voyages[index])
+                }
             )
             HorizontalDivider()
         }

@@ -26,4 +26,23 @@
     <string name="preparation_confirm_dialog_dismiss">Cancel</string>
     <string name="preparation_title_error">Please enter a title</string>
     <string name="preparation_description_error">Please enter a description</string>
+    <string name="review_top_bar_title">Review</string>
+    <string name="review_emotions_label">Emotions</string>
+    <string name="review_thoughts_label">Thoughts</string>
+    <string name="review_sensations_label">Physical Sensations</string>
+    <string name="review_behaviors_label">Behaviors</string>
+    <string name="review_learnings_label">Learnings</string>
+    <string name="review_learnings_body">What did you learn by engaging in this exposure?</string>
+    <string name="review_learnings_error">Please enter your learnings</string>
+    <string name="review_effectiveness_label">Effectiveness</string>
+    <string name="review_experiencing_label">Experiencing emotions</string>
+    <string name="review_anchoring_label">Anchoring in the present</string>
+    <string name="review_thinking_label">Thinking flexibly</string>
+    <string name="review_engaging_label">Engaging in alternative actions</string>
+    <string name="review_fear_chip">Fear</string>
+    <string name="review_sadness_chip">Sadness</string>
+    <string name="review_anxiety_chip">Anxiety</string>
+    <string name="review_guilt_chip">Guilt</string>
+    <string name="review_shame_chip">Shame</string>
+    <string name="review_happiness_chip">Happiness</string>
 </resources>
