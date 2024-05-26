@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
@@ -69,7 +69,7 @@ fun PreparationTopBar(
 }
 
 @Composable
-fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}, preparationViewModel: PreparationViewModel = viewModel()) {
+fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}, preparationViewModel: PreparationViewModel = hiltViewModel()) {
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
 
@@ -89,7 +89,7 @@ fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}, preparat
     if (openDiscardDialog) {
         DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
     } else if (openConfirmDialog) {
-        ConfirmDialog(onConfirm = { preparationViewModel.submitVoyage() }, onDismiss = { openConfirmDialog = false })
+        ConfirmDialog(onConfirm = { /*TODO*/ }, onDismiss = { openConfirmDialog = false })
     }
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {

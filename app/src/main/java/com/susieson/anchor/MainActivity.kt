@@ -13,7 +13,9 @@ import androidx.navigation.compose.rememberNavController
 import com.susieson.anchor.ui.home.Home
 import com.susieson.anchor.ui.preparation.Preparation
 import com.susieson.anchor.ui.theme.AnchorTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
