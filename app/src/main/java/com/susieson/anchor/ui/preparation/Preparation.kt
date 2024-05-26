@@ -78,16 +78,17 @@ fun Preparation(
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
 
-    var thoughts by rememberSaveable { mutableStateOf(listOf<String>()) }
-    var interpretations by rememberSaveable { mutableStateOf(listOf<String>()) }
-    var behaviors by rememberSaveable { mutableStateOf(listOf<String>()) }
-    var actions by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var thoughts by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
+    var interpretations by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
+    var behaviors by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
+    var actions by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
 
     var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var openConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     val titleError = title.isBlank()
-    val isValid = !titleError
+    val descriptionError = description.isBlank()
+    val isValid = !titleError && !descriptionError
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
@@ -143,7 +144,9 @@ fun Preparation(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp)
+                    .padding(top = 12.dp),
+                isError = descriptionError,
+                supportingText = { if (descriptionError) Text(stringResource(R.string.preparation_description_error)) }
             )
             Text(
                 text = stringResource(R.string.preparation_thoughts_label),

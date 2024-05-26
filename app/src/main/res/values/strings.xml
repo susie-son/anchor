@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Anchor</string>
-    <string name="home_title">No voyages yet...</string>
+    <string name="home_title">No voyages yet…</string>
     <string name="home_body">All aboard!</string>
     <string name="home_start_button">Embark</string>
     <string name="home_top_bar_title">Anchor</string>
@@ -25,4 +25,5 @@
     <string name="preparation_confirm_dialog_confirm">Start</string>
     <string name="preparation_confirm_dialog_dismiss">Cancel</string>
     <string name="preparation_title_error">Please enter a title</string>
+    <string name="preparation_description_error">Please enter a description</string>
 </resources>

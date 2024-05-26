@@ -2,6 +2,7 @@ package com.susieson.anchor.service
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.dataObjects
 import com.google.firebase.firestore.firestore
 import com.susieson.anchor.model.Voyage
@@ -28,6 +29,7 @@ class StorageServiceImpl @Inject constructor(
                 .collection(USERS_COLLECTION)
                 .document(user.id)
                 .collection(VOYAGES_COLLECTION)
+                .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
                 .dataObjects()
         }
 
@@ -45,5 +47,6 @@ class StorageServiceImpl @Inject constructor(
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val VOYAGES_COLLECTION = "voyages"
+        private const val CREATED_AT_FIELD = "createdAt"
     }
 }

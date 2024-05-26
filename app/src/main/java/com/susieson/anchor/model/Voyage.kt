@@ -1,10 +1,15 @@
 package com.susieson.anchor.model
 
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.ServerTimestamp
+
 data class Voyage(
+    @ServerTimestamp
+    val createdAt: Timestamp? = null,
     val title: String = "",
-    val description: String? = null,
-    val thoughts: List<String>? = null,
-    val interpretations: List<String>? = null,
-    val behaviors: List<String>? = null,
-    val actions: List<String>? = null
+    val description: String = "",
+    val thoughts: List<String> = emptyList(),
+    val interpretations: List<String> = emptyList(),
+    val behaviors: List<String> = emptyList(),
+    val actions: List<String> = emptyList()
 )

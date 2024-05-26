@@ -10,9 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -53,13 +53,15 @@ fun Home(
         topBar = { HomeTopBar() },
         floatingActionButton = {
             if (voyages?.isNotEmpty() == true) {
-                LargeFloatingActionButton(
+                ExtendedFloatingActionButton(
                     onClick = onStart,
                     content = {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_add),
-                            contentDescription = "Add"
+                            painter = painterResource(id = R.drawable.icon_boat),
+                            contentDescription = null,
+                            modifier = modifier.padding(end = 8.dp)
                         )
+                        Text(stringResource(R.string.home_start_button))
                     }
                 )
             }
@@ -115,7 +117,7 @@ fun VoyageList(modifier: Modifier = Modifier, voyages: List<Voyage>) {
         items(voyages.size) { index ->
             ListItem(
                 headlineContent = { Text(voyages[index].title) },
-                supportingContent = { voyages[index].description?.let { Text(it) } }
+                supportingContent = { Text(voyages[index].description) }
             )
             HorizontalDivider()
         }
