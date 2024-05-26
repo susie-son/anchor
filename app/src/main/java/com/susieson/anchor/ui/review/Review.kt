@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.LabeledSlider
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
@@ -98,7 +99,15 @@ fun Review(
 
     val learningsError = learnings.isBlank()
     val isValid = !learningsError
-    val isEmpty = learnings.isBlank()
+    val isEmpty =
+        !fear && !sadness && !anxiety && !guilt && !shame && !happiness &&
+                thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty() &&
+                experiencingRating == 0f && anchoringRating == 0f && thinkingRating == 0f && engagingRating == 0f &&
+                learnings.isBlank()
+
+    if (openDiscardDialog) {
+        DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
+    }
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
         ReviewTopBar(

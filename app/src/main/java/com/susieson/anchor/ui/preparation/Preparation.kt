@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.model.Voyage
+import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
 
@@ -207,14 +208,6 @@ fun Preparation(
 }
 
 @Composable
-fun DiscardDialog(onConfirm: () -> Unit = {}, onDismiss: () -> Unit = {}) {
-    AlertDialog(text = { Text(stringResource(R.string.preparation_discard_dialog_text)) },
-        onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(R.string.preparation_discard_dialog_confirm)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.preparation_discard_dialog_dismiss)) } })
-}
-
-@Composable
 fun ConfirmDialog(
     modifier: Modifier = Modifier, onConfirm: () -> Unit = {}, onDismiss: () -> Unit = {}
 ) {
@@ -260,14 +253,6 @@ fun ConfirmDialog(
 fun PreparationPreview() {
     AnchorTheme {
         Preparation()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DiscardDialogPreview() {
-    AnchorTheme {
-        DiscardDialog()
     }
 }
 
