@@ -1,20 +1,23 @@
-package com.susieson.anchor.ui.preparation
+package com.susieson.anchor.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.susieson.anchor.model.Voyage
+import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PreparationViewModel @Inject constructor(
-    private val storageService: StorageService
+class HomeViewModel @Inject constructor(
+    private val authService: AuthService,
+    storageService: StorageService
 ) : ViewModel() {
-    fun add(voyage: Voyage) {
+    val voyages = storageService.voyages
+
+    fun login() {
         viewModelScope.launch {
-            storageService.add(voyage)
+            authService.createAnonymousAccount()
         }
     }
 }

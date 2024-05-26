@@ -1,40 +1,49 @@
 package com.susieson.anchor.service
 
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.dataObjects
+import com.google.firebase.firestore.firestore
 import com.susieson.anchor.model.Voyage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface StorageService {
     val voyages: Flow<List<Voyage>>
 
-    suspend fun getVoyage(voyageId: String)
-    suspend fun save(voyage: Voyage)
-    suspend fun update(voyage: Voyage)
-    suspend fun delete(voyageId: String)
-    suspend fun deleteAllForUser(userId: String)
+    suspend fun add(voyage: Voyage)
 }
 
-class StorageServiceImpl @Inject constructor(): StorageService {
+class StorageServiceImpl @Inject constructor(
+    private val auth: AuthService,
+    private val firestore: FirebaseFirestore = Firebase.firestore
+) : StorageService {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val voyages: Flow<List<Voyage>>
-        get() = TODO()
+        get() = auth.currentUser.flatMapLatest { user ->
+            firestore
+                .collection(USERS_COLLECTION)
+                .document(user.id)
+                .collection(VOYAGES_COLLECTION)
+                .dataObjects()
+        }
 
-    override suspend fun getVoyage(voyageId: String) {
-        TODO("Not yet implemented")
+    override suspend fun add(voyage: Voyage) {
+        auth.currentUser.collect { user ->
+            firestore
+                .collection(USERS_COLLECTION)
+                .document(user.id)
+                .collection(VOYAGES_COLLECTION)
+                .add(voyage)
+                .await()
+        }
     }
 
-    override suspend fun save(voyage: Voyage) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun update(voyage: Voyage) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun delete(voyageId: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteAllForUser(userId: String) {
-        TODO("Not yet implemented")
+    companion object {
+        private const val USERS_COLLECTION = "users"
+        private const val VOYAGES_COLLECTION = "voyages"
     }
 }

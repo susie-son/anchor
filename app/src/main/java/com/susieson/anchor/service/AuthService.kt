@@ -1,16 +1,30 @@
 package com.susieson.anchor.service
 
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.firebase.auth.FirebaseAuth
+import com.susieson.anchor.model.User
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface AuthService {
+    val currentUser: Flow<User>
     suspend fun createAnonymousAccount()
 }
 
-class AuthServiceImpl @Inject constructor(): AuthService {
+class AuthServiceImpl @Inject constructor(private val auth: FirebaseAuth) : AuthService {
+    override val currentUser: Flow<User>
+        get() = callbackFlow {
+            val listener =
+                FirebaseAuth.AuthStateListener { auth ->
+                    trySend(auth.currentUser?.let { User(it.uid) } ?: User())
+                }
+            auth.addAuthStateListener(listener)
+            awaitClose { auth.removeAuthStateListener(listener) }
+        }
+
     override suspend fun createAnonymousAccount() {
-        Firebase.auth.signInAnonymously().await()
+        auth.signInAnonymously().await()
     }
 }

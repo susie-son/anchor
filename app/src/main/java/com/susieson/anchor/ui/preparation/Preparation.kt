@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Voyage
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
 
@@ -69,7 +70,11 @@ fun PreparationTopBar(
 }
 
 @Composable
-fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}, preparationViewModel: PreparationViewModel = hiltViewModel()) {
+fun Preparation(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit = {},
+    preparationViewModel: PreparationViewModel = hiltViewModel()
+) {
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
 
@@ -89,7 +94,21 @@ fun Preparation(modifier: Modifier = Modifier, onBack: () -> Unit = {}, preparat
     if (openDiscardDialog) {
         DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
     } else if (openConfirmDialog) {
-        ConfirmDialog(onConfirm = { /*TODO*/ }, onDismiss = { openConfirmDialog = false })
+        ConfirmDialog(
+            onConfirm = {
+                preparationViewModel.add(
+                    Voyage(
+                        title = title,
+                        description = description,
+                        thoughts = thoughts,
+                        interpretations = interpretations,
+                        behaviors = behaviors,
+                        actions = actions
+                    )
+                )
+                onBack()
+            },
+            onDismiss = { openConfirmDialog = false })
     }
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
@@ -210,12 +229,16 @@ fun ConfirmDialog(
                 )
                 ListItem(headlineContent = { Text(stringResource(R.string.preparation_confirm_dialog_check_1)) },
                     trailingContent = {
-                        Checkbox(checked = checked[0], onCheckedChange = { checked = listOf(it, checked[1]) })
+                        Checkbox(
+                            checked = checked[0],
+                            onCheckedChange = { checked = listOf(it, checked[1]) })
                     })
                 HorizontalDivider()
                 ListItem(headlineContent = { Text(stringResource(R.string.preparation_confirm_dialog_check_2)) },
                     trailingContent = {
-                        Checkbox(checked = checked[1], onCheckedChange = { checked = listOf(checked[0], it) })
+                        Checkbox(
+                            checked = checked[1],
+                            onCheckedChange = { checked = listOf(checked[0], it) })
                     })
             }
         },
