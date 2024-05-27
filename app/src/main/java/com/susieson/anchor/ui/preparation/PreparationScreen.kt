@@ -110,9 +110,13 @@ fun PreparationScreen(
 
     val titleError = title.isBlank()
     val descriptionError = description.isBlank()
-    val isValid = !titleError && !descriptionError
-    val isEmpty =
-        title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+    val thoughtsError = thoughts.isEmpty()
+    val interpretationsError = interpretations.isEmpty()
+    val behaviorsError = behaviors.isEmpty()
+    val actionsError = actions.isEmpty()
+
+    val isValid = !titleError && !descriptionError && !thoughtsError && !interpretationsError && !behaviorsError && !actionsError
+    val isEmpty = title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     if (openDiscardDialog) {
         DiscardDialog(
@@ -184,7 +188,8 @@ fun PreparationScreen(
             Text(
                 text = stringResource(R.string.preparation_thoughts_body),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                color = if (thoughtsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = thoughts,
                 onAdd = { field -> thoughts = listOf(field) + thoughts },
@@ -197,7 +202,8 @@ fun PreparationScreen(
             Text(
                 text = stringResource(R.string.preparation_interpretations_body),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                color = if (interpretationsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = interpretations,
                 onAdd = { field -> interpretations = listOf(field) + interpretations },
@@ -210,7 +216,8 @@ fun PreparationScreen(
             Text(
                 text = stringResource(R.string.preparation_behaviors_body),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                color = if (behaviorsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = behaviors,
                 onAdd = { field -> behaviors = listOf(field) + behaviors },
@@ -223,7 +230,8 @@ fun PreparationScreen(
             Text(
                 text = stringResource(R.string.preparation_actions_body),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                color = if (actionsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = actions,
                 onAdd = { field -> actions = listOf(field) + actions },

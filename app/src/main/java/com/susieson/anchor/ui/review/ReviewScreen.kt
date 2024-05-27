@@ -107,8 +107,20 @@ fun ReviewScreen(
 
     var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
 
+    val emotionsError = emotions.isEmpty()
+
+    val thoughtsError = thoughts.isEmpty()
+    val sensationsError = sensations.isEmpty()
+    val behaviorsError = behaviors.isEmpty()
+
+    val experiencingError = experiencingRating == 0f
+    val anchoringError = anchoringRating == 0f
+    val thinkingError = thinkingRating == 0f
+    val engagingError = engagingRating == 0f
+
     val learningsError = learnings.isBlank()
-    val isValid = !learningsError
+
+    val isValid = !emotionsError && !thoughtsError && !sensationsError && !behaviorsError && !experiencingError && !anchoringError && !thinkingError && !engagingError && !learningsError
     val isEmpty =
         !fear && !sadness && !anxiety && !guilt && !shame && !happiness &&
                 thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty() &&
@@ -152,7 +164,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_emotions_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = if (emotionsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -191,7 +204,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_thoughts_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
+                color = if (thoughtsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = thoughts,
                 onAdd = { field -> thoughts = listOf(field) + thoughts },
@@ -199,7 +213,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_sensations_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
+                color = if (sensationsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = sensations,
                 onAdd = { field -> sensations = listOf(field) + sensations },
@@ -207,7 +222,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_behaviors_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
+                color = if (behaviorsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             TextFieldColumn(texts = behaviors,
                 onAdd = { field -> behaviors = listOf(field) + behaviors },
@@ -220,7 +236,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_experiencing_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = if (experiencingError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             LabeledSlider(
                 value = experiencingRating,
@@ -232,7 +249,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_anchoring_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = if (anchoringError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             LabeledSlider(
                 value = anchoringRating,
@@ -244,7 +262,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_thinking_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = if (thinkingError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             LabeledSlider(
                 value = thinkingRating,
@@ -256,7 +275,8 @@ fun ReviewScreen(
             Text(
                 text = stringResource(R.string.review_engaging_label),
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = if (engagingError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
             LabeledSlider(
                 value = engagingRating,

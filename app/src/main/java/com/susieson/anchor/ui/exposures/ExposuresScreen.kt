@@ -124,8 +124,8 @@ fun ExposureList(
     LazyColumn(modifier = modifier) {
         items(exposures.size) { index ->
             ListItem(
-                headlineContent = { Text(exposures[index].title.ifBlank { stringResource(R.string.exposures_no_title) }) },
-                supportingContent = { Text(exposures[index].description.ifBlank { stringResource(R.string.exposures_no_description) }) },
+                headlineContent = { Text(exposures[index].title) },
+                supportingContent = { Text(exposures[index].description) },
                 modifier = Modifier.clickable {
                     onItemClick(exposures[index].id, exposures[index].status)
                 }
