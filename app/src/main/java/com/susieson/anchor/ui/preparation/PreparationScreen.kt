@@ -21,7 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -33,9 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
-import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
@@ -75,16 +75,36 @@ fun PreparationTopBar(
 @Composable
 fun PreparationScreen(
     modifier: Modifier = Modifier,
+    userId: String,
+    exposureId: String,
     onBack: () -> Unit = {},
     preparationViewModel: PreparationViewModel = hiltViewModel()
 ) {
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
+    val exposure = preparationViewModel.exposure.observeAsState().value
 
-    var thoughts by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-    var interpretations by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-    var behaviors by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-    var actions by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
+    var title by rememberSaveable { mutableStateOf(exposure?.title ?: "") }
+    var description by rememberSaveable { mutableStateOf(exposure?.description ?: "") }
+
+    var thoughts by rememberSaveable {
+        mutableStateOf(
+            exposure?.preparation?.thoughts ?: emptyList()
+        )
+    }
+    var interpretations by rememberSaveable {
+        mutableStateOf(
+            exposure?.preparation?.interpretations ?: emptyList()
+        )
+    }
+    var behaviors by rememberSaveable {
+        mutableStateOf(
+            exposure?.preparation?.behaviors ?: emptyList()
+        )
+    }
+    var actions by rememberSaveable {
+        mutableStateOf(
+            exposure?.preparation?.actions ?: emptyList()
+        )
+    }
 
     var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var openConfirmDialog by rememberSaveable { mutableStateOf(false) }
@@ -95,8 +115,22 @@ fun PreparationScreen(
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
+    DisposableEffect(true) {
+        onDispose {
+            preparationViewModel.delete(userId, exposureId)
+        }
+    }
+
     if (openDiscardDialog) {
-        DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
+        DiscardDialog(
+            onConfirm = {
+                preparationViewModel.delete(userId, exposureId)
+                onBack()
+            },
+            onDismiss = {
+                openDiscardDialog = false
+            }
+        )
     } else if (openConfirmDialog) {
         ConfirmDialog(
             onConfirm = {
@@ -106,13 +140,7 @@ fun PreparationScreen(
                     behaviors = behaviors,
                     actions = actions
                 )
-                val exposure = Exposure(
-                    title = title,
-                    description = description,
-                    preparation = preparation,
-                    status = Status.IN_PROGRESS
-                )
-                preparationViewModel.add(exposure)
+                preparationViewModel.add(userId, exposureId, title, description, preparation)
                 onBack()
             },
             onDismiss = { openConfirmDialog = false })
@@ -249,14 +277,6 @@ fun ConfirmDialog(
                 enabled = checked.all { it }) { Text(stringResource(R.string.preparation_confirm_dialog_confirm)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.preparation_confirm_dialog_dismiss)) } })
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun PreparationPreview() {
-    AnchorTheme {
-        PreparationScreen()
-    }
 }
 
 @Preview(showBackground = true)

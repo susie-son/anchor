@@ -7,13 +7,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.home.HomeScreen
+import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.preparation.PreparationScreen
 import com.susieson.anchor.ui.review.ReviewScreen
+import com.susieson.anchor.ui.splash.SplashScreen
 import com.susieson.anchor.ui.summary.SummaryScreen
 import com.susieson.anchor.ui.theme.AnchorTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,43 +38,101 @@ class MainActivity : ComponentActivity() {
 fun AnchorApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-            HomeScreen(
+    NavHost(navController = navController, startDestination = "splash") {
+        composable("splash") {
+            SplashScreen(
                 modifier = modifier,
-                onStart = { navController.navigate("preparation") },
-                onItemClick = { exposure ->
-                    when (exposure.status) {
+                onStart = { userId -> navController.navigate("home/${userId}/exposures") }
+            )
+        }
+        composable(
+            route = "home/{userId}/exposures",
+            arguments = listOf(navArgument("userId") {
+                type = NavType.StringType
+                nullable = false
+            })
+        ) { backStackEntry ->
+            ExposuresScreen(
+                modifier = modifier,
+                userId = backStackEntry.arguments?.getString("userId")!!,
+                onStart = { userId, exposureId ->
+                    navController.navigate("home/${userId}/exposures/${exposureId}/preparation")
+                },
+                onItemClick = { userId, exposureId, status ->
+                    when (status) {
                         Status.COMPLETED -> {
-                            navController.navigate("summary/${exposure.id}")
+                            navController.navigate("home/${userId}/exposures/${exposureId}/summary")
                         }
-                        Status.IN_PROGRESS -> {
-                            navController.navigate("review/${exposure.id}")
-                        }
-                        else -> {}
-                    }
 
+                        Status.IN_PROGRESS -> {
+                            navController.navigate("home/${userId}/exposures/${exposureId}/review")
+                        }
+
+                        Status.DRAFT -> {
+                            navController.navigate("home/${userId}/exposures/${exposureId}/preparation")
+                        }
+                    }
                 }
             )
         }
-        composable("preparation") {
+        composable(
+            route = "home/{userId}/exposures/{exposureId}/preparation",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("exposureId") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) { backStackEntry ->
             PreparationScreen(
                 modifier = modifier,
-                onBack = { navController.navigateUp() }
+                userId = backStackEntry.arguments?.getString("userId")!!,
+                exposureId = backStackEntry.arguments?.getString("exposureId")!!,
+                onBack = { navController.popBackStack() }
             )
         }
-        composable("review/{exposureId}") { backStackEntry ->
+        composable(
+            route = "home/{userId}/exposures/{exposureId}/review",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("exposureId") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) { backStackEntry ->
             ReviewScreen(
                 modifier = modifier,
+                userId = backStackEntry.arguments?.getString("userId")!!,
                 exposureId = backStackEntry.arguments?.getString("exposureId")!!,
-                onBack = { navController.navigateUp() }
+                onBack = { navController.popBackStack() }
             )
         }
-        composable("summary/{exposureId}") { backStackEntry ->
+        composable(
+            route = "home/{userId}/exposures/{exposureId}/summary",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("exposureId") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) { backStackEntry ->
             SummaryScreen(
                 modifier = modifier,
+                userId = backStackEntry.arguments?.getString("userId")!!,
                 exposureId = backStackEntry.arguments?.getString("exposureId")!!,
-                onBack = { navController.navigateUp() }
+                onBack = { navController.popBackStack() }
             )
         }
     }

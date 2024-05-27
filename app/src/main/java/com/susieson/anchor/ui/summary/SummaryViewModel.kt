@@ -17,9 +17,9 @@ class SummaryViewModel @Inject constructor(
     val exposure: LiveData<Exposure> get() = _exposure
     private val _exposure = MutableLiveData<Exposure>()
 
-    fun get(exposureId: String) {
+    fun get(userId: String, exposureId: String) {
         viewModelScope.launch {
-            _exposure.value = storageService.get(exposureId)
+            _exposure.value = storageService.get(userId, exposureId)
         }
     }
 }

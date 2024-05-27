@@ -44,6 +44,7 @@ fun SummaryTopBar(
 @Composable
 fun SummaryScreen(
     modifier: Modifier = Modifier,
+    userId: String,
     exposureId: String,
     onBack: () -> Unit = {},
     summaryViewModel: SummaryViewModel = hiltViewModel()
@@ -59,11 +60,11 @@ fun SummaryScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            summaryViewModel.exposure.observeAsState().value ?.let { exposure ->
+            summaryViewModel.exposure.observeAsState().value?.let { exposure ->
                 Text(exposure.title)
             }
-            LaunchedEffect(exposureId) {
-                summaryViewModel.get(exposureId)
+            LaunchedEffect(userId, exposureId) {
+                summaryViewModel.get(userId, exposureId)
             }
         }
     }

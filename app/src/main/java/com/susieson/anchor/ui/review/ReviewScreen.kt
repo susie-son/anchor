@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
@@ -37,7 +36,6 @@ import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.LabeledSlider
 import com.susieson.anchor.ui.components.TextFieldColumn
-import com.susieson.anchor.ui.theme.AnchorTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +73,7 @@ fun ReviewTopBar(
 @Composable
 fun ReviewScreen(
     modifier: Modifier = Modifier,
+    userId: String,
     exposureId: String,
     onBack: () -> Unit = {},
     reviewViewModel: ReviewViewModel = hiltViewModel()
@@ -138,7 +137,7 @@ fun ReviewScreen(
                     engaging = engagingRating,
                     learnings = learnings
                 )
-                reviewViewModel.add(exposureId = exposureId, review = review)
+                reviewViewModel.add(userId, exposureId, review)
                 onBack()
             }
         )
@@ -287,13 +286,5 @@ fun ReviewScreen(
                 supportingText = { if (learningsError) Text(stringResource(R.string.review_learnings_error)) }
             )
         }
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun ReviewTopBarPreview() {
-    AnchorTheme {
-        ReviewScreen(exposureId = "123")
     }
 }

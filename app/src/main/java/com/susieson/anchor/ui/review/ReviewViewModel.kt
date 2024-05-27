@@ -12,9 +12,9 @@ import javax.inject.Inject
 class ReviewViewModel @Inject constructor(
     private val storageService: StorageService
 ) : ViewModel() {
-    fun add(exposureId: String, review: Review) {
+    fun add(userId: String, exposureId: String, review: Review) {
         viewModelScope.launch {
-            storageService.add(exposureId, review)
+            storageService.add(userId, exposureId, review)
         }
     }
 }
