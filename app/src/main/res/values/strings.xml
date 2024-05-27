@@ -52,4 +52,7 @@
     <string name="review_emotions_shame">Shame</string>
     <string name="review_emotions_happiness">Happiness</string>
     <string name="summary_top_bar_title">Summary</string>
+    <string name="summary_completed_at_label">Completed</string>
+    <string name="exposure_completed_date">Completed %s</string>
+    <string name="exposure_in_progress_date">Started %s</string>
 </resources>

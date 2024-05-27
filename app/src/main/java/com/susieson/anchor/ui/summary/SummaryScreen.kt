@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
+import java.text.DateFormat
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +71,18 @@ fun SummaryScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             val exposure by summaryViewModel.exposure.collectAsState(Exposure())
+            exposure.review.createdAt?.let {
+                Text(
+                    stringResource(R.string.summary_completed_at_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    DateFormat.getDateInstance().format(it.toDate()),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 exposure.title,
                 style = MaterialTheme.typography.titleLarge,

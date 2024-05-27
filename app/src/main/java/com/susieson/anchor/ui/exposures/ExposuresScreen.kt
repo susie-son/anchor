@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposures
 
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
+import kotlinx.datetime.toKotlinInstant
+import nl.jacobras.humanreadable.HumanReadable
+import java.text.DateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,6 +128,24 @@ fun ExposureList(
     LazyColumn(modifier = modifier) {
         items(exposures.size) { index ->
             ListItem(
+                overlineContent = {
+                    val timestamp =
+                        exposures[index].review.createdAt ?: exposures[index].preparation.createdAt
+                        ?: exposures[index].createdAt
+                    timestamp?.let {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            return@let HumanReadable.timeAgo(it.toInstant().toKotlinInstant())
+                        } else {
+                            return@let DateFormat.getDateTimeInstance().format(it.toDate())
+                        }
+                    }?.let {
+                        if (exposures[index].status == Status.COMPLETED) {
+                            Text(stringResource(R.string.exposure_completed_date, it))
+                        } else {
+                            Text(stringResource(R.string.exposure_in_progress_date, it))
+                        }
+                    }
+                },
                 headlineContent = { Text(exposures[index].title) },
                 supportingContent = { Text(exposures[index].description) },
                 modifier = Modifier.clickable {
