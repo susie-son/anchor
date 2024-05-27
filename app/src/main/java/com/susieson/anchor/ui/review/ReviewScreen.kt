@@ -75,7 +75,7 @@ fun ReviewTopBar(
 @Composable
 fun ReviewScreen(
     modifier: Modifier = Modifier,
-    exposureId: String = "",
+    exposureId: String,
     onBack: () -> Unit = {},
     reviewViewModel: ReviewViewModel = hiltViewModel()
 ) {
@@ -87,12 +87,12 @@ fun ReviewScreen(
     var happiness by rememberSaveable { mutableStateOf(false) }
 
     val emotions = listOfNotNull(
-        if (fear) "Fear" else null,
-        if (sadness) "Sadness" else null,
-        if (anxiety) "Anxiety" else null,
-        if (guilt) "Guilt" else null,
-        if (shame) "Shame" else null,
-        if (happiness) "Happiness" else null
+        if (fear) stringResource(R.string.review_emotions_fear) else null,
+        if (sadness) stringResource(R.string.review_emotions_sadness) else null,
+        if (anxiety) stringResource(R.string.review_emotions_anxiety) else null,
+        if (guilt) stringResource(R.string.review_emotions_guilt) else null,
+        if (shame) stringResource(R.string.review_emotions_shame) else null,
+        if (happiness) stringResource(R.string.review_emotions_happiness) else null
     )
 
     var thoughts by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
@@ -294,6 +294,6 @@ fun ReviewScreen(
 @Composable
 fun ReviewTopBarPreview() {
     AnchorTheme {
-        ReviewScreen()
+        ReviewScreen(exposureId = "123")
     }
 }

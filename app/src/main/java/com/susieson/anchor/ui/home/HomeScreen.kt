@@ -20,8 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -48,7 +47,7 @@ fun HomeScreen(
     onItemClick: (Exposure) -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val exposures by homeViewModel.exposures.collectAsState(null)
+    val exposures = homeViewModel.exposures.observeAsState().value
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -90,6 +89,7 @@ fun HomeScreen(
     }
     LaunchedEffect(true) {
         homeViewModel.login()
+        homeViewModel.get()
     }
 }
 

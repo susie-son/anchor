@@ -10,9 +10,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.home.HomeScreen
 import com.susieson.anchor.ui.preparation.PreparationScreen
 import com.susieson.anchor.ui.review.ReviewScreen
+import com.susieson.anchor.ui.summary.SummaryScreen
 import com.susieson.anchor.ui.theme.AnchorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +40,18 @@ fun AnchorApp(modifier: Modifier = Modifier) {
             HomeScreen(
                 modifier = modifier,
                 onStart = { navController.navigate("preparation") },
-                onItemClick = { navController.navigate("review/${it.id}") }
+                onItemClick = { exposure ->
+                    when (exposure.status) {
+                        Status.COMPLETED -> {
+                            navController.navigate("summary/${exposure.id}")
+                        }
+                        Status.IN_PROGRESS -> {
+                            navController.navigate("review/${exposure.id}")
+                        }
+                        else -> {}
+                    }
+
+                }
             )
         }
         composable("preparation") {
@@ -49,6 +62,13 @@ fun AnchorApp(modifier: Modifier = Modifier) {
         }
         composable("review/{exposureId}") { backStackEntry ->
             ReviewScreen(
+                modifier = modifier,
+                exposureId = backStackEntry.arguments?.getString("exposureId")!!,
+                onBack = { navController.navigateUp() }
+            )
+        }
+        composable("summary/{exposureId}") { backStackEntry ->
+            SummaryScreen(
                 modifier = modifier,
                 exposureId = backStackEntry.arguments?.getString("exposureId")!!,
                 onBack = { navController.navigateUp() }

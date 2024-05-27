@@ -45,4 +45,11 @@
     <string name="review_guilt_chip">Guilt</string>
     <string name="review_shame_chip">Shame</string>
     <string name="review_happiness_chip">Happiness</string>
+    <string name="review_emotions_fear">Fear</string>
+    <string name="review_emotions_sadness">Sadness</string>
+    <string name="review_emotions_anxiety">Anxiety</string>
+    <string name="review_emotions_guilt">Guilt</string>
+    <string name="review_emotions_shame">Shame</string>
+    <string name="review_emotions_happiness">Happiness</string>
+    <string name="summary_top_bar_title">Summary</string>
 </resources>

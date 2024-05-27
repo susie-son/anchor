@@ -1,34 +1,25 @@
-package com.susieson.anchor.ui.home
+package com.susieson.anchor.ui.summary
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Exposure
-import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val authService: AuthService,
+class SummaryViewModel @Inject constructor(
     private val storageService: StorageService
 ) : ViewModel() {
+    val exposure: LiveData<Exposure> get() = _exposure
+    private val _exposure = MutableLiveData<Exposure>()
 
-    private val _exposures = MutableLiveData<List<Exposure>>()
-    val exposures: LiveData<List<Exposure>> = _exposures
-
-    fun get() {
+    fun get(exposureId: String) {
         viewModelScope.launch {
-            _exposures.value = storageService.get()
-        }
-    }
-
-    fun login() {
-        viewModelScope.launch {
-            authService.createAnonymousAccount()
+            _exposure.value = storageService.get(exposureId)
         }
     }
 }
