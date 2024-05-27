@@ -21,9 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -76,33 +75,33 @@ fun PreparationTopBar(
 fun PreparationScreen(
     modifier: Modifier = Modifier,
     userId: String,
-    exposureId: String,
+    exposureId: String?,
     onBack: () -> Unit = {},
     preparationViewModel: PreparationViewModel = hiltViewModel()
 ) {
-    val exposure = preparationViewModel.exposure.observeAsState().value
+    val exposure by preparationViewModel.exposure.collectAsState()
 
-    var title by rememberSaveable { mutableStateOf(exposure?.title ?: "") }
-    var description by rememberSaveable { mutableStateOf(exposure?.description ?: "") }
+    var title by rememberSaveable { mutableStateOf(exposure.title) }
+    var description by rememberSaveable { mutableStateOf(exposure.description) }
 
     var thoughts by rememberSaveable {
         mutableStateOf(
-            exposure?.preparation?.thoughts ?: emptyList()
+            exposure.preparation.thoughts
         )
     }
     var interpretations by rememberSaveable {
         mutableStateOf(
-            exposure?.preparation?.interpretations ?: emptyList()
+            exposure.preparation.interpretations
         )
     }
     var behaviors by rememberSaveable {
         mutableStateOf(
-            exposure?.preparation?.behaviors ?: emptyList()
+            exposure.preparation.behaviors
         )
     }
     var actions by rememberSaveable {
         mutableStateOf(
-            exposure?.preparation?.actions ?: emptyList()
+            exposure.preparation.actions
         )
     }
 
@@ -115,18 +114,9 @@ fun PreparationScreen(
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
-    DisposableEffect(true) {
-        onDispose {
-            preparationViewModel.delete(userId, exposureId)
-        }
-    }
-
     if (openDiscardDialog) {
         DiscardDialog(
-            onConfirm = {
-                preparationViewModel.delete(userId, exposureId)
-                onBack()
-            },
+            onConfirm = onBack,
             onDismiss = {
                 openDiscardDialog = false
             }
@@ -140,7 +130,11 @@ fun PreparationScreen(
                     behaviors = behaviors,
                     actions = actions
                 )
-                preparationViewModel.add(userId, exposureId, title, description, preparation)
+                if (exposureId == null) {
+                    preparationViewModel.new(userId, title, description, preparation)
+                } else {
+                    preparationViewModel.add(userId, exposureId, title, description, preparation)
+                }
                 onBack()
             },
             onDismiss = { openConfirmDialog = false })

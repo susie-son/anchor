@@ -13,13 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Exposure
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,9 +62,9 @@ fun SummaryScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            summaryViewModel.exposure.observeAsState().value?.let { exposure ->
-                Text(exposure.title)
-            }
+            val exposure by summaryViewModel.exposure.collectAsState(Exposure())
+
+            Text(exposure.title)
             LaunchedEffect(userId, exposureId) {
                 summaryViewModel.get(userId, exposureId)
             }

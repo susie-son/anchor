@@ -2,10 +2,13 @@ package com.susieson.anchor.service
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.snapshots
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.model.Status
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -14,8 +17,8 @@ interface StorageService {
     suspend fun add(userId: String, exposureId: String, title: String, description: String)
     suspend fun add(userId: String, exposureId: String, preparation: Preparation)
     suspend fun add(userId: String, exposureId: String, review: Review)
-    suspend fun get(userId: String): List<Exposure>
-    suspend fun get(userId: String, exposureId: String): Exposure
+    suspend fun get(userId: String): Flow<List<Exposure>>
+    suspend fun get(userId: String, exposureId: String): Flow<Exposure>
     suspend fun delete(userId: String, exposureId: String)
 }
 
@@ -72,19 +75,17 @@ class StorageServiceImpl @Inject constructor(
             .await()
     }
 
-    override suspend fun get(userId: String): List<Exposure> {
+    override suspend fun get(userId: String): Flow<List<Exposure>> {
         return exposuresCollectionRef(userId)
             .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
-            .get()
-            .await()
-            .toObjects(Exposure::class.java)
+            .snapshots()
+            .map { it.toObjects(Exposure::class.java) }
     }
 
-    override suspend fun get(userId: String, exposureId: String): Exposure {
+    override suspend fun get(userId: String, exposureId: String): Flow<Exposure> {
         return exposureDocumentRef(userId, exposureId)
-            .get()
-            .await()
-            .toObject(Exposure::class.java)!!
+            .snapshots()
+            .map { it.toObject(Exposure::class.java)!! }
     }
 
     override suspend fun delete(userId: String, exposureId: String) {

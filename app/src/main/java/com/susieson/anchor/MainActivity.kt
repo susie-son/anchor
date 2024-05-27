@@ -84,14 +84,14 @@ fun AnchorApp(modifier: Modifier = Modifier) {
                 },
                 navArgument("exposureId") {
                     type = NavType.StringType
-                    nullable = false
+                    nullable = true
                 }
             )
         ) { backStackEntry ->
             PreparationScreen(
                 modifier = modifier,
                 userId = backStackEntry.arguments?.getString("userId")!!,
-                exposureId = backStackEntry.arguments?.getString("exposureId")!!,
+                exposureId = backStackEntry.arguments?.getString("exposureId"),
                 onBack = { navController.popBackStack() }
             )
         }

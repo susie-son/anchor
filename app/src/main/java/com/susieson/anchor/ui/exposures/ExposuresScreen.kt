@@ -20,7 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -44,27 +45,19 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 fun ExposuresScreen(
     modifier: Modifier = Modifier,
     userId: String,
-    onStart: (String, String) -> Unit = { _, _ -> },
+    onStart: (String, String?) -> Unit = { _, _ -> },
     onItemClick: (String, String, Status) -> Unit = { _, _, _ -> },
     exposuresViewModel: ExposuresViewModel = hiltViewModel()
 ) {
-    val exposures = exposuresViewModel.exposures.observeAsState().value
-    val exposureId = exposuresViewModel.exposureId.observeAsState().value
-
-    LaunchedEffect(exposureId) {
-        if (exposureId != null) {
-            onStart(userId, exposureId)
-            exposuresViewModel.reset()
-        }
-    }
+    val exposures by exposuresViewModel.exposures.collectAsState(emptyList())
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { HomeTopBar() },
         floatingActionButton = {
-            if (exposures?.isNotEmpty() == true) {
+            if (exposures.isNotEmpty()) {
                 ExtendedFloatingActionButton(
-                    onClick = { exposuresViewModel.new(userId) },
+                    onClick = { onStart(userId, null) },
                     content = {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_add),
@@ -77,23 +70,21 @@ fun ExposuresScreen(
             }
         }
     ) { innerPadding ->
-        exposures?.let {
-            if (it.isEmpty()) {
-                EmptyExposureList(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    onStart = { exposuresViewModel.new(userId) }
-                )
-            } else {
-                ExposureList(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    exposures = it,
-                    onItemClick = { exposureId, status -> onItemClick(userId, exposureId, status) }
-                )
-            }
+        if (exposures.isEmpty()) {
+            EmptyExposureList(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                onStart = { onStart(userId, null) }
+            )
+        } else {
+            ExposureList(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                exposures = exposures,
+                onItemClick = { exposureId, status -> onItemClick(userId, exposureId, status) }
+            )
         }
     }
     LaunchedEffect(true) {
