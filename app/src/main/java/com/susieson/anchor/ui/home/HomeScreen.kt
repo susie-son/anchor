@@ -42,7 +42,7 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Home(
+fun HomeScreen(
     modifier: Modifier = Modifier,
     onStart: () -> Unit = {},
     onItemClick: (Exposure) -> Unit = {},
@@ -134,6 +134,6 @@ fun ExposureList(modifier: Modifier = Modifier, exposures: List<Exposure>, onIte
 @Composable
 fun HomePreview() {
     AnchorTheme {
-        Home()
+        HomeScreen()
     }
 }

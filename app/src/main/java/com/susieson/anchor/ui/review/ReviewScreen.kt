@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.LabeledSlider
 import com.susieson.anchor.ui.components.TextFieldColumn
@@ -72,8 +73,9 @@ fun ReviewTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun Review(
+fun ReviewScreen(
     modifier: Modifier = Modifier,
+    exposureId: String = "",
     onBack: () -> Unit = {},
     reviewViewModel: ReviewViewModel = hiltViewModel()
 ) {
@@ -83,6 +85,15 @@ fun Review(
     var guilt by rememberSaveable { mutableStateOf(false) }
     var shame by rememberSaveable { mutableStateOf(false) }
     var happiness by rememberSaveable { mutableStateOf(false) }
+
+    val emotions = listOfNotNull(
+        if (fear) "Fear" else null,
+        if (sadness) "Sadness" else null,
+        if (anxiety) "Anxiety" else null,
+        if (guilt) "Guilt" else null,
+        if (shame) "Shame" else null,
+        if (happiness) "Happiness" else null
+    )
 
     var thoughts by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
     var sensations by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
@@ -115,7 +126,21 @@ fun Review(
             isEmpty = isEmpty,
             onBack = onBack,
             onDiscard = { openDiscardDialog = true },
-            onConfirm = { /*TODO*/ }
+            onConfirm = {
+                val review = Review(
+                    emotions = emotions,
+                    thoughts = thoughts,
+                    sensations = sensations,
+                    behaviors = behaviors,
+                    experiencing = experiencingRating,
+                    anchoring = anchoringRating,
+                    thinking = thinkingRating,
+                    engaging = engagingRating,
+                    learnings = learnings
+                )
+                reviewViewModel.add(exposureId = exposureId, review = review)
+                onBack()
+            }
         )
     }) { innerPadding ->
         Column(
@@ -269,6 +294,6 @@ fun Review(
 @Composable
 fun ReviewTopBarPreview() {
     AnchorTheme {
-        Review()
+        ReviewScreen()
     }
 }

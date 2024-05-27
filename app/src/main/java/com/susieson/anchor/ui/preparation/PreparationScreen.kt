@@ -33,8 +33,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.model.Status
 import com.susieson.anchor.model.Exposure
+import com.susieson.anchor.model.Preparation
+import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
@@ -72,7 +73,7 @@ fun PreparationTopBar(
 }
 
 @Composable
-fun Preparation(
+fun PreparationScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
     preparationViewModel: PreparationViewModel = hiltViewModel()
@@ -99,17 +100,19 @@ fun Preparation(
     } else if (openConfirmDialog) {
         ConfirmDialog(
             onConfirm = {
-                preparationViewModel.add(
-                    Exposure(
-                        title = title,
-                        description = description,
-                        thoughts = thoughts,
-                        interpretations = interpretations,
-                        behaviors = behaviors,
-                        actions = actions,
-                        status = Status.IN_PROGRESS
-                    )
+                val preparation = Preparation(
+                    thoughts = thoughts,
+                    interpretations = interpretations,
+                    behaviors = behaviors,
+                    actions = actions
                 )
+                val exposure = Exposure(
+                    title = title,
+                    description = description,
+                    preparation = preparation,
+                    status = Status.IN_PROGRESS
+                )
+                preparationViewModel.add(exposure)
                 onBack()
             },
             onDismiss = { openConfirmDialog = false })
@@ -252,7 +255,7 @@ fun ConfirmDialog(
 @Composable
 fun PreparationPreview() {
     AnchorTheme {
-        Preparation()
+        PreparationScreen()
     }
 }
 

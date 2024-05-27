@@ -10,9 +10,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.susieson.anchor.ui.home.Home
-import com.susieson.anchor.ui.preparation.Preparation
-import com.susieson.anchor.ui.review.Review
+import com.susieson.anchor.ui.home.HomeScreen
+import com.susieson.anchor.ui.preparation.PreparationScreen
+import com.susieson.anchor.ui.review.ReviewScreen
 import com.susieson.anchor.ui.theme.AnchorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,13 +35,24 @@ fun AnchorApp(modifier: Modifier = Modifier) {
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            Home(modifier = modifier, onStart = { navController.navigate("preparation") }, onItemClick = { navController.navigate("review") })
+            HomeScreen(
+                modifier = modifier,
+                onStart = { navController.navigate("preparation") },
+                onItemClick = { navController.navigate("review/${it.id}") }
+            )
         }
         composable("preparation") {
-            Preparation(modifier = modifier, onBack = { navController.navigateUp() })
+            PreparationScreen(
+                modifier = modifier,
+                onBack = { navController.navigateUp() }
+            )
         }
-        composable("review") {
-            Review(modifier = modifier, onBack = { navController.navigateUp() })
+        composable("review/{exposureId}") { backStackEntry ->
+            ReviewScreen(
+                modifier = modifier,
+                exposureId = backStackEntry.arguments?.getString("exposureId")!!,
+                onBack = { navController.navigateUp() }
+            )
         }
     }
 }
