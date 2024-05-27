@@ -55,8 +55,8 @@ fun AnchorApp(modifier: Modifier = Modifier) {
             ExposuresScreen(
                 modifier = modifier,
                 userId = backStackEntry.arguments?.getString("userId")!!,
-                onStart = { userId, exposureId ->
-                    navController.navigate("home/${userId}/exposures/${exposureId}/preparation")
+                onStart = { userId ->
+                    navController.navigate("home/${userId}/exposures/preparation")
                 },
                 onItemClick = { userId, exposureId, status ->
                     when (status) {
@@ -76,22 +76,17 @@ fun AnchorApp(modifier: Modifier = Modifier) {
             )
         }
         composable(
-            route = "home/{userId}/exposures/{exposureId}/preparation",
+            route = "home/{userId}/exposures/preparation",
             arguments = listOf(
                 navArgument("userId") {
                     type = NavType.StringType
                     nullable = false
-                },
-                navArgument("exposureId") {
-                    type = NavType.StringType
-                    nullable = true
                 }
             )
         ) { backStackEntry ->
             PreparationScreen(
                 modifier = modifier,
                 userId = backStackEntry.arguments?.getString("userId")!!,
-                exposureId = backStackEntry.arguments?.getString("exposureId"),
                 onBack = { navController.popBackStack() }
             )
         }

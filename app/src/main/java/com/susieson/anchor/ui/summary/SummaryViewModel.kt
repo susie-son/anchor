@@ -15,7 +15,7 @@ class SummaryViewModel @Inject constructor(
     private val storageService: StorageService
 ) : ViewModel() {
 
-    private val _exposure = MutableStateFlow(Exposure())
+    private val _exposure = MutableStateFlow<Exposure?>(null)
     val exposure = _exposure.asStateFlow()
 
     fun get(userId: String, exposureId: String) {

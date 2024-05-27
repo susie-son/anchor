@@ -14,7 +14,7 @@ import javax.inject.Inject
 class ExposuresViewModel @Inject constructor(
     private val storageService: StorageService
 ) : ViewModel() {
-    private val _exposures = MutableStateFlow<List<Exposure>>(emptyList())
+    private val _exposures = MutableStateFlow<List<Exposure>?>(null)
     val exposures = _exposures.asStateFlow()
 
     fun get(userId: String) {

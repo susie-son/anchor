@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
+import com.susieson.anchor.ui.components.LoadingScreen
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
@@ -49,19 +50,19 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 fun ExposuresScreen(
     modifier: Modifier = Modifier,
     userId: String,
-    onStart: (String, String?) -> Unit = { _, _ -> },
+    onStart: (String) -> Unit = {},
     onItemClick: (String, String, Status) -> Unit = { _, _, _ -> },
     exposuresViewModel: ExposuresViewModel = hiltViewModel()
 ) {
-    val exposures by exposuresViewModel.exposures.collectAsState(emptyList())
+    val exposures by exposuresViewModel.exposures.collectAsState()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { HomeTopBar() },
         floatingActionButton = {
-            if (exposures.isNotEmpty()) {
+            if (exposures?.isNotEmpty() == true) {
                 ExtendedFloatingActionButton(
-                    onClick = { onStart(userId, null) },
+                    onClick = { onStart(userId) },
                     content = {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_add),
@@ -74,22 +75,26 @@ fun ExposuresScreen(
             }
         }
     ) { innerPadding ->
-        if (exposures.isEmpty()) {
-            EmptyExposureList(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                onStart = { onStart(userId, null) }
-            )
-        } else {
-            ExposureList(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                exposures = exposures,
-                onItemClick = { exposureId, status -> onItemClick(userId, exposureId, status) }
-            )
-        }
+        exposures?.let { exposures ->
+            if (exposures.isEmpty()) {
+                EmptyExposureList(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    onStart = { onStart(userId) }
+                )
+            } else {
+                ExposureList(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    exposures = exposures,
+                    onItemClick = { exposureId, status -> onItemClick(userId, exposureId, status) }
+                )
+            }
+        } ?: LoadingScreen(modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding))
     }
     LaunchedEffect(true) {
         exposuresViewModel.get(userId)

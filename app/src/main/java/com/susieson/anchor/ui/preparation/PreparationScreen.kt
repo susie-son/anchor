@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -75,35 +74,16 @@ fun PreparationTopBar(
 fun PreparationScreen(
     modifier: Modifier = Modifier,
     userId: String,
-    exposureId: String?,
     onBack: () -> Unit = {},
     preparationViewModel: PreparationViewModel = hiltViewModel()
 ) {
-    val exposure by preparationViewModel.exposure.collectAsState()
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
 
-    var title by rememberSaveable { mutableStateOf(exposure.title) }
-    var description by rememberSaveable { mutableStateOf(exposure.description) }
-
-    var thoughts by rememberSaveable {
-        mutableStateOf(
-            exposure.preparation.thoughts
-        )
-    }
-    var interpretations by rememberSaveable {
-        mutableStateOf(
-            exposure.preparation.interpretations
-        )
-    }
-    var behaviors by rememberSaveable {
-        mutableStateOf(
-            exposure.preparation.behaviors
-        )
-    }
-    var actions by rememberSaveable {
-        mutableStateOf(
-            exposure.preparation.actions
-        )
-    }
+    var thoughts by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var interpretations by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var behaviors by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var actions by rememberSaveable { mutableStateOf(listOf<String>()) }
 
     var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var openConfirmDialog by rememberSaveable { mutableStateOf(false) }
@@ -134,11 +114,7 @@ fun PreparationScreen(
                     behaviors = behaviors,
                     actions = actions
                 )
-                if (exposureId == null) {
-                    preparationViewModel.new(userId, title, description, preparation)
-                } else {
-                    preparationViewModel.add(userId, exposureId, title, description, preparation)
-                }
+                preparationViewModel.new(userId, title, description, preparation)
                 onBack()
             },
             onDismiss = { openConfirmDialog = false })
