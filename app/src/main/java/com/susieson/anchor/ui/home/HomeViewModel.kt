@@ -13,7 +13,7 @@ class HomeViewModel @Inject constructor(
     private val authService: AuthService,
     storageService: StorageService
 ) : ViewModel() {
-    val voyages = storageService.voyages
+    val exposures = storageService.exposures
 
     fun login() {
         viewModelScope.launch {

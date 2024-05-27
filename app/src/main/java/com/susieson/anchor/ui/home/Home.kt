@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.model.Voyage
+import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.ui.theme.AnchorTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,16 +45,16 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 fun Home(
     modifier: Modifier = Modifier,
     onStart: () -> Unit = {},
-    onItemClick: (Voyage) -> Unit = {},
+    onItemClick: (Exposure) -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val voyages by homeViewModel.voyages.collectAsState(null)
+    val exposures by homeViewModel.exposures.collectAsState(null)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { HomeTopBar() },
         floatingActionButton = {
-            if (voyages?.isNotEmpty() == true) {
+            if (exposures?.isNotEmpty() == true) {
                 ExtendedFloatingActionButton(
                     onClick = onStart,
                     content = {
@@ -69,20 +69,20 @@ fun Home(
             }
         }
     ) { innerPadding ->
-        voyages?.let {
+        exposures?.let {
             if (it.isEmpty()) {
-                EmptyVoyageList(
+                EmptyExposureList(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(innerPadding),
                     onStart = onStart
                 )
             } else {
-                VoyageList(
+                ExposureList(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    voyages = it,
+                    exposures = it,
                     onItemClick = onItemClick
                 )
             }
@@ -94,7 +94,7 @@ fun Home(
 }
 
 @Composable
-fun EmptyVoyageList(modifier: Modifier = Modifier, onStart: () -> Unit) {
+fun EmptyExposureList(modifier: Modifier = Modifier, onStart: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
@@ -115,14 +115,14 @@ fun EmptyVoyageList(modifier: Modifier = Modifier, onStart: () -> Unit) {
 }
 
 @Composable
-fun VoyageList(modifier: Modifier = Modifier, voyages: List<Voyage>, onItemClick: (Voyage) -> Unit) {
+fun ExposureList(modifier: Modifier = Modifier, exposures: List<Exposure>, onItemClick: (Exposure) -> Unit) {
     LazyColumn(modifier = modifier) {
-        items(voyages.size) { index ->
+        items(exposures.size) { index ->
             ListItem(
-                headlineContent = { Text(voyages[index].title) },
-                supportingContent = { Text(voyages[index].description) },
+                headlineContent = { Text(exposures[index].title) },
+                supportingContent = { Text(exposures[index].description) },
                 modifier = Modifier.clickable {
-                    onItemClick(voyages[index])
+                    onItemClick(exposures[index])
                 }
             )
             HorizontalDivider()

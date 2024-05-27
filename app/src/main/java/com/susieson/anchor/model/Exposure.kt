@@ -3,7 +3,7 @@ package com.susieson.anchor.model
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ServerTimestamp
 
-data class Voyage(
+data class Exposure(
     @ServerTimestamp
     val createdAt: Timestamp? = null,
     val title: String = "",

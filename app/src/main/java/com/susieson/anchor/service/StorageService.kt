@@ -5,7 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.dataObjects
 import com.google.firebase.firestore.firestore
-import com.susieson.anchor.model.Voyage
+import com.susieson.anchor.model.Exposure
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -13,9 +13,9 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface StorageService {
-    val voyages: Flow<List<Voyage>>
+    val exposures: Flow<List<Exposure>>
 
-    suspend fun add(voyage: Voyage)
+    suspend fun add(exposure: Exposure)
 }
 
 class StorageServiceImpl @Inject constructor(
@@ -23,30 +23,30 @@ class StorageServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore = Firebase.firestore
 ) : StorageService {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val voyages: Flow<List<Voyage>>
+    override val exposures: Flow<List<Exposure>>
         get() = auth.currentUser.flatMapLatest { user ->
             firestore
                 .collection(USERS_COLLECTION)
                 .document(user.id)
-                .collection(VOYAGES_COLLECTION)
+                .collection(EXPOSURES_COLLECTION)
                 .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
                 .dataObjects()
         }
 
-    override suspend fun add(voyage: Voyage) {
+    override suspend fun add(exposure: Exposure) {
         auth.currentUser.collect { user ->
             firestore
                 .collection(USERS_COLLECTION)
                 .document(user.id)
-                .collection(VOYAGES_COLLECTION)
-                .add(voyage)
+                .collection(EXPOSURES_COLLECTION)
+                .add(exposure)
                 .await()
         }
     }
 
     companion object {
         private const val USERS_COLLECTION = "users"
-        private const val VOYAGES_COLLECTION = "voyages"
+        private const val EXPOSURES_COLLECTION = "exposures"
         private const val CREATED_AT_FIELD = "createdAt"
     }
 }

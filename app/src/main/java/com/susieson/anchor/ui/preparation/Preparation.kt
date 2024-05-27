@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.model.Voyage
+import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.theme.AnchorTheme
@@ -100,7 +100,7 @@ fun Preparation(
         ConfirmDialog(
             onConfirm = {
                 preparationViewModel.add(
-                    Voyage(
+                    Exposure(
                         title = title,
                         description = description,
                         thoughts = thoughts,
