@@ -21,6 +21,7 @@ interface StorageService {
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
     suspend fun getExposureList(userId: String): Flow<List<Exposure>>
     suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure>
+    suspend fun getExposureSync(userId: String, exposureId: String): Exposure
 }
 
 class StorageServiceImpl @Inject constructor(
@@ -112,6 +113,10 @@ class StorageServiceImpl @Inject constructor(
         return exposureDocumentRef(userId, exposureId)
             .snapshots()
             .map { it.toObject(Exposure::class.java)!! }
+    }
+
+    override suspend fun getExposureSync(userId: String, exposureId: String): Exposure {
+        return exposureDocumentRef(userId, exposureId).get().await().toObject(Exposure::class.java)!!
     }
 
     companion object {

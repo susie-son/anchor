@@ -1,17 +1,21 @@
 package com.susieson.anchor.ui.ready
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +31,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +56,7 @@ fun ReadyTopBar(
     )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ReadyScreen(
     modifier: Modifier = Modifier,
@@ -59,36 +67,71 @@ fun ReadyScreen(
 ) {
     var checked by rememberSaveable { mutableStateOf(listOf(false, false)) }
 
+    val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        null
+    }
+
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
         ReadyTopBar(
             onBack = onBack,
         )
     }) { innerPadding ->
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(32.dp),
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            Text(stringResource(R.string.ready_description))
-            Column(modifier = modifier.weight(1f)) {
-                ListItem(headlineContent = { Text(stringResource(R.string.ready_check_1)) },
+            postNotificationPermission?.let {
+                if (!it.status.isGranted) {
+                    Card(modifier = modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text("Stay anchored \u2693", style = MaterialTheme.typography.titleMedium)
+                            Text("Enable notifications to get an ongoing reminder about your exposure!")
+                            OutlinedButton(
+                                onClick = { postNotificationPermission.launchPermissionRequest() },
+                                modifier = modifier.align(Alignment.End)
+                            ) {
+                                Text("Remind me")
+                            }
+                        }
+                    }
+                }
+            }
+            Text(
+                stringResource(R.string.ready_description),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = modifier.align(Alignment.CenterHorizontally)
+            )
+            Column {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.ready_check_1)) },
                     trailingContent = {
                         Checkbox(
                             checked = checked[0],
                             onCheckedChange = { checked = listOf(it, checked[1]) })
-                    })
-                ListItem(headlineContent = { Text(stringResource(R.string.ready_check_2)) },
+                    },
+                    modifier = modifier.height(40.dp)
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.ready_check_2)) },
                     trailingContent = {
                         Checkbox(
                             checked = checked[1],
                             onCheckedChange = { checked = listOf(checked[0], it) })
-                    })
+                    },
+                    modifier = modifier.height(40.dp)
+                )
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ) {
                 OutlinedButton(onClick = onBack) { Text(stringResource(R.string.ready_dismiss_button)) }
                 FilledTonalButton(
