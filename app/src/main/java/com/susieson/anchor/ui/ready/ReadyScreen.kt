@@ -92,13 +92,13 @@ fun ReadyScreen(
                             modifier = modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text("Stay anchored \u2693", style = MaterialTheme.typography.titleMedium)
-                            Text("Enable notifications to get an ongoing reminder about your exposure!")
+                            Text(stringResource(R.string.notification_permission_title), style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.notification_permission_description))
                             OutlinedButton(
                                 onClick = { postNotificationPermission.launchPermissionRequest() },
                                 modifier = modifier.align(Alignment.End)
                             ) {
-                                Text("Remind me")
+                                Text(stringResource(R.string.notification_permission_button))
                             }
                         }
                     }
@@ -131,7 +131,9 @@ fun ReadyScreen(
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 OutlinedButton(onClick = onBack) { Text(stringResource(R.string.ready_dismiss_button)) }
                 FilledTonalButton(

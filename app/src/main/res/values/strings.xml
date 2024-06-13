@@ -57,4 +57,7 @@
     <string name="ready_check_2">Stay anchored in the present.</string>
     <string name="ready_confirm_button">Start</string>
     <string name="ready_dismiss_button">Later</string>
+    <string name="notification_permission_title">Stay anchored ⚓</string>
+    <string name="notification_permission_description">Enable notifications to get an ongoing reminder about your exposure!</string>
+    <string name="notification_permission_button">Remind me</string>
 </resources>
