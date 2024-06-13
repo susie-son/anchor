@@ -3,7 +3,7 @@
     <string name="exposures_title">No exposures yet…</string>
     <string name="exposures_body">Create a new one to get started!</string>
     <string name="exposures_start_button">Create</string>
-    <string name="exposures_top_bar_title">Anchor</string>
+    <string name="anchor_top_bar_title">Anchor</string>
     <string name="preparation_top_bar_title">Preparation</string>
     <string name="preparation_title_label">Title</string>
     <string name="preparation_description_label">Description</string>

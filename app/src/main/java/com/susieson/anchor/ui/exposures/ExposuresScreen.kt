@@ -10,14 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.TopAppBarState
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.LoadingScreen
@@ -37,67 +33,41 @@ import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeTopBar(modifier: Modifier = Modifier) {
-    CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(R.string.exposures_top_bar_title)) },
-        modifier = modifier
-    )
-}
-
 @Composable
 fun ExposuresScreen(
     modifier: Modifier = Modifier,
     userId: String,
     onStart: (String) -> Unit,
     onItemClick: (String, String) -> Unit,
+    onTopAppBarStateChanged: (TopAppBarState?) -> Unit,
     exposuresViewModel: ExposuresViewModel = hiltViewModel()
 ) {
-    val exposures by exposuresViewModel.exposures.collectAsState()
+    val exposuresState by exposuresViewModel.exposures.collectAsState()
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = { HomeTopBar() },
-        floatingActionButton = {
-            if (exposures?.isNotEmpty() == true) {
-                ExtendedFloatingActionButton(
-                    onClick = { onStart(userId) },
-                    content = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.icon_add),
-                            contentDescription = null,
-                            modifier = modifier.padding(end = 8.dp)
-                        )
-                        Text(stringResource(R.string.exposures_start_button))
-                    }
-                )
-            }
-        }
-    ) { innerPadding ->
-        exposures?.let { exposures ->
-            if (exposures.isEmpty()) {
-                EmptyExposureList(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    onStart = { onStart(userId) }
-                )
-            } else {
-                ExposureList(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    exposures = exposures,
-                    onItemClick = { exposureId -> onItemClick(userId, exposureId) }
-                )
-            }
-        } ?: LoadingScreen(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+    val exposures = exposuresState
+
+    if (exposures == null) {
+        LoadingScreen(modifier = modifier.fillMaxSize())
+    } else if (exposures.isEmpty()) {
+        EmptyExposureList(
+            modifier = modifier.fillMaxSize(),
+            onStart = { onStart(userId) }
+        )
+    } else {
+        ExposureList(
+            modifier = modifier.fillMaxSize(),
+            exposures = exposures,
+            onItemClick = { exposureId -> onItemClick(userId, exposureId) }
         )
     }
+
+    onTopAppBarStateChanged(
+        TopAppBarState(
+            title = R.string.anchor_top_bar_title,
+            onAction = { onStart(userId) }
+        )
+    )
+
     LaunchedEffect(userId) {
         exposuresViewModel.get(userId)
     }
