@@ -9,16 +9,18 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface AuthService {
-    val currentUser: Flow<User>
+    val currentUser: Flow<User?>
     suspend fun createAnonymousAccount()
 }
 
 class AuthServiceImpl @Inject constructor(private val auth: FirebaseAuth) : AuthService {
-    override val currentUser: Flow<User>
+    override val currentUser: Flow<User?>
         get() = callbackFlow {
             val listener =
                 FirebaseAuth.AuthStateListener { auth ->
-                    trySend(auth.currentUser?.let { User(it.uid) } ?: User())
+                    auth.currentUser?.let {
+                        trySend(User(it.uid))
+                    } ?: trySend(null)
                 }
             auth.addAuthStateListener(listener)
             awaitClose { auth.removeAuthStateListener(listener) }

@@ -1,24 +1,25 @@
-package com.susieson.anchor.ui.splash
+package com.susieson.anchor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.susieson.anchor.model.User
 import com.susieson.anchor.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val authService: AuthService
-) : ViewModel() {
+): ViewModel() {
 
-    val user: Flow<User> = authService.currentUser
+    var userId = ""
 
-    fun login() {
+    init {
         viewModelScope.launch {
             authService.createAnonymousAccount()
+            authService.currentUser.collect { user ->
+                userId = user?.id ?: ""
+            }
         }
     }
 }

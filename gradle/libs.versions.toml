@@ -1,6 +1,7 @@
 [versions]
 accompanistPermissions = "0.35.1-alpha"
 agp = "8.4.1"
+coreSplashscreen = "1.0.1"
 firebaseBom = "33.0.0"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
@@ -22,6 +23,7 @@ navigationCompose = "2.8.0-beta03"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }

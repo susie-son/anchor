@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.human.readable)
     implementation(libs.accompanist.permissions)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.core.splashscreen)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
