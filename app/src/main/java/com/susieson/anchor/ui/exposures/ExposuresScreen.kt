@@ -98,7 +98,7 @@ fun ExposuresScreen(
                 .padding(innerPadding)
         )
     }
-    LaunchedEffect(true) {
+    LaunchedEffect(userId) {
         exposuresViewModel.get(userId)
     }
 }

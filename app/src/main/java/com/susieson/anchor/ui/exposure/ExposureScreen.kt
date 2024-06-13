@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,13 +65,11 @@ fun ExposureScreen(
                 )
             }
         }
-    } ?: LoadingScreen()
+    } ?: LoadingScreen(
+        modifier = modifier.fillMaxSize()
+    )
 
-    LaunchedEffect(true) {
-        if (exposureId.isNullOrEmpty()) {
-            exposureViewModel.new(userId)
-        } else {
-            exposureViewModel.get(userId, exposureId)
-        }
+    LaunchedEffect(userId, exposureId) {
+        exposureViewModel.get(userId, exposureId)
     }
 }

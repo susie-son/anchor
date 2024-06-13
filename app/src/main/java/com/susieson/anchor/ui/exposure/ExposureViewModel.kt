@@ -23,15 +23,6 @@ class ExposureViewModel @Inject constructor(
     private val _exposure = MutableStateFlow<Exposure?>(null)
     val exposure = _exposure.asStateFlow()
 
-    fun new(userId: String) {
-        viewModelScope.launch {
-            val exposureId = storageService.addExposure(userId)
-            storageService.getExposure(userId, exposureId).collect { exposure ->
-                _exposure.value = exposure
-            }
-        }
-    }
-
     fun update(userId: String, exposureId: String, title: String) {
         viewModelScope.launch {
             storageService.updateExposure(userId, exposureId, Status.IN_PROGRESS)
@@ -57,9 +48,10 @@ class ExposureViewModel @Inject constructor(
         }
     }
 
-    fun get(userId: String, exposureId: String) {
+    fun get(userId: String, exposureId: String?) {
         viewModelScope.launch {
-            storageService.getExposure(userId, exposureId).collect { exposure ->
+            val id = exposureId ?: storageService.addExposure(userId)
+            storageService.getExposure(userId, id).collect { exposure ->
                 _exposure.value = exposure
             }
         }
