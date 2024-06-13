@@ -14,9 +14,15 @@ fun SplashScreen(
     splashViewModel: SplashViewModel = hiltViewModel()
 ) {
     val user by splashViewModel.user.collectAsState(null)
-    if (user != null) {
-        onStart(user!!.id)
+
+    LaunchedEffect(user) {
+        user?.let {
+            if (it.id.isNotEmpty()) {
+                onStart(it.id)
+            }
+        }
     }
+
     LaunchedEffect(true) {
         splashViewModel.login()
     }

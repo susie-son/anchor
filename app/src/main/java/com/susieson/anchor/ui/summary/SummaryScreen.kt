@@ -73,7 +73,7 @@ fun SummaryScreen(
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                exposure.review.createdAt?.let {
+                exposure.updatedAt?.let {
                     Text(
                         stringResource(R.string.summary_completed_at_label),
                         style = MaterialTheme.typography.labelMedium,

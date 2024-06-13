@@ -20,7 +20,7 @@ class SummaryViewModel @Inject constructor(
 
     fun get(userId: String, exposureId: String) {
         viewModelScope.launch {
-            storageService.get(userId, exposureId).collect { exposure ->
+            storageService.getExposure(userId, exposureId).collect { exposure ->
                 _exposure.value = exposure
             }
         }

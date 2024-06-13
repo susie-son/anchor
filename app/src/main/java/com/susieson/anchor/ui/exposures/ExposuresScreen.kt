@@ -92,9 +92,11 @@ fun ExposuresScreen(
                     onItemClick = { exposureId, status -> onItemClick(userId, exposureId, status) }
                 )
             }
-        } ?: LoadingScreen(modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding))
+        } ?: LoadingScreen(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        )
     }
     LaunchedEffect(true) {
         exposuresViewModel.get(userId)
@@ -134,9 +136,7 @@ fun ExposureList(
         items(exposures.size) { index ->
             ListItem(
                 overlineContent = {
-                    val timestamp =
-                        exposures[index].review.createdAt ?: exposures[index].preparation.createdAt
-                        ?: exposures[index].createdAt
+                    val timestamp = exposures[index].updatedAt
                     timestamp?.let {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             return@let HumanReadable.timeAgo(it.toInstant().toKotlinInstant())
@@ -144,11 +144,17 @@ fun ExposureList(
                             return@let DateFormat.getDateTimeInstance().format(it.toDate())
                         }
                     }?.let {
-                        if (exposures[index].status == Status.COMPLETED) {
-                            Text(stringResource(R.string.exposure_completed_date, it))
-                        } else {
-                            Text(stringResource(R.string.exposure_in_progress_date, it))
-                        }
+                        Text(
+                            stringResource(
+                                when (exposures[index].status) {
+                                    Status.COMPLETED -> R.string.exposure_completed_date
+                                    Status.IN_PROGRESS -> R.string.exposure_in_progress_date
+                                    Status.READY -> R.string.exposure_ready_date
+                                    Status.DRAFT -> R.string.exposure_draft_date
+                                },
+                                it
+                            )
+                        )
                     }
                 },
                 headlineContent = { Text(exposures[index].title) },

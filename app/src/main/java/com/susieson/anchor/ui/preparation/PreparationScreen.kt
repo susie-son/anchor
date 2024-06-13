@@ -8,20 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,14 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.TextFieldColumn
-import com.susieson.anchor.ui.theme.AnchorTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,6 +71,7 @@ fun PreparationScreen(
     modifier: Modifier = Modifier,
     userId: String,
     onBack: () -> Unit = {},
+    onNext: (String, String) -> Unit = { _, _ -> },
     preparationViewModel: PreparationViewModel = hiltViewModel()
 ) {
     var title by rememberSaveable { mutableStateOf("") }
@@ -87,7 +83,6 @@ fun PreparationScreen(
     var actions by rememberSaveable { mutableStateOf(listOf<String>()) }
 
     var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
-    var openConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     val titleError = title.isBlank()
     val descriptionError = description.isBlank()
@@ -99,6 +94,14 @@ fun PreparationScreen(
     val isValid = !titleError && !descriptionError && !thoughtsError && !interpretationsError && !behaviorsError && !actionsError
     val isEmpty = title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
+    val exposureId by preparationViewModel.exposureId.collectAsState()
+
+    LaunchedEffect(exposureId) {
+        exposureId?.let {
+            onNext(userId, it)
+        }
+    }
+
     if (openDiscardDialog) {
         DiscardDialog(
             onConfirm = onBack,
@@ -106,19 +109,6 @@ fun PreparationScreen(
                 openDiscardDialog = false
             }
         )
-    } else if (openConfirmDialog) {
-        ConfirmDialog(
-            onConfirm = {
-                val preparation = Preparation(
-                    thoughts = thoughts,
-                    interpretations = interpretations,
-                    behaviors = behaviors,
-                    actions = actions
-                )
-                preparationViewModel.new(userId, title, description, preparation)
-                onBack()
-            },
-            onDismiss = { openConfirmDialog = false })
     }
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
@@ -127,7 +117,15 @@ fun PreparationScreen(
             isEmpty = isEmpty,
             onBack = onBack,
             onDiscard = { openDiscardDialog = true },
-            onConfirm = { openConfirmDialog = true }
+            onConfirm = {
+                val preparation = Preparation(
+                    thoughts = thoughts,
+                    interpretations = interpretations,
+                    behaviors = behaviors,
+                    actions = actions
+                )
+                preparationViewModel.new(userId, title, description, preparation)
+            }
         )
     }) { innerPadding ->
         Column(
@@ -215,54 +213,5 @@ fun PreparationScreen(
                 onAdd = { field -> actions = listOf(field) + actions },
                 onDelete = { text -> actions = actions.filter { it != text } })
         }
-    }
-}
-
-@Composable
-fun ConfirmDialog(
-    modifier: Modifier = Modifier, onConfirm: () -> Unit = {}, onDismiss: () -> Unit = {}
-) {
-    var checked by rememberSaveable { mutableStateOf(listOf(false, false)) }
-
-    AlertDialog(icon = {
-        Icon(
-            painter = painterResource(id = R.drawable.icon_anchor), contentDescription = null
-        )
-    },
-        title = { Text(stringResource(R.string.preparation_confirm_dialog_title)) },
-        text = {
-            Column(modifier = modifier) {
-                Text(
-                    stringResource(R.string.preparation_confirm_dialog_text),
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-                )
-                ListItem(headlineContent = { Text(stringResource(R.string.preparation_confirm_dialog_check_1)) },
-                    trailingContent = {
-                        Checkbox(
-                            checked = checked[0],
-                            onCheckedChange = { checked = listOf(it, checked[1]) })
-                    })
-                HorizontalDivider()
-                ListItem(headlineContent = { Text(stringResource(R.string.preparation_confirm_dialog_check_2)) },
-                    trailingContent = {
-                        Checkbox(
-                            checked = checked[1],
-                            onCheckedChange = { checked = listOf(checked[0], it) })
-                    })
-            }
-        },
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onConfirm,
-                enabled = checked.all { it }) { Text(stringResource(R.string.preparation_confirm_dialog_confirm)) }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.preparation_confirm_dialog_dismiss)) } })
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ConfirmDialogPreview() {
-    AnchorTheme {
-        ConfirmDialog()
     }
 }

@@ -19,7 +19,7 @@ class ExposuresViewModel @Inject constructor(
 
     fun get(userId: String) {
         viewModelScope.launch {
-            storageService.get(userId).collect { exposures ->
+            storageService.getExposureList(userId).collect { exposures ->
                 _exposures.value = exposures
             }
         }

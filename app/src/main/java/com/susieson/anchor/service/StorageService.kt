@@ -1,5 +1,6 @@
 package com.susieson.anchor.service
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.snapshots
@@ -13,13 +14,13 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface StorageService {
-    suspend fun add(userId: String): String
-    suspend fun add(userId: String, exposureId: String, title: String, description: String)
-    suspend fun add(userId: String, exposureId: String, preparation: Preparation)
-    suspend fun add(userId: String, exposureId: String, review: Review)
-    suspend fun get(userId: String): Flow<List<Exposure>>
-    suspend fun get(userId: String, exposureId: String): Flow<Exposure>
-    suspend fun delete(userId: String, exposureId: String)
+    suspend fun addExposure(userId: String): String
+    suspend fun updateExposure(userId: String, exposureId: String, title: String, description: String)
+    suspend fun updateExposure(userId: String, exposureId: String, preparation: Preparation)
+    suspend fun updateExposure(userId: String, exposureId: String, review: Review)
+    suspend fun updateExposure(userId: String, exposureId: String, status: Status)
+    suspend fun getExposureList(userId: String): Flow<List<Exposure>>
+    suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure>
 }
 
 class StorageServiceImpl @Inject constructor(
@@ -35,17 +36,17 @@ class StorageServiceImpl @Inject constructor(
         exposuresCollectionRef(userId)
             .document(exposureId)
 
-    override suspend fun add(userId: String): String {
+    override suspend fun addExposure(userId: String): String {
         val exposure = Exposure()
         val document = exposuresCollectionRef(userId)
             .add(exposure)
             .await()
-        val exposureWithId = exposure.copy(id = document.id)
+        val exposureWithId = exposure.copy(id = document.id, updatedAt = Timestamp.now())
         document.set(exposureWithId)
         return document.id
     }
 
-    override suspend fun add(
+    override suspend fun updateExposure(
         userId: String,
         exposureId: String,
         title: String,
@@ -58,46 +59,66 @@ class StorageServiceImpl @Inject constructor(
                 DESCRIPTION_FIELD,
                 description,
                 STATUS_FIELD,
-                Status.IN_PROGRESS
+                Status.READY,
+                UPDATED_AT_FIELD,
+                Timestamp.now()
             )
             .await()
     }
 
-    override suspend fun add(userId: String, exposureId: String, preparation: Preparation) {
+    override suspend fun updateExposure(userId: String, exposureId: String, preparation: Preparation) {
         exposureDocumentRef(userId, exposureId)
-            .update(PREPARATION_FIELD, preparation)
+            .update(
+                PREPARATION_FIELD,
+                preparation,
+                UPDATED_AT_FIELD,
+                Timestamp.now()
+            )
             .await()
     }
 
-    override suspend fun add(userId: String, exposureId: String, review: Review) {
+    override suspend fun updateExposure(userId: String, exposureId: String, review: Review) {
         exposureDocumentRef(userId, exposureId)
-            .update(REVIEW_FIELD, review, STATUS_FIELD, Status.COMPLETED)
+            .update(
+                REVIEW_FIELD,
+                review,
+                STATUS_FIELD,
+                Status.COMPLETED,
+                UPDATED_AT_FIELD,
+                Timestamp.now()
+            )
             .await()
     }
 
-    override suspend fun get(userId: String): Flow<List<Exposure>> {
+    override suspend fun updateExposure(userId: String, exposureId: String, status: Status) {
+        exposureDocumentRef(userId, exposureId)
+            .update(
+                STATUS_FIELD,
+                status,
+                UPDATED_AT_FIELD,
+                Timestamp.now()
+            )
+            .await()
+    }
+
+    override suspend fun getExposureList(userId: String): Flow<List<Exposure>> {
         return exposuresCollectionRef(userId)
             .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
             .snapshots()
             .map { it.toObjects(Exposure::class.java) }
     }
 
-    override suspend fun get(userId: String, exposureId: String): Flow<Exposure> {
+    override suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure> {
         return exposureDocumentRef(userId, exposureId)
             .snapshots()
             .map { it.toObject(Exposure::class.java)!! }
-    }
-
-    override suspend fun delete(userId: String, exposureId: String) {
-        exposureDocumentRef(userId, exposureId)
-            .delete()
-            .await()
     }
 
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val EXPOSURES_COLLECTION = "exposures"
         private const val CREATED_AT_FIELD = "createdAt"
+        private const val UPDATED_AT_FIELD = "updatedAt"
         private const val REVIEW_FIELD = "review"
         private const val STATUS_FIELD = "status"
         private const val TITLE_FIELD = "title"

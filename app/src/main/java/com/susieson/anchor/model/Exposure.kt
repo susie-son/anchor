@@ -6,6 +6,8 @@ import com.google.firebase.firestore.ServerTimestamp
 data class Exposure(
     @ServerTimestamp
     val createdAt: Timestamp? = null,
+    @ServerTimestamp
+    val updatedAt: Timestamp? = null,
     val id: String = "",
     val title: String = "",
     val description: String = "",
@@ -16,6 +18,7 @@ data class Exposure(
 
 enum class Status {
     DRAFT,
+    READY,
     IN_PROGRESS,
     COMPLETED
 }

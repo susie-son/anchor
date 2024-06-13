@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.preparation.PreparationScreen
+import com.susieson.anchor.ui.ready.ReadyScreen
 import com.susieson.anchor.ui.review.ReviewScreen
 import com.susieson.anchor.ui.splash.SplashScreen
 import com.susieson.anchor.ui.summary.SummaryScreen
@@ -68,6 +69,10 @@ fun AnchorApp(modifier: Modifier = Modifier) {
                             navController.navigate("home/${userId}/exposures/${exposureId}/review")
                         }
 
+                        Status.READY -> {
+                            navController.navigate("home/${userId}/exposures/${exposureId}/ready")
+                        }
+
                         Status.DRAFT -> {
                             navController.navigate("home/${userId}/exposures/${exposureId}/preparation")
                         }
@@ -87,6 +92,29 @@ fun AnchorApp(modifier: Modifier = Modifier) {
             PreparationScreen(
                 modifier = modifier,
                 userId = backStackEntry.arguments?.getString("userId")!!,
+                onBack = { navController.popBackStack() },
+                onNext = { userId, exposureId ->
+                    navController.navigate("home/${userId}/exposures/${exposureId}/ready", builder = { popUpTo("home/${userId}/exposures") })
+                }
+            )
+        }
+        composable(
+            route = "home/{userId}/exposures/{exposureId}/ready",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("exposureId") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) { backStackEntry ->
+            ReadyScreen(
+                modifier = modifier,
+                userId = backStackEntry.arguments?.getString("userId")!!,
+                exposureId = backStackEntry.arguments?.getString("exposureId")!!,
                 onBack = { navController.popBackStack() }
             )
         }

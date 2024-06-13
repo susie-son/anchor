@@ -1,11 +1,6 @@
 package com.susieson.anchor.model
 
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.ServerTimestamp
-
 data class Review(
-    @ServerTimestamp
-    val createdAt: Timestamp? = null,
     val emotions: List<String> = emptyList(),
     val thoughts: List<String> = emptyList(),
     val sensations: List<String> = emptyList(),

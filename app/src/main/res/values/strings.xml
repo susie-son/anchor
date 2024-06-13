@@ -18,12 +18,6 @@
     <string name="discard_dialog_text">Are you sure you want to discard?</string>
     <string name="discard_dialog_confirm">Discard</string>
     <string name="discard_dialog_dismiss">Cancel</string>
-    <string name="preparation_confirm_dialog_title">Ready to start?</string>
-    <string name="preparation_confirm_dialog_text">During the exposure, remember to:</string>
-    <string name="preparation_confirm_dialog_check_1">Be gentle with yourself.</string>
-    <string name="preparation_confirm_dialog_check_2">Stay anchored in the present.</string>
-    <string name="preparation_confirm_dialog_confirm">Start</string>
-    <string name="preparation_confirm_dialog_dismiss">Cancel</string>
     <string name="preparation_title_error">Please enter a title.</string>
     <string name="preparation_description_error">Please enter a description.</string>
     <string name="review_top_bar_title">Review</string>
@@ -55,4 +49,12 @@
     <string name="summary_completed_at_label">Completed</string>
     <string name="exposure_completed_date">Completed %s</string>
     <string name="exposure_in_progress_date">Started %s</string>
+    <string name="exposure_ready_date">Prepared %s</string>
+    <string name="exposure_draft_date">Created %s</string>
+    <string name="ready_top_bar_title">Ready to start?</string>
+    <string name="ready_description">During the exposure, remember to:</string>
+    <string name="ready_check_1">Be gentle with yourself.</string>
+    <string name="ready_check_2">Stay anchored in the present.</string>
+    <string name="ready_confirm_button">Start</string>
+    <string name="ready_dismiss_button">Later</string>
 </resources>
