@@ -23,6 +23,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <data android:scheme="https" android:host="anchor.susieson.com" />
+            </intent-filter>
         </activity>
     </application>
 

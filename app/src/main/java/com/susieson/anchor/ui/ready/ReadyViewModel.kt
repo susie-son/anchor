@@ -18,7 +18,7 @@ class ReadyViewModel @Inject constructor(
         viewModelScope.launch {
             storageService.updateExposure(userId, exposureId, Status.IN_PROGRESS)
             val exposure = storageService.getExposureSync(userId, exposureId)
-            notificationService.showReminderNotification(exposure.title)
+            notificationService.showReminderNotification(exposure.title, userId, exposureId)
         }
     }
 }

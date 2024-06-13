@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.preparation.PreparationScreen
@@ -94,7 +95,9 @@ fun AnchorApp(modifier: Modifier = Modifier) {
                 userId = backStackEntry.arguments?.getString("userId")!!,
                 onBack = { navController.popBackStack() },
                 onNext = { userId, exposureId ->
-                    navController.navigate("home/${userId}/exposures/${exposureId}/ready", builder = { popUpTo("home/${userId}/exposures") })
+                    navController.navigate(
+                        "home/${userId}/exposures/${exposureId}/ready",
+                        builder = { popUpTo("home/${userId}/exposures") })
                 }
             )
         }
@@ -129,7 +132,11 @@ fun AnchorApp(modifier: Modifier = Modifier) {
                     type = NavType.StringType
                     nullable = false
                 }
-            )
+            ),
+            deepLinks = listOf(navDeepLink {
+                uriPattern =
+                    "https://anchor.susieson.com/home/{userId}/exposures/{exposureId}/review"
+            }),
         ) { backStackEntry ->
             ReviewScreen(
                 modifier = modifier,
