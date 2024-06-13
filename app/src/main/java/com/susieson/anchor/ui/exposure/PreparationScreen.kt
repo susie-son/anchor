@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.preparation
+package com.susieson.anchor.ui.exposure
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,7 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.ui.components.DiscardDialog
@@ -41,8 +38,8 @@ fun PreparationTopBar(
     isValid: Boolean,
     isEmpty: Boolean,
     onBack: () -> Unit,
-    onDiscard: () -> Unit = {},
-    onConfirm: () -> Unit = {}
+    onDiscard: () -> Unit,
+    onConfirm: () -> Unit
 ) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.preparation_top_bar_title)) },
@@ -69,10 +66,8 @@ fun PreparationTopBar(
 @Composable
 fun PreparationScreen(
     modifier: Modifier = Modifier,
-    userId: String,
-    onBack: () -> Unit = {},
-    onNext: (String, String) -> Unit = { _, _ -> },
-    preparationViewModel: PreparationViewModel = hiltViewModel()
+    onBack: () -> Unit,
+    onNext: (String, String, Preparation) -> Unit,
 ) {
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
@@ -91,20 +86,16 @@ fun PreparationScreen(
     val behaviorsError = behaviors.isEmpty()
     val actionsError = actions.isEmpty()
 
-    val isValid = !titleError && !descriptionError && !thoughtsError && !interpretationsError && !behaviorsError && !actionsError
-    val isEmpty = title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
-
-    val exposureId by preparationViewModel.exposureId.collectAsState()
-
-    LaunchedEffect(exposureId) {
-        exposureId?.let {
-            onNext(userId, it)
-        }
-    }
+    val isValid =
+        !titleError && !descriptionError && !thoughtsError && !interpretationsError && !behaviorsError && !actionsError
+    val isEmpty =
+        title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     if (openDiscardDialog) {
         DiscardDialog(
-            onConfirm = onBack,
+            onConfirm = {
+                onBack()
+            },
             onDismiss = {
                 openDiscardDialog = false
             }
@@ -124,7 +115,7 @@ fun PreparationScreen(
                     behaviors = behaviors,
                     actions = actions
                 )
-                preparationViewModel.new(userId, title, description, preparation)
+                onNext(title, description, preparation)
             }
         )
     }) { innerPadding ->

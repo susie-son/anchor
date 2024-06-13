@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -72,6 +73,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.human.readable)
     implementation(libs.accompanist.permissions)
+    implementation(libs.kotlinx.serialization.json)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

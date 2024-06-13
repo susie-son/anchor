@@ -50,8 +50,8 @@ fun HomeTopBar(modifier: Modifier = Modifier) {
 fun ExposuresScreen(
     modifier: Modifier = Modifier,
     userId: String,
-    onStart: (String) -> Unit = {},
-    onItemClick: (String, String, Status) -> Unit = { _, _, _ -> },
+    onStart: (String) -> Unit,
+    onItemClick: (String, String) -> Unit,
     exposuresViewModel: ExposuresViewModel = hiltViewModel()
 ) {
     val exposures by exposuresViewModel.exposures.collectAsState()
@@ -89,7 +89,7 @@ fun ExposuresScreen(
                         .fillMaxSize()
                         .padding(innerPadding),
                     exposures = exposures,
-                    onItemClick = { exposureId, status -> onItemClick(userId, exposureId, status) }
+                    onItemClick = { exposureId -> onItemClick(userId, exposureId) }
                 )
             }
         } ?: LoadingScreen(
@@ -130,7 +130,7 @@ fun EmptyExposureList(modifier: Modifier = Modifier, onStart: () -> Unit) {
 fun ExposureList(
     modifier: Modifier = Modifier,
     exposures: List<Exposure>,
-    onItemClick: (String, Status) -> Unit
+    onItemClick: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(exposures.size) { index ->
@@ -157,11 +157,9 @@ fun ExposureList(
                         )
                     }
                 },
-                headlineContent = { Text(exposures[index].title) },
-                supportingContent = { Text(exposures[index].description) },
-                modifier = Modifier.clickable {
-                    onItemClick(exposures[index].id, exposures[index].status)
-                }
+                headlineContent = { Text(exposures[index].title.ifBlank { stringResource(R.string.exposures_no_title) }) },
+                supportingContent = { Text(exposures[index].description.ifBlank { stringResource(R.string.exposures_no_description) }) },
+                modifier = Modifier.clickable { onItemClick(exposures[index].id) }
             )
             HorizontalDivider()
         }

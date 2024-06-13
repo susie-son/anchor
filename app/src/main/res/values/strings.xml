@@ -61,4 +61,6 @@
     <string name="notification_permission_description">Enable notifications to get an ongoing reminder about your exposure!</string>
     <string name="notification_permission_button">Remind me</string>
     <string name="reminder_notification_text">Remember to stay anchored during your exposure.</string>
+    <string name="exposures_no_title">No title</string>
+    <string name="exposures_no_description">No description</string>
 </resources>

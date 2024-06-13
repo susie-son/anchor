@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.review
+package com.susieson.anchor.ui.exposure
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.DiscardDialog
@@ -45,8 +44,8 @@ fun ReviewTopBar(
     isValid: Boolean,
     isEmpty: Boolean,
     onBack: () -> Unit,
-    onDiscard: () -> Unit = {},
-    onConfirm: () -> Unit = {}
+    onDiscard: () -> Unit,
+    onConfirm: () -> Unit
 ) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.review_top_bar_title)) },
@@ -74,10 +73,8 @@ fun ReviewTopBar(
 @Composable
 fun ReviewScreen(
     modifier: Modifier = Modifier,
-    userId: String,
-    exposureId: String,
-    onBack: () -> Unit = {},
-    reviewViewModel: ReviewViewModel = hiltViewModel()
+    onAdd: (Review) -> Unit,
+    onBack: () -> Unit
 ) {
     var fear by rememberSaveable { mutableStateOf(false) }
     var sadness by rememberSaveable { mutableStateOf(false) }
@@ -121,7 +118,8 @@ fun ReviewScreen(
 
     val learningsError = learnings.isBlank()
 
-    val isValid = !emotionsError && !thoughtsError && !sensationsError && !behaviorsError && !experiencingError && !anchoringError && !thinkingError && !engagingError && !learningsError
+    val isValid =
+        !emotionsError && !thoughtsError && !sensationsError && !behaviorsError && !experiencingError && !anchoringError && !thinkingError && !engagingError && !learningsError
     val isEmpty =
         !fear && !sadness && !anxiety && !guilt && !shame && !happiness &&
                 thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty() &&
@@ -150,7 +148,7 @@ fun ReviewScreen(
                     engaging = engagingRating,
                     learnings = learnings
                 )
-                reviewViewModel.add(userId, exposureId, review)
+                onAdd(review)
                 onBack()
             }
         )

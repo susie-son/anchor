@@ -1,5 +1,6 @@
-package com.susieson.anchor.ui.ready
+package com.susieson.anchor.ui.exposure
 
+import android.Manifest
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -60,15 +60,13 @@ fun ReadyTopBar(
 @Composable
 fun ReadyScreen(
     modifier: Modifier = Modifier,
-    userId: String,
-    exposureId: String,
-    onBack: () -> Unit = {},
-    readyViewModel: ReadyViewModel = hiltViewModel()
+    onUpdate: () -> Unit,
+    onBack: () -> Unit
 ) {
     var checked by rememberSaveable { mutableStateOf(listOf(false, false)) }
 
     val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     } else {
         null
     }
@@ -92,7 +90,10 @@ fun ReadyScreen(
                             modifier = modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text(stringResource(R.string.notification_permission_title), style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                stringResource(R.string.notification_permission_title),
+                                style = MaterialTheme.typography.titleMedium
+                            )
                             Text(stringResource(R.string.notification_permission_description))
                             OutlinedButton(
                                 onClick = { postNotificationPermission.launchPermissionRequest() },
@@ -138,7 +139,7 @@ fun ReadyScreen(
                 OutlinedButton(onClick = onBack) { Text(stringResource(R.string.ready_dismiss_button)) }
                 FilledTonalButton(
                     onClick = {
-                        readyViewModel.update(userId, exposureId)
+                        onUpdate()
                         onBack()
                     },
                     enabled = checked.all { it }) { Text(stringResource(R.string.ready_confirm_button)) }

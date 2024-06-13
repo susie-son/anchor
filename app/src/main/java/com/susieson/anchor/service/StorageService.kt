@@ -15,13 +15,19 @@ import javax.inject.Inject
 
 interface StorageService {
     suspend fun addExposure(userId: String): String
-    suspend fun updateExposure(userId: String, exposureId: String, title: String, description: String)
-    suspend fun updateExposure(userId: String, exposureId: String, preparation: Preparation)
+    suspend fun updateExposure(
+        userId: String,
+        exposureId: String,
+        title: String,
+        description: String,
+        preparation: Preparation
+    )
+
     suspend fun updateExposure(userId: String, exposureId: String, review: Review)
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
     suspend fun getExposureList(userId: String): Flow<List<Exposure>>
-    suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure>
-    suspend fun getExposureSync(userId: String, exposureId: String): Exposure
+    suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
+    suspend fun deleteExposure(userId: String, exposureId: String)
 }
 
 class StorageServiceImpl @Inject constructor(
@@ -51,7 +57,8 @@ class StorageServiceImpl @Inject constructor(
         userId: String,
         exposureId: String,
         title: String,
-        description: String
+        description: String,
+        preparation: Preparation
     ) {
         exposureDocumentRef(userId, exposureId)
             .update(
@@ -61,15 +68,6 @@ class StorageServiceImpl @Inject constructor(
                 description,
                 STATUS_FIELD,
                 Status.READY,
-                UPDATED_AT_FIELD,
-                Timestamp.now()
-            )
-            .await()
-    }
-
-    override suspend fun updateExposure(userId: String, exposureId: String, preparation: Preparation) {
-        exposureDocumentRef(userId, exposureId)
-            .update(
                 PREPARATION_FIELD,
                 preparation,
                 UPDATED_AT_FIELD,
@@ -109,14 +107,16 @@ class StorageServiceImpl @Inject constructor(
             .map { it.toObjects(Exposure::class.java) }
     }
 
-    override suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure> {
+    override suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure?> {
         return exposureDocumentRef(userId, exposureId)
             .snapshots()
-            .map { it.toObject(Exposure::class.java)!! }
+            .map { it.toObject(Exposure::class.java) }
     }
 
-    override suspend fun getExposureSync(userId: String, exposureId: String): Exposure {
-        return exposureDocumentRef(userId, exposureId).get().await().toObject(Exposure::class.java)!!
+    override suspend fun deleteExposure(userId: String, exposureId: String) {
+        exposureDocumentRef(userId, exposureId)
+            .delete()
+            .await()
     }
 
     companion object {

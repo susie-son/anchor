@@ -28,7 +28,7 @@ class NotificationService(private val context: Context) {
         if (notificationManager.areNotificationsEnabled()) {
             val deepLinkIntent = Intent(
                 Intent.ACTION_VIEW,
-                "https://anchor.susieson.com/home/$userId/exposures/$exposureId/review".toUri(),
+                "https://anchor.susieson.com/exposure/$userId/$exposureId".toUri(),
                 context,
                 MainActivity::class.java
             )
