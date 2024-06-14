@@ -25,6 +25,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,19 +58,24 @@ fun TextFieldColumn(
                 }),
                 interactionSource = interactionSource,
                 singleLine = true,
+                textStyle = TextStyle.Default.copy(
+                    color = OutlinedTextFieldDefaults.colors().focusedTextColor
+                ),
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 0.dp, 0.dp),
             ) { innerTextField ->
-                OutlinedTextFieldDefaults.DecorationBox(value = field,
+                OutlinedTextFieldDefaults.DecorationBox(
+                    value = field,
                     innerTextField = innerTextField,
                     enabled = true,
                     singleLine = true,
                     visualTransformation = VisualTransformation.None,
                     interactionSource = interactionSource,
                     contentPadding = contentPadding(0.dp, 0.dp, 0.dp, 0.dp),
-                    placeholder = { Text("Add") },
-                    container = {})
+                    placeholder = { Text(stringResource(R.string.text_field_column_add)) },
+                    container = {}
+                )
             }
         },
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),

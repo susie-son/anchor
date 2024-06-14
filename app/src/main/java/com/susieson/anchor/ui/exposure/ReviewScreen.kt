@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -97,34 +96,32 @@ fun ReviewScreen(
         DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
     }
 
-    LaunchedEffect(isValid, isEmpty) {
-        onTopAppBarStateChanged(
-            TopAppBarState(
-                title = R.string.review_top_bar_title,
-                onBack = onBack,
-                formState = FormState(
-                    isValid = isValid,
-                    isEmpty = isEmpty,
-                    onDiscard = { openDiscardDialog = true },
-                    onConfirm = {
-                        val review = Review(
-                            emotions = emotions,
-                            thoughts = thoughts,
-                            sensations = sensations,
-                            behaviors = behaviors,
-                            experiencing = experiencingRating,
-                            anchoring = anchoringRating,
-                            thinking = thinkingRating,
-                            engaging = engagingRating,
-                            learnings = learnings
-                        )
-                        onAdd(review)
-                        onBack()
-                    }
-                )
+    onTopAppBarStateChanged(
+        TopAppBarState(
+            title = R.string.review_top_bar_title,
+            onBack = onBack,
+            formState = FormState(
+                isValid = isValid,
+                isEmpty = isEmpty,
+                onDiscard = { openDiscardDialog = true },
+                onConfirm = {
+                    val review = Review(
+                        emotions = emotions,
+                        thoughts = thoughts,
+                        sensations = sensations,
+                        behaviors = behaviors,
+                        experiencing = experiencingRating,
+                        anchoring = anchoringRating,
+                        thinking = thinkingRating,
+                        engaging = engagingRating,
+                        learnings = learnings
+                    )
+                    onAdd(review)
+                    onBack()
+                }
             )
         )
-    }
+    )
 
     Column(
         modifier = Modifier

@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,14 +47,12 @@ fun ReadyScreen(
         null
     }
 
-    LaunchedEffect(true) {
-        onTopAppBarStateChanged(
-            TopAppBarState(
-                title = R.string.ready_top_bar_title,
-                onBack = onBack
-            )
+    onTopAppBarStateChanged(
+        TopAppBarState(
+            title = R.string.ready_top_bar_title,
+            onBack = onBack
         )
-    }
+    )
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),

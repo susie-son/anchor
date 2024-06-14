@@ -5,11 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -42,16 +40,22 @@ fun ExposuresScreen(
     onTopAppBarStateChanged: (TopAppBarState?) -> Unit,
     exposuresViewModel: ExposuresViewModel = hiltViewModel()
 ) {
+    onTopAppBarStateChanged(
+        TopAppBarState(
+            title = R.string.anchor_top_bar_title,
+            onAction = { onStart(userId) }
+        )
+    )
+
     val exposuresState by exposuresViewModel.exposures.collectAsState()
 
-    val exposures = exposuresState
+    val exposures = exposuresState?.filterNot { it.status == Status.DRAFT }
 
     if (exposures == null) {
         LoadingScreen(modifier = modifier.fillMaxSize())
     } else if (exposures.isEmpty()) {
         EmptyExposureList(
-            modifier = modifier.fillMaxSize(),
-            onStart = { onStart(userId) }
+            modifier = modifier.fillMaxSize()
         )
     } else {
         ExposureList(
@@ -61,20 +65,13 @@ fun ExposuresScreen(
         )
     }
 
-    onTopAppBarStateChanged(
-        TopAppBarState(
-            title = R.string.anchor_top_bar_title,
-            onAction = { onStart(userId) }
-        )
-    )
-
     LaunchedEffect(userId) {
         exposuresViewModel.get(userId)
     }
 }
 
 @Composable
-fun EmptyExposureList(modifier: Modifier = Modifier, onStart: () -> Unit) {
+fun EmptyExposureList(modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
@@ -82,17 +79,11 @@ fun EmptyExposureList(modifier: Modifier = Modifier, onStart: () -> Unit) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.illustration_sailboat),
-            modifier = Modifier
-                .padding(0.dp, 24.dp)
-                .weight(0.8f),
-            contentDescription = null,
+            modifier = Modifier.padding(0.dp, 24.dp),
+            contentDescription = null
         )
         Text(stringResource(R.string.exposures_title), style = MaterialTheme.typography.titleLarge)
         Text(stringResource(R.string.exposures_body), style = MaterialTheme.typography.bodyLarge)
-        Button(onClick = onStart, modifier = Modifier.padding(vertical = 24.dp)) {
-            Text(stringResource(R.string.exposures_start_button))
-        }
-        Spacer(modifier = Modifier.weight(0.2f))
     }
 }
 

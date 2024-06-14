@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,28 +57,26 @@ fun PreparationScreen(
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
-    LaunchedEffect(isValid, isEmpty) {
-        onTopAppBarStateChanged(
-            TopAppBarState(
-                title = R.string.preparation_top_bar_title,
-                onBack = onBack,
-                formState = FormState(
-                    isValid = isValid,
-                    isEmpty = isEmpty,
-                    onDiscard = { openDiscardDialog = true },
-                    onConfirm = {
-                        val preparation = Preparation(
-                            thoughts = thoughts,
-                            interpretations = interpretations,
-                            behaviors = behaviors,
-                            actions = actions
-                        )
-                        onNext(title, description, preparation)
-                    }
-                )
+    onTopAppBarStateChanged(
+        TopAppBarState(
+            title = R.string.preparation_top_bar_title,
+            onBack = onBack,
+            formState = FormState(
+                isValid = isValid,
+                isEmpty = isEmpty,
+                onDiscard = { openDiscardDialog = true },
+                onConfirm = {
+                    val preparation = Preparation(
+                        thoughts = thoughts,
+                        interpretations = interpretations,
+                        behaviors = behaviors,
+                        actions = actions
+                    )
+                    onNext(title, description, preparation)
+                }
             )
         )
-    }
+    )
 
     if (openDiscardDialog) {
         DiscardDialog(
