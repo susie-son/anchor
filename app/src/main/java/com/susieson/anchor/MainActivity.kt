@@ -20,9 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,10 +50,10 @@ class MainActivity : ComponentActivity() {
             object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     // Check whether the initial data is ready.
-                    return if (mainViewModel.userId.isNotBlank()) {
+                    return if (mainViewModel.isInitialized) {
                         setContent {
                             AnchorTheme {
-                                AnchorApp(mainViewModel.userId)
+                                AnchorApp(viewModel = mainViewModel)
                             }
                         }
                         content.viewTreeObserver.removeOnPreDrawListener(this)
@@ -74,7 +72,7 @@ class MainActivity : ComponentActivity() {
 data class ExposuresNav(val userId: String)
 
 @Serializable
-data class ExposureNav(val userId: String, val exposureId: String?)
+data class ExposureNav(val userId: String, val exposureId: String)
 
 data class TopAppBarState(
     @StringRes
@@ -82,7 +80,16 @@ data class TopAppBarState(
     val formState: FormState? = null,
     val onBack: (() -> Unit)? = null,
     val onAction: (() -> Unit)? = null
-)
+) {
+    companion object {
+        val Default = TopAppBarState(
+            title = R.string.app_name,
+            formState = null,
+            onBack = null,
+            onAction = null
+        )
+    }
+}
 
 data class FormState(
     val isEmpty: Boolean,
@@ -93,66 +100,54 @@ data class FormState(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnchorTopAppBar(
-    state: TopAppBarState?,
-    modifier: Modifier = Modifier
-) {
-    when (state) {
-        null -> CenterAlignedTopAppBar(
-            title = { Text(text = stringResource(R.string.anchor_top_bar_title)) },
-            modifier = modifier
-        )
-
-        else -> CenterAlignedTopAppBar(
-            title = { Text(stringResource(state.title)) },
-            navigationIcon = {
-                state.onBack?.let {
-                    if (state.formState == null) {
-                        IconButton(onClick = it) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.icon_close),
-                                contentDescription = "Close"
-                            )
-                        }
-                    } else {
-                        val (isEmpty, onDiscard) = state.formState
-                        IconButton(onClick = { if (isEmpty) it() else onDiscard() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.icon_close),
-                                contentDescription = "Close"
-                            )
-                        }
-                    }
-                }
-            },
-            actions = {
-                if (state.formState != null) {
-                    val (_, _, isValid, onConfirm) = state.formState
-                    IconButton(onClick = onConfirm, enabled = isValid) {
+fun AnchorTopAppBar(state: TopAppBarState) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(state.title)) },
+        navigationIcon = {
+            state.onBack?.let {
+                if (state.formState == null) {
+                    IconButton(onClick = it) {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_done),
-                            contentDescription = "Done"
+                            painter = painterResource(id = R.drawable.icon_close),
+                            contentDescription = "Close"
+                        )
+                    }
+                } else {
+                    val (isEmpty, onDiscard) = state.formState
+                    IconButton(onClick = { if (isEmpty) it() else onDiscard() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_close),
+                            contentDescription = "Close"
                         )
                     }
                 }
-            },
-            modifier = Modifier
-        )
-    }
+            }
+        },
+        actions = {
+            if (state.formState != null) {
+                val (_, _, isValid, onConfirm) = state.formState
+                IconButton(onClick = onConfirm, enabled = isValid) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_done),
+                        contentDescription = "Done"
+                    )
+                }
+            }
+        },
+        modifier = Modifier
+    )
 }
 
 @Composable
-fun AnchorApp(userId: String, modifier: Modifier = Modifier) {
+fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    var topAppBarState by rememberSaveable { mutableStateOf<TopAppBarState?>(null) }
+    val topAppBar by remember { viewModel.topAppBar }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = {
-            AnchorTopAppBar(state = topAppBarState)
-        },
+        topBar = { AnchorTopAppBar(topAppBar) },
         floatingActionButton = {
-            topAppBarState?.onAction?.let {
+            topAppBar.onAction?.let {
                 ExtendedFloatingActionButton(
                     onClick = it,
                     content = {
@@ -172,23 +167,14 @@ fun AnchorApp(userId: String, modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            NavHost(navController = navController, startDestination = ExposuresNav(userId)) {
+            NavHost(navController = navController, startDestination = ExposuresNav(viewModel.userId)) {
                 composable<ExposuresNav> {
                     ExposuresScreen(
                         modifier = modifier,
-                        userId = userId,
-                        onStart = {
-                            navController.navigate(ExposureNav(userId, null))
+                        onItemSelect = { exposureId ->
+                            navController.navigate(ExposureNav(viewModel.userId, exposureId))
                         },
-                        onItemClick = { userId, exposureId ->
-                            navController.navigate(
-                                ExposureNav(
-                                    userId,
-                                    exposureId
-                                )
-                            )
-                        },
-                        onTopAppBarStateChanged = { topAppBarState = it }
+                        setTopAppBarState = viewModel::setTopAppBar
                     )
                 }
                 composable<ExposureNav>(
@@ -199,10 +185,9 @@ fun AnchorApp(userId: String, modifier: Modifier = Modifier) {
                     val nav: ExposureNav = backStackEntry.toRoute()
                     ExposureScreen(
                         modifier = modifier,
-                        userId = userId,
                         exposureId = nav.exposureId,
-                        onBack = { navController.popBackStack() },
-                        onTopAppBarStateChanged = { topAppBarState = it }
+                        onBack = navController::popBackStack,
+                        setTopAppBarState = viewModel::setTopAppBar
                     )
                 }
             }

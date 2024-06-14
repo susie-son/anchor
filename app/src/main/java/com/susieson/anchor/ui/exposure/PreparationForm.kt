@@ -14,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,27 +23,34 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.FormState
 import com.susieson.anchor.R
 import com.susieson.anchor.TopAppBarState
-import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.TextFieldColumn
 
 @Composable
-fun PreparationScreen(
-    modifier: Modifier = Modifier,
+fun PreparationForm(
+    title: String,
+    description: String,
+    thoughts: List<String>,
+    interpretations: List<String>,
+    behaviors: List<String>,
+    actions: List<String>,
+    setTitle: (String) -> Unit,
+    setDescription: (String) -> Unit,
+    addThought: (String) -> Unit,
+    addInterpretation: (String) -> Unit,
+    addBehavior: (String) -> Unit,
+    addAction: (String) -> Unit,
+    removeThought: (String) -> Unit,
+    removeInterpretation: (String) -> Unit,
+    removeBehavior: (String) -> Unit,
+    removeAction: (String) -> Unit,
+    onDiscard: () -> Unit,
     onBack: () -> Unit,
-    onNext: (String, String, Preparation) -> Unit,
-    onTopAppBarStateChanged: (TopAppBarState) -> Unit
+    onNext: () -> Unit,
+    setTopAppBarState: (TopAppBarState) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-
-    var thoughts by rememberSaveable { mutableStateOf(listOf<String>()) }
-    var interpretations by rememberSaveable { mutableStateOf(listOf<String>()) }
-    var behaviors by rememberSaveable { mutableStateOf(listOf<String>()) }
-    var actions by rememberSaveable { mutableStateOf(listOf<String>()) }
-
-    var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
+    var openDiscardDialog by remember { mutableStateOf(false) }
 
     val titleError = title.isBlank()
     val descriptionError = description.isBlank()
@@ -57,7 +64,7 @@ fun PreparationScreen(
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
-    onTopAppBarStateChanged(
+    setTopAppBarState(
         TopAppBarState(
             title = R.string.preparation_top_bar_title,
             onBack = onBack,
@@ -65,15 +72,7 @@ fun PreparationScreen(
                 isValid = isValid,
                 isEmpty = isEmpty,
                 onDiscard = { openDiscardDialog = true },
-                onConfirm = {
-                    val preparation = Preparation(
-                        thoughts = thoughts,
-                        interpretations = interpretations,
-                        behaviors = behaviors,
-                        actions = actions
-                    )
-                    onNext(title, description, preparation)
-                }
+                onConfirm = onNext
             )
         )
     )
@@ -81,6 +80,8 @@ fun PreparationScreen(
     if (openDiscardDialog) {
         DiscardDialog(
             onConfirm = {
+                onDiscard()
+                openDiscardDialog = false
                 onBack()
             },
             onDismiss = {
@@ -98,7 +99,7 @@ fun PreparationScreen(
     ) {
         OutlinedTextField(value = title,
             label = { Text(stringResource(R.string.preparation_title_label)) },
-            onValueChange = { title = it },
+            onValueChange = setTitle,
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth(),
@@ -108,7 +109,7 @@ fun PreparationScreen(
         OutlinedTextField(
             value = description,
             label = { Text(stringResource(R.string.preparation_description_label)) },
-            onValueChange = { description = it },
+            onValueChange = setDescription,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             modifier = Modifier
                 .fillMaxWidth()
@@ -127,9 +128,7 @@ fun PreparationScreen(
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
             color = if (thoughtsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = thoughts,
-            onAdd = { field -> thoughts = listOf(field) + thoughts },
-            onDelete = { text -> thoughts = thoughts.filter { it != text } })
+        TextFieldColumn(thoughts, addThought, removeThought)
         Text(
             text = stringResource(R.string.preparation_interpretations_label),
             style = MaterialTheme.typography.labelSmall,
@@ -141,9 +140,7 @@ fun PreparationScreen(
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
             color = if (interpretationsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = interpretations,
-            onAdd = { field -> interpretations = listOf(field) + interpretations },
-            onDelete = { text -> interpretations = interpretations.filter { it != text } })
+        TextFieldColumn(interpretations, addInterpretation, removeInterpretation)
         Text(
             text = stringResource(R.string.preparation_behaviors_label),
             style = MaterialTheme.typography.labelSmall,
@@ -155,9 +152,7 @@ fun PreparationScreen(
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
             color = if (behaviorsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = behaviors,
-            onAdd = { field -> behaviors = listOf(field) + behaviors },
-            onDelete = { text -> behaviors = behaviors.filter { it != text } })
+        TextFieldColumn(behaviors, addBehavior, removeBehavior)
         Text(
             text = stringResource(R.string.preparation_actions_label),
             style = MaterialTheme.typography.labelSmall,
@@ -169,8 +164,6 @@ fun PreparationScreen(
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
             color = if (actionsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = actions,
-            onAdd = { field -> actions = listOf(field) + actions },
-            onDelete = { text -> actions = actions.filter { it != text } })
+        TextFieldColumn(actions, addAction, removeAction)
     }
 }

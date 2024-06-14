@@ -27,6 +27,9 @@ import com.susieson.anchor.TopAppBarState
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.LoadingScreen
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
@@ -34,20 +37,27 @@ import java.text.DateFormat
 @Composable
 fun ExposuresScreen(
     modifier: Modifier = Modifier,
-    userId: String,
-    onStart: (String) -> Unit,
-    onItemClick: (String, String) -> Unit,
-    onTopAppBarStateChanged: (TopAppBarState?) -> Unit,
-    exposuresViewModel: ExposuresViewModel = hiltViewModel()
+    onItemSelect: (String) -> Unit,
+    setTopAppBarState: (TopAppBarState) -> Unit,
+    viewModel: ExposuresViewModel = hiltViewModel()
 ) {
-    onTopAppBarStateChanged(
+    setTopAppBarState(
         TopAppBarState(
-            title = R.string.anchor_top_bar_title,
-            onAction = { onStart(userId) }
+            title = R.string.app_name,
+            onAction = viewModel::addExposure
         )
     )
 
-    val exposuresState by exposuresViewModel.exposures.collectAsState()
+    val exposureId by viewModel.exposureId.collectAsState()
+
+    LaunchedEffect(exposureId) {
+        exposureId?.let {
+            onItemSelect(it)
+            viewModel.resetExposureId()
+        }
+    }
+
+    val exposuresState by viewModel.exposures.collectAsState()
 
     val exposures = exposuresState?.filterNot { it.status == Status.DRAFT }
 
@@ -61,12 +71,8 @@ fun ExposuresScreen(
         ExposureList(
             modifier = modifier.fillMaxSize(),
             exposures = exposures,
-            onItemClick = { exposureId -> onItemClick(userId, exposureId) }
+            onItemClick = onItemSelect
         )
-    }
-
-    LaunchedEffect(userId) {
-        exposuresViewModel.get(userId)
     }
 }
 
@@ -95,34 +101,51 @@ fun ExposureList(
 ) {
     LazyColumn(modifier = modifier) {
         items(exposures.size) { index ->
-            ListItem(
-                overlineContent = {
-                    val timestamp = exposures[index].updatedAt
-                    timestamp?.let {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            return@let HumanReadable.timeAgo(it.toInstant().toKotlinInstant())
+            val exposure = exposures[index]
+            val timestamp = exposure.updatedAt
+
+            val timestampText: Flow<String> = flow {
+                while (true) {
+                    if (timestamp != null) {
+                        val time = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
                         } else {
-                            return@let DateFormat.getDateTimeInstance().format(it.toDate())
+                            DateFormat.getDateTimeInstance().format(timestamp.toDate())
                         }
-                    }?.let {
-                        Text(
-                            stringResource(
-                                when (exposures[index].status) {
-                                    Status.COMPLETED -> R.string.exposure_completed_date
-                                    Status.IN_PROGRESS -> R.string.exposure_in_progress_date
-                                    Status.READY -> R.string.exposure_ready_date
-                                    Status.DRAFT -> R.string.exposure_draft_date
-                                },
-                                it
-                            )
-                        )
+                        emit(time)
+                        delay(1000 * 60)
+                    } else {
+                        return@flow
                     }
-                },
-                headlineContent = { Text(exposures[index].title.ifBlank { stringResource(R.string.exposures_no_title) }) },
-                supportingContent = { Text(exposures[index].description.ifBlank { stringResource(R.string.exposures_no_description) }) },
-                modifier = Modifier.clickable { onItemClick(exposures[index].id) }
+                }
+            }
+
+            val time by timestampText.collectAsState(null)
+
+            ListItem(
+                overlineContent = { time?.let { StatusWithTimestamp(time = it, status = exposure.status) } },
+                headlineContent = { Text(exposure.title.ifBlank { stringResource(R.string.exposures_no_title) }) },
+                supportingContent = { Text(exposure.description.ifBlank { stringResource(R.string.exposures_no_description) }) },
+                modifier = Modifier.clickable { onItemClick(exposure.id) }
             )
             HorizontalDivider()
         }
     }
+}
+
+@Composable
+fun StatusWithTimestamp(
+    time: String,
+    status: Status
+) {
+    val statusText = stringResource(
+        when (status) {
+            Status.COMPLETED -> R.string.exposure_completed_date
+            Status.IN_PROGRESS -> R.string.exposure_in_progress_date
+            Status.READY -> R.string.exposure_ready_date
+            Status.DRAFT -> R.string.exposure_draft_date
+        },
+        time
+    )
+    Text(statusText, style = MaterialTheme.typography.bodySmall)
 }

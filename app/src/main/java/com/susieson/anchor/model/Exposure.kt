@@ -11,8 +11,8 @@ data class Exposure(
     val id: String = "",
     val title: String = "",
     val description: String = "",
-    val preparation: Preparation = Preparation(),
-    val review: Review = Review(),
+    val preparation: Preparation? = null,
+    val review: Review? = null,
     val status: Status = Status.DRAFT
 )
 

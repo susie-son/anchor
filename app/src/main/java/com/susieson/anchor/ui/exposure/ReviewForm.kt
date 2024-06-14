@@ -18,9 +18,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,49 +28,52 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.FormState
 import com.susieson.anchor.R
 import com.susieson.anchor.TopAppBarState
-import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.LabeledSlider
 import com.susieson.anchor.ui.components.TextFieldColumn
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun ReviewScreen(
-    modifier: Modifier = Modifier,
-    onAdd: (Review) -> Unit,
+fun ReviewForm(
+    fear: Boolean,
+    sadness: Boolean,
+    anxiety: Boolean,
+    guilt: Boolean,
+    shame: Boolean,
+    happiness: Boolean,
+    thoughts: List<String>,
+    sensations: List<String>,
+    behaviors: List<String>,
+    experiencingRating: Float,
+    anchoringRating: Float,
+    thinkingRating: Float,
+    engagingRating: Float,
+    learnings: String,
+    setFear: () -> Unit,
+    setSadness: () -> Unit,
+    setAnxiety: () -> Unit,
+    setGuilt: () -> Unit,
+    setShame: () -> Unit,
+    setHappiness: () -> Unit,
+    addThought: (String) -> Unit,
+    addSensation: (String) -> Unit,
+    addBehavior: (String) -> Unit,
+    setExperiencingRating: (Float) -> Unit,
+    setAnchoringRating: (Float) -> Unit,
+    setThinkingRating: (Float) -> Unit,
+    setEngagingRating: (Float) -> Unit,
+    setLearnings: (String) -> Unit,
+    removeThought: (String) -> Unit,
+    removeSensation: (String) -> Unit,
+    removeBehavior: (String) -> Unit,
     onBack: () -> Unit,
-    onTopAppBarStateChanged: (TopAppBarState) -> Unit
+    onNext: () -> Unit,
+    setTopAppBarState: (TopAppBarState) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    var fear by rememberSaveable { mutableStateOf(false) }
-    var sadness by rememberSaveable { mutableStateOf(false) }
-    var anxiety by rememberSaveable { mutableStateOf(false) }
-    var guilt by rememberSaveable { mutableStateOf(false) }
-    var shame by rememberSaveable { mutableStateOf(false) }
-    var happiness by rememberSaveable { mutableStateOf(false) }
+    var openDiscardDialog by remember { mutableStateOf(false) }
 
-    val emotions = listOfNotNull(
-        if (fear) stringResource(R.string.review_emotions_fear) else null,
-        if (sadness) stringResource(R.string.review_emotions_sadness) else null,
-        if (anxiety) stringResource(R.string.review_emotions_anxiety) else null,
-        if (guilt) stringResource(R.string.review_emotions_guilt) else null,
-        if (shame) stringResource(R.string.review_emotions_shame) else null,
-        if (happiness) stringResource(R.string.review_emotions_happiness) else null
-    )
-
-    var thoughts by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-    var sensations by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-    var behaviors by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-
-    var experiencingRating by rememberSaveable { mutableFloatStateOf(0f) }
-    var anchoringRating by rememberSaveable { mutableFloatStateOf(0f) }
-    var thinkingRating by rememberSaveable { mutableFloatStateOf(0f) }
-    var engagingRating by rememberSaveable { mutableFloatStateOf(0f) }
-
-    var learnings by rememberSaveable { mutableStateOf("") }
-
-    var openDiscardDialog by rememberSaveable { mutableStateOf(false) }
-
-    val emotionsError = emotions.isEmpty()
+    val emotionsError = !fear && !sadness && !anxiety && !guilt && !shame && !happiness
 
     val thoughtsError = thoughts.isEmpty()
     val sensationsError = sensations.isEmpty()
@@ -93,10 +95,18 @@ fun ReviewScreen(
                 learnings.isBlank()
 
     if (openDiscardDialog) {
-        DiscardDialog(onConfirm = onBack, onDismiss = { openDiscardDialog = false })
+        DiscardDialog(
+            onConfirm = {
+                openDiscardDialog = false
+                onBack()
+            },
+            onDismiss = {
+                openDiscardDialog = false
+            }
+        )
     }
 
-    onTopAppBarStateChanged(
+    setTopAppBarState(
         TopAppBarState(
             title = R.string.review_top_bar_title,
             onBack = onBack,
@@ -105,18 +115,7 @@ fun ReviewScreen(
                 isEmpty = isEmpty,
                 onDiscard = { openDiscardDialog = true },
                 onConfirm = {
-                    val review = Review(
-                        emotions = emotions,
-                        thoughts = thoughts,
-                        sensations = sensations,
-                        behaviors = behaviors,
-                        experiencing = experiencingRating,
-                        anchoring = anchoringRating,
-                        thinking = thinkingRating,
-                        engaging = engagingRating,
-                        learnings = learnings
-                    )
-                    onAdd(review)
+                    onNext()
                     onBack()
                 }
             )
@@ -124,7 +123,7 @@ fun ReviewScreen(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
@@ -141,32 +140,32 @@ fun ReviewScreen(
         ) {
             FilterChip(
                 selected = fear,
-                onClick = { fear = !fear },
+                onClick = setFear,
                 label = { Text(stringResource(R.string.review_fear_chip)) }
             )
             FilterChip(
                 selected = sadness,
-                onClick = { sadness = !sadness },
+                onClick = setSadness,
                 label = { Text(stringResource(R.string.review_sadness_chip)) }
             )
             FilterChip(
                 selected = anxiety,
-                onClick = { anxiety = !anxiety },
+                onClick = setAnxiety,
                 label = { Text(stringResource(R.string.review_anxiety_chip)) }
             )
             FilterChip(
                 selected = guilt,
-                onClick = { guilt = !guilt },
+                onClick = setGuilt,
                 label = { Text(stringResource(R.string.review_guilt_chip)) }
             )
             FilterChip(
                 selected = shame,
-                onClick = { shame = !shame },
+                onClick = setShame,
                 label = { Text(stringResource(R.string.review_shame_chip)) }
             )
             FilterChip(
                 selected = happiness,
-                onClick = { happiness = !happiness },
+                onClick = setHappiness,
                 label = { Text(stringResource(R.string.review_happiness_chip)) }
             )
         }
@@ -176,27 +175,21 @@ fun ReviewScreen(
             modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
             color = if (thoughtsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = thoughts,
-            onAdd = { field -> thoughts = listOf(field) + thoughts },
-            onDelete = { text -> thoughts = thoughts.filter { it != text } })
+        TextFieldColumn(thoughts, addThought, removeThought)
         Text(
             text = stringResource(R.string.review_sensations_label),
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
             color = if (sensationsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = sensations,
-            onAdd = { field -> sensations = listOf(field) + sensations },
-            onDelete = { text -> sensations = sensations.filter { it != text } })
+        TextFieldColumn(sensations, addSensation, removeSensation)
         Text(
             text = stringResource(R.string.review_behaviors_label),
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
             color = if (behaviorsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
         )
-        TextFieldColumn(texts = behaviors,
-            onAdd = { field -> behaviors = listOf(field) + behaviors },
-            onDelete = { text -> behaviors = behaviors.filter { it != text } })
+        TextFieldColumn(behaviors, addBehavior, removeBehavior)
         Text(
             text = stringResource(R.string.review_effectiveness_label),
             style = MaterialTheme.typography.labelSmall,
@@ -210,7 +203,7 @@ fun ReviewScreen(
         )
         LabeledSlider(
             value = experiencingRating,
-            onValueChange = { experiencingRating = it },
+            onValueChange = setExperiencingRating,
             valueRange = 0f..10f,
             steps = 9,
             modifier = Modifier.padding(8.dp)
@@ -223,7 +216,7 @@ fun ReviewScreen(
         )
         LabeledSlider(
             value = anchoringRating,
-            onValueChange = { anchoringRating = it },
+            onValueChange = setAnchoringRating,
             valueRange = 0f..10f,
             steps = 9,
             modifier = Modifier.padding(8.dp)
@@ -236,7 +229,7 @@ fun ReviewScreen(
         )
         LabeledSlider(
             value = thinkingRating,
-            onValueChange = { thinkingRating = it },
+            onValueChange = setThinkingRating,
             valueRange = 0f..10f,
             steps = 9,
             modifier = Modifier.padding(8.dp)
@@ -249,7 +242,7 @@ fun ReviewScreen(
         )
         LabeledSlider(
             value = engagingRating,
-            onValueChange = { engagingRating = it },
+            onValueChange = setEngagingRating,
             valueRange = 0f..10f,
             steps = 9,
             modifier = Modifier.padding(8.dp)
@@ -266,7 +259,7 @@ fun ReviewScreen(
         )
         OutlinedTextField(
             value = learnings,
-            onValueChange = { learnings = it },
+            onValueChange = setLearnings,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             modifier = Modifier
                 .fillMaxWidth()

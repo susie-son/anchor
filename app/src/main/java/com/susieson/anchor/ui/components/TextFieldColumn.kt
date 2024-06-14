@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -36,10 +37,10 @@ import com.susieson.anchor.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextFieldColumn(
+    texts: List<String>,
+    onAdd: (String) -> Unit,
+    onDelete: (String) -> Unit,
     modifier: Modifier = Modifier,
-    texts: List<String> = mutableListOf(),
-    onAdd: (String) -> Unit = {},
-    onDelete: (String) -> Unit = {}
 ) {
     var field by rememberSaveable { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -61,6 +62,7 @@ fun TextFieldColumn(
                 textStyle = TextStyle.Default.copy(
                     color = OutlinedTextFieldDefaults.colors().focusedTextColor
                 ),
+                cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 0.dp, 0.dp),
@@ -109,5 +111,9 @@ fun TextFieldColumn(
 @Preview
 @Composable
 fun TextFieldColumnPreview() {
-    TextFieldColumn(texts = mutableListOf("1", "2", "3"))
+    TextFieldColumn(
+        texts = mutableListOf("1", "2", "3"),
+        onAdd = {},
+        onDelete = {}
+    )
 }

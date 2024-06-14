@@ -17,10 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,13 +31,13 @@ import com.susieson.anchor.TopAppBarState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ReadyScreen(
-    modifier: Modifier = Modifier,
-    onUpdate: () -> Unit,
+fun ExposureReady(
     onBack: () -> Unit,
-    onTopAppBarStateChanged: (TopAppBarState) -> Unit
+    onNext: () -> Unit,
+    setTopAppBarState: (TopAppBarState) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    var checked by rememberSaveable { mutableStateOf(listOf(false, false)) }
+    val checked = remember { mutableStateListOf(false, false) }
 
     val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
@@ -47,7 +45,7 @@ fun ReadyScreen(
         null
     }
 
-    onTopAppBarStateChanged(
+    setTopAppBarState(
         TopAppBarState(
             title = R.string.ready_top_bar_title,
             onBack = onBack
@@ -93,7 +91,7 @@ fun ReadyScreen(
                 trailingContent = {
                     Checkbox(
                         checked = checked[0],
-                        onCheckedChange = { checked = listOf(it, checked[1]) })
+                        onCheckedChange = { checked[0] = it })
                 },
                 modifier = modifier.height(40.dp)
             )
@@ -102,7 +100,7 @@ fun ReadyScreen(
                 trailingContent = {
                     Checkbox(
                         checked = checked[1],
-                        onCheckedChange = { checked = listOf(checked[0], it) })
+                        onCheckedChange = { checked[1] = it })
                 },
                 modifier = modifier.height(40.dp)
             )
@@ -115,10 +113,7 @@ fun ReadyScreen(
         ) {
             OutlinedButton(onClick = onBack) { Text(stringResource(R.string.ready_dismiss_button)) }
             FilledTonalButton(
-                onClick = {
-                    onUpdate()
-                    onBack()
-                },
+                onClick = onNext,
                 enabled = checked.all { it }) { Text(stringResource(R.string.ready_confirm_button)) }
         }
     }
