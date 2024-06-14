@@ -11,6 +11,11 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -22,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -108,7 +112,7 @@ fun AnchorTopAppBar(state: TopAppBarState) {
                 if (state.formState == null) {
                     IconButton(onClick = it) {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_close),
+                            Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = "Close"
                         )
                     }
@@ -116,7 +120,7 @@ fun AnchorTopAppBar(state: TopAppBarState) {
                     val (isEmpty, onDiscard) = state.formState
                     IconButton(onClick = { if (isEmpty) it() else onDiscard() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_close),
+                            Icons.Default.Close,
                             contentDescription = "Close"
                         )
                     }
@@ -128,7 +132,7 @@ fun AnchorTopAppBar(state: TopAppBarState) {
                 val (_, _, isValid, onConfirm) = state.formState
                 IconButton(onClick = onConfirm, enabled = isValid) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_done),
+                        Icons.Default.Done,
                         contentDescription = "Done"
                     )
                 }
@@ -152,7 +156,7 @@ fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
                     onClick = it,
                     content = {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_add),
+                            Icons.Default.Add,
                             contentDescription = null,
                             modifier = modifier.padding(end = 8.dp)
                         )

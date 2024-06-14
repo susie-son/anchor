@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,7 +28,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -89,7 +91,7 @@ fun TextFieldColumn(
                     }
                 }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_add),
+                        Icons.Default.Add,
                         contentDescription = "Add"
                     )
                 }
@@ -99,7 +101,7 @@ fun TextFieldColumn(
             ListItem(headlineContent = { Text(text = text) }, trailingContent = {
                 IconButton(onClick = { onDelete(text) }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_delete),
+                        Icons.Default.Delete,
                         contentDescription = "Delete"
                     )
                 }
