@@ -92,7 +92,7 @@ fun TextFieldColumn(
                 }) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Add"
+                        contentDescription = stringResource(R.string.content_description_add)
                     )
                 }
             })
@@ -102,7 +102,7 @@ fun TextFieldColumn(
                 IconButton(onClick = { onDelete(text) }) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete"
+                        contentDescription = stringResource(R.string.content_description_delete)
                     )
                 }
             })

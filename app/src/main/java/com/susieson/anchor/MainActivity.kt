@@ -113,7 +113,7 @@ fun AnchorTopAppBar(state: TopAppBarState) {
                     IconButton(onClick = it) {
                         Icon(
                             Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = "Close"
+                            contentDescription = stringResource(R.string.content_description_back)
                         )
                     }
                 } else {
@@ -121,7 +121,7 @@ fun AnchorTopAppBar(state: TopAppBarState) {
                     IconButton(onClick = { if (isEmpty) it() else onDiscard() }) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Close"
+                            contentDescription = stringResource(R.string.content_description_close)
                         )
                     }
                 }
@@ -133,7 +133,7 @@ fun AnchorTopAppBar(state: TopAppBarState) {
                 IconButton(onClick = onConfirm, enabled = isValid) {
                     Icon(
                         Icons.Default.Done,
-                        contentDescription = "Done"
+                        contentDescription = stringResource(R.string.content_description_done)
                     )
                 }
             }
