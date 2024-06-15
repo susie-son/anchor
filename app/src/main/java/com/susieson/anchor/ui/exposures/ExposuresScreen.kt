@@ -5,9 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,13 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.TopAppBarState
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.components.LoadingScreen
+import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.components.Loading
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
@@ -38,11 +37,11 @@ import java.text.DateFormat
 fun ExposuresScreen(
     modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
-    setTopAppBarState: (TopAppBarState) -> Unit,
+    setTopAppBar: (AnchorTopAppBarState) -> Unit,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
-    setTopAppBarState(
-        TopAppBarState(
+    setTopAppBar(
+        AnchorTopAppBarState(
             title = R.string.app_name,
             onAction = viewModel::addExposure
         )
@@ -62,14 +61,12 @@ fun ExposuresScreen(
     val exposures = exposuresState?.filterNot { it.status == Status.DRAFT }
 
     if (exposures == null) {
-        LoadingScreen(modifier = modifier.fillMaxSize())
+        Loading(modifier = modifier)
     } else if (exposures.isEmpty()) {
-        EmptyExposureList(
-            modifier = modifier.fillMaxSize()
-        )
+        EmptyExposureList(modifier = modifier)
     } else {
         ExposureList(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier,
             exposures = exposures,
             onItemClick = onItemSelect
         )
@@ -100,35 +97,39 @@ fun ExposureList(
     onItemClick: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
-        items(exposures.size) { index ->
-            val exposure = exposures[index]
+        items(exposures) { exposure ->
             val timestamp = exposure.updatedAt
 
-            val timestampText: Flow<String> = flow {
+            val time by produceState<String?>(initialValue = null, exposure) {
                 while (true) {
-                    if (timestamp != null) {
-                        val time = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (timestamp == null) {
+                        value = null
+                    } else {
+                        val formattedTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
                         } else {
                             DateFormat.getDateTimeInstance().format(timestamp.toDate())
                         }
-                        emit(time)
-                        delay(1000 * 60)
-                    } else {
-                        return@flow
+                        value = formattedTime
                     }
+                    delay(60_000)
                 }
             }
 
-            val time by timestampText.collectAsState(null)
-
             ListItem(
-                overlineContent = { time?.let { StatusWithTimestamp(time = it, status = exposure.status) } },
+                overlineContent = {
+                    time?.let {
+                        StatusWithTimestamp(
+                            time = it,
+                            status = exposure.status
+                        )
+                    }
+                },
                 headlineContent = { Text(exposure.title.ifBlank { stringResource(R.string.exposures_no_title) }) },
                 supportingContent = { Text(exposure.description.ifBlank { stringResource(R.string.exposures_no_description) }) },
-                modifier = Modifier.clickable { onItemClick(exposure.id) }
+                modifier = modifier.clickable { onItemClick(exposure.id) }
             )
-            HorizontalDivider()
+            HorizontalDivider(modifier = modifier)
         }
     }
 }
@@ -136,7 +137,8 @@ fun ExposureList(
 @Composable
 fun StatusWithTimestamp(
     time: String,
-    status: Status
+    status: Status,
+    modifier: Modifier = Modifier
 ) {
     val statusText = stringResource(
         when (status) {
@@ -147,5 +149,5 @@ fun StatusWithTimestamp(
         },
         time
     )
-    Text(statusText, style = MaterialTheme.typography.bodySmall)
+    Text(statusText, style = MaterialTheme.typography.bodySmall, modifier = modifier)
 }

@@ -1,26 +1,25 @@
 package com.susieson.anchor.ui.exposure
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.susieson.anchor.TopAppBarState
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.components.LoadingScreen
+import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.components.Loading
 
 @Composable
 fun ExposureScreen(
     exposureId: String,
     onBack: () -> Unit,
-    setTopAppBarState: (TopAppBarState) -> Unit,
+    setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel(),
 ) {
     val exposure = viewModel.exposure.value
 
     if (exposure == null) {
-        LoadingScreen(modifier = modifier.fillMaxSize())
+        Loading(modifier = modifier)
     } else when (exposure.status) {
         Status.DRAFT -> {
             PreparationForm(
@@ -43,7 +42,8 @@ fun ExposureScreen(
                 onDiscard = viewModel::deleteExposure,
                 onBack = onBack,
                 onNext = viewModel::addPreparation,
-                setTopAppBarState = setTopAppBarState
+                setTopAppBar = setTopAppBar,
+                modifier = modifier
             )
         }
 
@@ -54,7 +54,8 @@ fun ExposureScreen(
                     viewModel.markAsInProgress()
                     onBack()
                 },
-                setTopAppBarState = setTopAppBarState
+                setTopAppBar = setTopAppBar,
+                modifier = modifier
             )
         }
 
@@ -93,7 +94,8 @@ fun ExposureScreen(
                 removeBehavior = viewModel::removeReviewBehavior,
                 onBack = onBack,
                 onNext = viewModel::addReview,
-                setTopAppBarState = setTopAppBarState
+                setTopAppBar = setTopAppBar,
+                modifier = modifier
             )
         }
 
@@ -101,7 +103,8 @@ fun ExposureScreen(
             ExposureSummary(
                 exposure = exposure,
                 onBack = onBack,
-                setTopAppBarState = setTopAppBarState
+                setTopAppBar = setTopAppBar,
+                modifier = modifier
             )
         }
     }

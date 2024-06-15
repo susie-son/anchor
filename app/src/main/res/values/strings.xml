@@ -56,10 +56,13 @@
     <string name="reminder_notification_text">Remember to stay anchored during your exposure.</string>
     <string name="exposures_no_title">No title</string>
     <string name="exposures_no_description">No description</string>
-    <string name="text_field_column_add">Add</string>
+    <string name="text_field_placeholder">…</string>
     <string name="content_description_add">Add</string>
     <string name="content_description_delete">Delete</string>
     <string name="content_description_back">Back</string>
     <string name="content_description_close">Close</string>
     <string name="content_description_done">Done</string>
+    <string name="review_thoughts_body">List the thoughts you encountered while completing this exposure.</string>
+    <string name="review_sensations_body">List the physical sensations you experienced while completing this exposure.</string>
+    <string name="review_behaviors_body">List the behaviors you exhibited while completing this exposure.</string>
 </resources>

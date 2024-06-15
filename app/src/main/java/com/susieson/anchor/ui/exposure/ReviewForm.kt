@@ -1,38 +1,27 @@
 package com.susieson.anchor.ui.exposure
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
-import com.susieson.anchor.FormState
 import com.susieson.anchor.R
-import com.susieson.anchor.TopAppBarState
+import com.susieson.anchor.ui.components.AnchorFormState
+import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.DiscardDialog
-import com.susieson.anchor.ui.components.LabeledSlider
-import com.susieson.anchor.ui.components.TextFieldColumn
+import com.susieson.anchor.ui.components.FormRatingItem
+import com.susieson.anchor.ui.components.FormSection
+import com.susieson.anchor.ui.components.FormSelectFilterItem
+import com.susieson.anchor.ui.components.FormTextField
+import com.susieson.anchor.ui.components.LabeledFormSection
+import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ReviewForm(
     fear: Boolean,
@@ -68,31 +57,40 @@ fun ReviewForm(
     removeBehavior: (String) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    setTopAppBarState: (TopAppBarState) -> Unit,
+    setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var openDiscardDialog by remember { mutableStateOf(false) }
 
-    val emotionsError = !fear && !sadness && !anxiety && !guilt && !shame && !happiness
-
-    val thoughtsError = thoughts.isEmpty()
-    val sensationsError = sensations.isEmpty()
-    val behaviorsError = behaviors.isEmpty()
-
-    val experiencingError = experiencingRating == 0f
-    val anchoringError = anchoringRating == 0f
-    val thinkingError = thinkingRating == 0f
-    val engagingError = engagingRating == 0f
-
-    val learningsError = learnings.isBlank()
+    val emotionsFilters = mapOf(
+        R.string.review_fear_chip to fear,
+        R.string.review_sadness_chip to sadness,
+        R.string.review_anxiety_chip to anxiety,
+        R.string.review_guilt_chip to guilt,
+        R.string.review_shame_chip to shame,
+        R.string.review_happiness_chip to happiness
+    )
 
     val isValid =
-        !emotionsError && !thoughtsError && !sensationsError && !behaviorsError && !experiencingError && !anchoringError && !thinkingError && !engagingError && !learningsError
+        emotionsFilters.values.contains(true) &&
+                thoughts.isNotEmpty() &&
+                sensations.isNotEmpty() &&
+                behaviors.isNotEmpty() &&
+                experiencingRating > 0 &&
+                anchoringRating > 0 &&
+                thinkingRating > 0 &&
+                engagingRating > 0 &&
+                learnings.isNotEmpty()
     val isEmpty =
-        !fear && !sadness && !anxiety && !guilt && !shame && !happiness &&
-                thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty() &&
-                experiencingRating == 0f && anchoringRating == 0f && thinkingRating == 0f && engagingRating == 0f &&
-                learnings.isBlank()
+        emotionsFilters.values.all { !it } &&
+                thoughts.isEmpty() &&
+                sensations.isEmpty() &&
+                behaviors.isEmpty() &&
+                experiencingRating == 0f &&
+                anchoringRating == 0f &&
+                thinkingRating == 0f &&
+                engagingRating == 0f &&
+                learnings.isEmpty()
 
     if (openDiscardDialog) {
         DiscardDialog(
@@ -106,11 +104,11 @@ fun ReviewForm(
         )
     }
 
-    setTopAppBarState(
-        TopAppBarState(
+    setTopAppBar(
+        AnchorTopAppBarState(
             title = R.string.review_top_bar_title,
             onBack = onBack,
-            formState = FormState(
+            formState = AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
                 onDiscard = { openDiscardDialog = true },
@@ -124,148 +122,113 @@ fun ReviewForm(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
             .verticalScroll(rememberScrollState())
-            .imePadding()
+            .imePadding(),
     ) {
-        Text(
-            text = stringResource(R.string.review_emotions_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(bottom = 8.dp),
-            color = if (emotionsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        FormSection(
+            modifier = modifier,
+            {
+                FormSelectFilterItem(
+                    label = R.string.review_emotions_label,
+                    filters = emotionsFilters,
+                    onFilterChange = {
+                        when (it) {
+                            R.string.review_fear_chip -> setFear()
+                            R.string.review_sadness_chip -> setSadness()
+                            R.string.review_anxiety_chip -> setAnxiety()
+                            R.string.review_guilt_chip -> setGuilt()
+                            R.string.review_shame_chip -> setShame()
+                            R.string.review_happiness_chip -> setHappiness()
+                        }
+                    }
+                )
+            }
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            FilterChip(
-                selected = fear,
-                onClick = setFear,
-                label = { Text(stringResource(R.string.review_fear_chip)) }
-            )
-            FilterChip(
-                selected = sadness,
-                onClick = setSadness,
-                label = { Text(stringResource(R.string.review_sadness_chip)) }
-            )
-            FilterChip(
-                selected = anxiety,
-                onClick = setAnxiety,
-                label = { Text(stringResource(R.string.review_anxiety_chip)) }
-            )
-            FilterChip(
-                selected = guilt,
-                onClick = setGuilt,
-                label = { Text(stringResource(R.string.review_guilt_chip)) }
-            )
-            FilterChip(
-                selected = shame,
-                onClick = setShame,
-                label = { Text(stringResource(R.string.review_shame_chip)) }
-            )
-            FilterChip(
-                selected = happiness,
-                onClick = setHappiness,
-                label = { Text(stringResource(R.string.review_happiness_chip)) }
-            )
-        }
-        Text(
-            text = stringResource(R.string.review_thoughts_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
-            color = if (thoughtsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        FormSection(
+            modifier = modifier,
+            {
+                LabeledFormTextFieldColumn(
+                    texts = thoughts,
+                    label = R.string.review_thoughts_label,
+                    descriptionLabel = R.string.review_thoughts_body,
+                    onAdd = addThought,
+                    onDelete = removeThought,
+                    modifier = modifier,
+                )
+            },
+            {
+                LabeledFormTextFieldColumn(
+                    texts = sensations,
+                    label = R.string.review_sensations_label,
+                    descriptionLabel = R.string.review_sensations_body,
+                    onAdd = addSensation,
+                    onDelete = removeSensation,
+                    modifier = modifier,
+                )
+            },
+            {
+                LabeledFormTextFieldColumn(
+                    texts = behaviors,
+                    label = R.string.review_behaviors_label,
+                    descriptionLabel = R.string.review_behaviors_body,
+                    onAdd = addBehavior,
+                    onDelete = removeBehavior,
+                    modifier = modifier,
+                )
+            }
         )
-        TextFieldColumn(thoughts, addThought, removeThought)
-        Text(
-            text = stringResource(R.string.review_sensations_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
-            color = if (sensationsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        LabeledFormSection(
+            label = R.string.review_effectiveness_label,
+            descriptionLabel = null,
+            modifier = modifier,
+            {
+                FormRatingItem(
+                    label = R.string.review_experiencing_label,
+                    value = experiencingRating,
+                    onValueChange = setExperiencingRating,
+                    modifier = modifier,
+                )
+            },
+            {
+                FormRatingItem(
+                    label = R.string.review_anchoring_label,
+                    value = anchoringRating,
+                    onValueChange = setAnchoringRating,
+                    modifier = modifier,
+                )
+            },
+            {
+                FormRatingItem(
+                    label = R.string.review_thinking_label,
+                    value = thinkingRating,
+                    onValueChange = setThinkingRating,
+                    modifier = modifier,
+                )
+            },
+            {
+                FormRatingItem(
+                    label = R.string.review_engaging_label,
+                    value = engagingRating,
+                    onValueChange = setEngagingRating,
+                    modifier = modifier,
+                )
+            }
         )
-        TextFieldColumn(sensations, addSensation, removeSensation)
-        Text(
-            text = stringResource(R.string.review_behaviors_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
-            color = if (behaviorsError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-        )
-        TextFieldColumn(behaviors, addBehavior, removeBehavior)
-        Text(
-            text = stringResource(R.string.review_effectiveness_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
-        )
-        Text(
-            text = stringResource(R.string.review_experiencing_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(bottom = 8.dp),
-            color = if (experiencingError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-        )
-        LabeledSlider(
-            value = experiencingRating,
-            onValueChange = setExperiencingRating,
-            valueRange = 0f..10f,
-            steps = 9,
-            modifier = Modifier.padding(8.dp)
-        )
-        Text(
-            text = stringResource(R.string.review_anchoring_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(bottom = 8.dp),
-            color = if (anchoringError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-        )
-        LabeledSlider(
-            value = anchoringRating,
-            onValueChange = setAnchoringRating,
-            valueRange = 0f..10f,
-            steps = 9,
-            modifier = Modifier.padding(8.dp)
-        )
-        Text(
-            text = stringResource(R.string.review_thinking_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(bottom = 8.dp),
-            color = if (thinkingError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-        )
-        LabeledSlider(
-            value = thinkingRating,
-            onValueChange = setThinkingRating,
-            valueRange = 0f..10f,
-            steps = 9,
-            modifier = Modifier.padding(8.dp)
-        )
-        Text(
-            text = stringResource(R.string.review_engaging_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(bottom = 8.dp),
-            color = if (engagingError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-        )
-        LabeledSlider(
-            value = engagingRating,
-            onValueChange = setEngagingRating,
-            valueRange = 0f..10f,
-            steps = 9,
-            modifier = Modifier.padding(8.dp)
-        )
-        Text(
-            text = stringResource(R.string.review_learnings_label),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = stringResource(R.string.review_learnings_body),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-        )
-        OutlinedTextField(
-            value = learnings,
-            onValueChange = setLearnings,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            isError = learningsError,
-            supportingText = { if (learningsError) Text(stringResource(R.string.review_learnings_error)) }
+        LabeledFormSection(
+            label = R.string.review_learnings_label,
+            descriptionLabel = R.string.review_learnings_body,
+            modifier = modifier,
+            {
+                FormTextField(
+                    value = learnings,
+                    label = null,
+                    errorLabel = R.string.review_learnings_error,
+                    isError = learnings.isEmpty(),
+                    imeAction = ImeAction.Done,
+                    onValueChange = setLearnings,
+                    modifier = modifier,
+                )
+            }
         )
     }
 }

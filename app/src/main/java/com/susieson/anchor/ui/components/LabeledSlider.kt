@@ -32,7 +32,10 @@ fun LabeledSlider(
     @IntRange(from = 0)
     steps: Int = 0,
     thumb: @Composable (SliderState) -> Unit = {
-        Column(modifier = Modifier.offset(y = (-16).dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.offset(y = (-16).dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = value.roundToInt().toString(),
                 modifier = Modifier.padding(4.dp)
@@ -56,7 +59,7 @@ fun LabeledSlider(
     Slider(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier,
+        modifier = modifier.padding(vertical = 16.dp),
         enabled = enabled,
         onValueChangeFinished = onValueChangeFinished,
         colors = colors,
@@ -64,7 +67,7 @@ fun LabeledSlider(
         steps = steps,
         thumb = thumb,
         track = track,
-        valueRange = valueRange
+        valueRange = valueRange,
     )
 }
 

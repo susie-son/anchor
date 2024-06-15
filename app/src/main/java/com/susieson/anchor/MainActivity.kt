@@ -7,38 +7,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
-import androidx.navigation.toRoute
-import com.susieson.anchor.ui.exposure.ExposureScreen
-import com.susieson.anchor.ui.exposures.ExposuresScreen
+import com.susieson.anchor.ui.components.AnchorFloatingActionButton
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.theme.AnchorTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.Serializable
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -57,7 +38,10 @@ class MainActivity : ComponentActivity() {
                     return if (mainViewModel.isInitialized) {
                         setContent {
                             AnchorTheme {
-                                AnchorApp(viewModel = mainViewModel)
+                                AnchorApp(
+                                    viewModel = mainViewModel,
+                                    modifier = Modifier.fillMaxSize()
+                                )
                             }
                         }
                         content.viewTreeObserver.removeOnPreDrawListener(this)
@@ -72,129 +56,27 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Serializable
-data class ExposuresNav(val userId: String)
-
-@Serializable
-data class ExposureNav(val userId: String, val exposureId: String)
-
-data class TopAppBarState(
-    @StringRes
-    val title: Int,
-    val formState: FormState? = null,
-    val onBack: (() -> Unit)? = null,
-    val onAction: (() -> Unit)? = null
-) {
-    companion object {
-        val Default = TopAppBarState(
-            title = R.string.app_name,
-            formState = null,
-            onBack = null,
-            onAction = null
-        )
-    }
-}
-
-data class FormState(
-    val isEmpty: Boolean,
-    val onDiscard: () -> Unit,
-    val isValid: Boolean,
-    val onConfirm: () -> Unit
-)
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AnchorTopAppBar(state: TopAppBarState) {
-    CenterAlignedTopAppBar(
-        title = { Text(stringResource(state.title)) },
-        navigationIcon = {
-            state.onBack?.let {
-                if (state.formState == null) {
-                    IconButton(onClick = it) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.content_description_back)
-                        )
-                    }
-                } else {
-                    val (isEmpty, onDiscard) = state.formState
-                    IconButton(onClick = { if (isEmpty) it() else onDiscard() }) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.content_description_close)
-                        )
-                    }
-                }
-            }
-        },
-        actions = {
-            if (state.formState != null) {
-                val (_, _, isValid, onConfirm) = state.formState
-                IconButton(onClick = onConfirm, enabled = isValid) {
-                    Icon(
-                        Icons.Default.Done,
-                        contentDescription = stringResource(R.string.content_description_done)
-                    )
-                }
-            }
-        },
-        modifier = Modifier
-    )
-}
-
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val topAppBar by remember { viewModel.topAppBar }
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = { AnchorTopAppBar(topAppBar) },
         floatingActionButton = {
             topAppBar.onAction?.let {
-                ExtendedFloatingActionButton(
-                    onClick = it,
-                    content = {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = null,
-                            modifier = modifier.padding(end = 8.dp)
-                        )
-                        Text(stringResource(R.string.exposures_start_button))
-                    }
-                )
+                AnchorFloatingActionButton(it)
             }
         }
     ) { innerPadding ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            NavHost(navController = navController, startDestination = ExposuresNav(viewModel.userId)) {
-                composable<ExposuresNav> {
-                    ExposuresScreen(
-                        modifier = modifier,
-                        onItemSelect = { exposureId ->
-                            navController.navigate(ExposureNav(viewModel.userId, exposureId))
-                        },
-                        setTopAppBarState = viewModel::setTopAppBar
-                    )
-                }
-                composable<ExposureNav>(
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern = "https://anchor.susieson.com/exposure/{userId}/{exposureId}"
-                    })
-                ) { backStackEntry ->
-                    val nav: ExposureNav = backStackEntry.toRoute()
-                    ExposureScreen(
-                        modifier = modifier,
-                        exposureId = nav.exposureId,
-                        onBack = navController::popBackStack,
-                        setTopAppBarState = viewModel::setTopAppBar
-                    )
-                }
-            }
+        Box(modifier = modifier.padding(innerPadding)) {
+            AnchorNavHost(
+                userId = viewModel.userId,
+                setTopAppBar = viewModel::setTopAppBar,
+                navController = navController,
+                modifier = modifier
+            )
         }
     }
 }

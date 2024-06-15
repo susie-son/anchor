@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.service.AuthService
+import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class MainViewModel @Inject constructor(
 ): ViewModel() {
 
     lateinit var userId: String
-    val topAppBar = mutableStateOf(TopAppBarState.Default)
+    val topAppBar = mutableStateOf(AnchorTopAppBarState.Default)
     var isInitialized = false
 
     init {
@@ -24,7 +25,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun setTopAppBar(state: TopAppBarState) {
+    fun setTopAppBar(state: AnchorTopAppBarState) {
         topAppBar.value = state
     }
 }
