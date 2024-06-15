@@ -1,6 +1,8 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormTextField
 import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PreparationForm(
     title: String,
@@ -81,12 +84,15 @@ fun PreparationForm(
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
+        val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
         BasicFormSection(
             title = title,
             description = description,
             onTitleChange = setTitle,
             onDescriptionChange = setDescription,
-            modifier = modifier
+            modifier = modifier,
+            bringIntoViewRequester = bringIntoViewRequester
         )
         PreparationFormSection(
             thoughts = thoughts,
@@ -101,18 +107,21 @@ fun PreparationForm(
             removeInterpretation = removeInterpretation,
             removeBehavior = removeBehavior,
             removeAction = removeAction,
-            modifier = modifier
+            modifier = modifier,
+            bringIntoViewRequester = bringIntoViewRequester
         )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BasicFormSection(
     title: String,
     description: String,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bringIntoViewRequester: BringIntoViewRequester
 ) {
     FormSection(
         modifier = modifier,
@@ -124,7 +133,8 @@ private fun BasicFormSection(
                 isError = title.isBlank(),
                 imeAction = ImeAction.Next,
                 onValueChange = onTitleChange,
-                modifier = modifier
+                modifier = modifier,
+                bringIntoViewRequester = bringIntoViewRequester
             )
         },
         {
@@ -136,12 +146,14 @@ private fun BasicFormSection(
                 imeAction = ImeAction.Done,
                 onValueChange = onDescriptionChange,
                 singleLine = false,
-                modifier = modifier
+                modifier = modifier,
+                bringIntoViewRequester = bringIntoViewRequester
             )
         }
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PreparationFormSection(
     thoughts: List<String>,
@@ -156,7 +168,8 @@ private fun PreparationFormSection(
     removeInterpretation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bringIntoViewRequester: BringIntoViewRequester
 ) {
     FormSection(
         modifier = modifier,
@@ -167,7 +180,8 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_thoughts_body,
                 onAdd = addThought,
                 onDelete = removeThought,
-                modifier = modifier
+                modifier = modifier,
+                bringIntoViewRequester = bringIntoViewRequester
             )
             LabeledFormTextFieldColumn(
                 texts = interpretations,
@@ -175,7 +189,8 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_interpretations_body,
                 onAdd = addInterpretation,
                 onDelete = removeInterpretation,
-                modifier = modifier
+                modifier = modifier,
+                bringIntoViewRequester = bringIntoViewRequester
             )
         },
         {
@@ -185,7 +200,8 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_behaviors_body,
                 onAdd = addBehavior,
                 onDelete = removeBehavior,
-                modifier = modifier
+                modifier = modifier,
+                bringIntoViewRequester = bringIntoViewRequester
             )
         },
         {
@@ -195,7 +211,8 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_actions_body,
                 onAdd = addAction,
                 onDelete = removeAction,
-                modifier = modifier
+                modifier = modifier,
+                bringIntoViewRequester = bringIntoViewRequester
             )
         }
     )

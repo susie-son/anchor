@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
@@ -60,7 +62,7 @@ fun ExposureReady(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
-        modifier = modifier.padding(16.dp)
+        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
     ) {
         postNotificationPermission?.let {
             if (!it.status.isGranted) {

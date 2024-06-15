@@ -1,6 +1,8 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -21,6 +23,7 @@ import com.susieson.anchor.ui.components.FormTextField
 import com.susieson.anchor.ui.components.LabeledFormSection
 import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ReviewForm(
     fear: Boolean,
@@ -124,6 +127,8 @@ fun ReviewForm(
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
+        val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
         FormSection(
             modifier = modifier,
             {
@@ -152,7 +157,8 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_thoughts_body,
                     onAdd = addThought,
                     onDelete = removeThought,
-                    modifier = modifier
+                    modifier = modifier,
+                    bringIntoViewRequester = bringIntoViewRequester
                 )
             },
             {
@@ -162,7 +168,8 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_sensations_body,
                     onAdd = addSensation,
                     onDelete = removeSensation,
-                    modifier = modifier
+                    modifier = modifier,
+                    bringIntoViewRequester = bringIntoViewRequester
                 )
             },
             {
@@ -172,7 +179,8 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_behaviors_body,
                     onAdd = addBehavior,
                     onDelete = removeBehavior,
-                    modifier = modifier
+                    modifier = modifier,
+                    bringIntoViewRequester = bringIntoViewRequester
                 )
             }
         )
@@ -226,7 +234,8 @@ fun ReviewForm(
                     imeAction = ImeAction.Done,
                     onValueChange = setLearnings,
                     singleLine = false,
-                    modifier = modifier
+                    modifier = modifier,
+                    bringIntoViewRequester = bringIntoViewRequester
                 )
             }
         )
