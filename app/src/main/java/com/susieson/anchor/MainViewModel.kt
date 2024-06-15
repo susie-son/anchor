@@ -15,14 +15,15 @@ class MainViewModel
 constructor(
     private val authService: AuthService
 ) : ViewModel() {
-    lateinit var userId: String
+
+    var isReady = false
     val topAppBar = mutableStateOf(AnchorTopAppBarState.Default)
-    var isInitialized = false
+    val user = authService.user
 
     init {
         viewModelScope.launch {
-            userId = authService.getUserId()
-            isInitialized = true
+            authService.createAnonymousAccount()
+            isReady = true
         }
     }
 

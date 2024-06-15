@@ -1,7 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -80,10 +79,7 @@ fun PreparationForm(
     }
 
     Column(
-        modifier =
-        modifier
-            .verticalScroll(rememberScrollState())
-            .imePadding()
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
         BasicFormSection(
             title = title,
@@ -111,7 +107,7 @@ fun PreparationForm(
 }
 
 @Composable
-fun BasicFormSection(
+private fun BasicFormSection(
     title: String,
     description: String,
     onTitleChange: (String) -> Unit,
@@ -139,6 +135,7 @@ fun BasicFormSection(
                 isError = description.isBlank(),
                 imeAction = ImeAction.Done,
                 onValueChange = onDescriptionChange,
+                singleLine = false,
                 modifier = modifier
             )
         }
@@ -146,7 +143,7 @@ fun BasicFormSection(
 }
 
 @Composable
-fun PreparationFormSection(
+private fun PreparationFormSection(
     thoughts: List<String>,
     interpretations: List<String>,
     behaviors: List<String>,

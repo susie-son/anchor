@@ -209,9 +209,9 @@ fun FormTextFieldColumn(
                 BasicTextField(
                     value = field,
                     onValueChange = { field = it },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     keyboardActions =
-                    KeyboardActions(onDone = {
+                    KeyboardActions(onSend = {
                         if (field.isNotEmpty()) {
                             onAdd(field)
                             field = ""

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
             object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     // Check whether the initial data is ready.
-                    return if (mainViewModel.isInitialized) {
+                    return if (mainViewModel.isReady) {
                         setContent {
                             AnchorTheme {
                                 AnchorApp(
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val topAppBar by remember { viewModel.topAppBar }
+    val user by viewModel.user.collectAsState(null)
 
     Scaffold(
         modifier = modifier,
@@ -71,7 +73,7 @@ fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     ) { innerPadding ->
         Box(modifier = modifier.padding(innerPadding)) {
             AnchorNavHost(
-                userId = viewModel.userId,
+                user = user,
                 setTopAppBar = viewModel::setTopAppBar,
                 navController = navController,
                 modifier = modifier

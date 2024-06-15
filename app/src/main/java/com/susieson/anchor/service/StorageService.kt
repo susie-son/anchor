@@ -9,11 +9,16 @@ import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.model.Status
 import javax.inject.Inject
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
 interface StorageService {
+
+    fun getExposure(userId: String, exposureId: String): Flow<Exposure>
+
     suspend fun addExposure(userId: String): String
 
     suspend fun updateExposure(
@@ -29,8 +34,6 @@ interface StorageService {
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
 
     suspend fun getExposureList(userId: String): Flow<List<Exposure>>
-
-    suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
 
     suspend fun deleteExposure(userId: String, exposureId: String)
 }
@@ -55,8 +58,24 @@ constructor(
                 .add(exposure)
                 .await()
         val exposureWithId = exposure.copy(id = document.id, updatedAt = Timestamp.now())
-        document.set(exposureWithId)
+        document.set(exposureWithId).await()
         return document.id
+    }
+
+    override fun getExposure(userId: String, exposureId: String): Flow<Exposure> = callbackFlow {
+        val listener = exposureDocumentRef(
+            userId,
+            exposureId
+        ).addSnapshotListener { value, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (value != null) {
+                trySend(value.toObject(Exposure::class.java)!!)
+            }
+        }
+        awaitClose { listener.remove() }
     }
 
     override suspend fun updateExposure(
@@ -111,12 +130,6 @@ constructor(
             .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
             .snapshots()
             .map { it.toObjects(Exposure::class.java) }
-    }
-
-    override suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure?> {
-        return exposureDocumentRef(userId, exposureId)
-            .snapshots()
-            .map { it.toObject(Exposure::class.java) }
     }
 
     override suspend fun deleteExposure(userId: String, exposureId: String) {

@@ -7,32 +7,35 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import com.susieson.anchor.model.AnchorUser
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ExposuresNav(val userId: String)
+object ExposuresNav
 
 @Serializable
-data class ExposureNav(val userId: String, val exposureId: String)
+data class ExposureNav(val exposureId: String)
 
 @Composable
 fun AnchorNavHost(
-    userId: String,
+    user: AnchorUser?,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val userId = user?.id ?: return // TODO: Show login screen
     NavHost(
         navController = navController,
-        startDestination = ExposuresNav(userId)
+        startDestination = ExposuresNav
     ) {
         composable<ExposuresNav> {
             ExposuresScreen(
+                userId = userId,
                 onItemSelect = { exposureId ->
-                    navController.navigate(ExposureNav(userId, exposureId))
+                    navController.navigate(ExposureNav(exposureId))
                 },
                 setTopAppBar = setTopAppBar,
                 modifier = modifier
@@ -48,6 +51,7 @@ fun AnchorNavHost(
         ) { backStackEntry ->
             val nav: ExposureNav = backStackEntry.toRoute()
             ExposureScreen(
+                userId = userId,
                 exposureId = nav.exposureId,
                 onBack = navController::popBackStack,
                 setTopAppBar = setTopAppBar,

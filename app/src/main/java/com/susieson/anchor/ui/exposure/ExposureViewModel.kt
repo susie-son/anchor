@@ -10,40 +10,24 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.service.NotificationService
 import com.susieson.anchor.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ExposureViewModel
 @Inject
 constructor(
-    private val authService: AuthService,
     private val storageService: StorageService,
     private val notificationService: NotificationService
 ) : ViewModel() {
-    private lateinit var userId: String
-    private lateinit var exposureId: String
 
-    init {
-        viewModelScope.launch {
-            userId = authService.getUserId()
-        }
+    fun getExposure(userId: String, exposureId: String): Flow<Exposure> {
+        return storageService.getExposure(userId, exposureId)
     }
-
-    fun getExposure(exposureId: String) {
-        this.exposureId = exposureId
-        viewModelScope.launch {
-            storageService.getExposure(userId, exposureId).collect {
-                exposure.value = it
-            }
-        }
-    }
-
-    val exposure = mutableStateOf<Exposure?>(null)
 
     val title = mutableStateOf("")
     val description = mutableStateOf("")
@@ -179,7 +163,7 @@ constructor(
         this.learnings.value = learnings
     }
 
-    fun addPreparation() {
+    fun addPreparation(userId: String, exposureId: String) {
         val title = title.value
         val description = description.value
         val preparation =
@@ -194,14 +178,14 @@ constructor(
         }
     }
 
-    fun markAsInProgress() {
+    fun markAsInProgress(userId: String, exposureId: String) {
         viewModelScope.launch {
             storageService.updateExposure(userId, exposureId, Status.IN_PROGRESS)
             notificationService.showReminderNotification(title.value, userId, exposureId)
         }
     }
 
-    fun addReview() {
+    fun addReview(userId: String, exposureId: String) {
         val emotions =
             listOf(
                 fear to Emotion.FEAR,
@@ -230,7 +214,7 @@ constructor(
         }
     }
 
-    fun deleteExposure() {
+    fun deleteExposure(userId: String, exposureId: String) {
         viewModelScope.launch {
             storageService.deleteExposure(userId, exposureId)
         }

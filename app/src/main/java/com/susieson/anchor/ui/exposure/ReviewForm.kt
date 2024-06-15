@@ -1,7 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -123,10 +122,7 @@ fun ReviewForm(
     )
 
     Column(
-        modifier =
-        modifier
-            .verticalScroll(rememberScrollState())
-            .imePadding()
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
         FormSection(
             modifier = modifier,
@@ -229,6 +225,7 @@ fun ReviewForm(
                     isError = learnings.isEmpty(),
                     imeAction = ImeAction.Done,
                     onValueChange = setLearnings,
+                    singleLine = false,
                     modifier = modifier
                 )
             }

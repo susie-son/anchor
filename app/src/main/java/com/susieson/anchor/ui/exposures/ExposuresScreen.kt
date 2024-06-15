@@ -13,6 +13,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import nl.jacobras.humanreadable.HumanReadable
 
 @Composable
 fun ExposuresScreen(
+    userId: String,
     modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
@@ -43,33 +45,41 @@ fun ExposuresScreen(
     setTopAppBar(
         AnchorTopAppBarState(
             title = R.string.app_name,
-            onAction = viewModel::addExposure
+            onAction = {
+                viewModel.addExposure(userId)
+            }
         )
     )
 
-    val exposureId by viewModel.exposureId.collectAsState()
+    val exposures by viewModel.exposures.collectAsState()
 
-    LaunchedEffect(exposureId) {
-        exposureId?.let {
-            onItemSelect(it)
+    val filteredExposures = exposures?.filterNot { it.status == Status.DRAFT } ?: emptyList()
+
+    when {
+        exposures == null -> Loading(modifier = modifier)
+        filteredExposures.isNotEmpty() -> ExposureList(
+            modifier = modifier,
+            exposures = filteredExposures,
+            onItemClick = onItemSelect
+        )
+
+        else -> EmptyExposureList(modifier = modifier)
+    }
+
+    LaunchedEffect(userId) {
+        viewModel.getExposureList(userId)
+    }
+
+    val exposureId = viewModel.exposureId
+
+    DisposableEffect(exposureId) {
+        onDispose {
             viewModel.resetExposureId()
         }
     }
 
-    val exposuresState by viewModel.exposures.collectAsState()
-
-    val exposures = exposuresState?.filterNot { it.status == Status.DRAFT }
-
-    if (exposures == null) {
-        Loading(modifier = modifier)
-    } else if (exposures.isEmpty()) {
-        EmptyExposureList(modifier = modifier)
-    } else {
-        ExposureList(
-            modifier = modifier,
-            exposures = exposures,
-            onItemClick = onItemSelect
-        )
+    exposureId?.let {
+        onItemSelect(it)
     }
 }
 
