@@ -58,39 +58,40 @@ fun ReviewForm(
     onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var openDiscardDialog by remember { mutableStateOf(false) }
 
-    val emotionsFilters = mapOf(
-        R.string.review_fear_chip to fear,
-        R.string.review_sadness_chip to sadness,
-        R.string.review_anxiety_chip to anxiety,
-        R.string.review_guilt_chip to guilt,
-        R.string.review_shame_chip to shame,
-        R.string.review_happiness_chip to happiness
-    )
+    val emotionsFilters =
+        mapOf(
+            R.string.review_fear_chip to fear,
+            R.string.review_sadness_chip to sadness,
+            R.string.review_anxiety_chip to anxiety,
+            R.string.review_guilt_chip to guilt,
+            R.string.review_shame_chip to shame,
+            R.string.review_happiness_chip to happiness
+        )
 
     val isValid =
         emotionsFilters.values.contains(true) &&
-                thoughts.isNotEmpty() &&
-                sensations.isNotEmpty() &&
-                behaviors.isNotEmpty() &&
-                experiencingRating > 0 &&
-                anchoringRating > 0 &&
-                thinkingRating > 0 &&
-                engagingRating > 0 &&
-                learnings.isNotEmpty()
+            thoughts.isNotEmpty() &&
+            sensations.isNotEmpty() &&
+            behaviors.isNotEmpty() &&
+            experiencingRating > 0 &&
+            anchoringRating > 0 &&
+            thinkingRating > 0 &&
+            engagingRating > 0 &&
+            learnings.isNotEmpty()
     val isEmpty =
         emotionsFilters.values.all { !it } &&
-                thoughts.isEmpty() &&
-                sensations.isEmpty() &&
-                behaviors.isEmpty() &&
-                experiencingRating == 0f &&
-                anchoringRating == 0f &&
-                thinkingRating == 0f &&
-                engagingRating == 0f &&
-                learnings.isEmpty()
+            thoughts.isEmpty() &&
+            sensations.isEmpty() &&
+            behaviors.isEmpty() &&
+            experiencingRating == 0f &&
+            anchoringRating == 0f &&
+            thinkingRating == 0f &&
+            engagingRating == 0f &&
+            learnings.isEmpty()
 
     if (openDiscardDialog) {
         DiscardDialog(
@@ -108,7 +109,8 @@ fun ReviewForm(
         AnchorTopAppBarState(
             title = R.string.review_top_bar_title,
             onBack = onBack,
-            formState = AnchorFormState(
+            formState =
+            AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
                 onDiscard = { openDiscardDialog = true },
@@ -121,9 +123,10 @@ fun ReviewForm(
     )
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .verticalScroll(rememberScrollState())
-            .imePadding(),
+            .imePadding()
     ) {
         FormSection(
             modifier = modifier,
@@ -153,7 +156,7 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_thoughts_body,
                     onAdd = addThought,
                     onDelete = removeThought,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             },
             {
@@ -163,7 +166,7 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_sensations_body,
                     onAdd = addSensation,
                     onDelete = removeSensation,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             },
             {
@@ -173,7 +176,7 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_behaviors_body,
                     onAdd = addBehavior,
                     onDelete = removeBehavior,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             }
         )
@@ -186,7 +189,7 @@ fun ReviewForm(
                     label = R.string.review_experiencing_label,
                     value = experiencingRating,
                     onValueChange = setExperiencingRating,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             },
             {
@@ -194,7 +197,7 @@ fun ReviewForm(
                     label = R.string.review_anchoring_label,
                     value = anchoringRating,
                     onValueChange = setAnchoringRating,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             },
             {
@@ -202,7 +205,7 @@ fun ReviewForm(
                     label = R.string.review_thinking_label,
                     value = thinkingRating,
                     onValueChange = setThinkingRating,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             },
             {
@@ -210,7 +213,7 @@ fun ReviewForm(
                     label = R.string.review_engaging_label,
                     value = engagingRating,
                     onValueChange = setEngagingRating,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             }
         )
@@ -226,7 +229,7 @@ fun ReviewForm(
                     isError = learnings.isEmpty(),
                     imeAction = ImeAction.Done,
                     onValueChange = setLearnings,
-                    modifier = modifier,
+                    modifier = modifier
                 )
             }
         )

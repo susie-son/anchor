@@ -18,25 +18,28 @@ class NotificationService(private val context: Context) {
 
     fun showReminderNotification(title: String, userId: String, exposureId: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NOTIFICATION_REMINDERS_CHANNEL_ID,
-                NOTIFICATION_REMINDERS_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+            val channel =
+                NotificationChannel(
+                    NOTIFICATION_REMINDERS_CHANNEL_ID,
+                    NOTIFICATION_REMINDERS_NAME,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
             notificationManager.createNotificationChannel(channel)
         }
         if (notificationManager.areNotificationsEnabled()) {
-            val deepLinkIntent = Intent(
-                Intent.ACTION_VIEW,
-                "https://anchor.susieson.com/exposure/$userId/$exposureId".toUri(),
-                context,
-                MainActivity::class.java
-            )
+            val deepLinkIntent =
+                Intent(
+                    Intent.ACTION_VIEW,
+                    "https://anchor.susieson.com/exposure/$userId/$exposureId".toUri(),
+                    context,
+                    MainActivity::class.java
+                )
 
-            val deepLinkPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
-                addNextIntentWithParentStack(deepLinkIntent)
-                getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
-            }
+            val deepLinkPendingIntent: PendingIntent? =
+                TaskStackBuilder.create(context).run {
+                    addNextIntentWithParentStack(deepLinkIntent)
+                    getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
+                }
 
             val notification =
                 NotificationCompat.Builder(context, NOTIFICATION_REMINDERS_CHANNEL_ID)

@@ -19,7 +19,7 @@ fun LabeledItem(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     isOnSameLine: Boolean,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val labelItem: @Composable (modifier: Modifier) -> Unit = {
         Text(

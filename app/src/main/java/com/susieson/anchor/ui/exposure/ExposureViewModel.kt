@@ -14,16 +14,17 @@ import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.service.NotificationService
 import com.susieson.anchor.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
-class ExposureViewModel @Inject constructor(
+class ExposureViewModel
+@Inject
+constructor(
     private val authService: AuthService,
     private val storageService: StorageService,
     private val notificationService: NotificationService
 ) : ViewModel() {
-
     private lateinit var userId: String
     private lateinit var exposureId: String
 
@@ -181,12 +182,13 @@ class ExposureViewModel @Inject constructor(
     fun addPreparation() {
         val title = title.value
         val description = description.value
-        val preparation = Preparation(
-            thoughts = preparationThoughts,
-            interpretations = preparationInterpretations,
-            behaviors = preparationBehaviors,
-            actions = preparationActions
-        )
+        val preparation =
+            Preparation(
+                thoughts = preparationThoughts,
+                interpretations = preparationInterpretations,
+                behaviors = preparationBehaviors,
+                actions = preparationActions
+            )
         viewModelScope.launch {
             storageService.updateExposure(userId, exposureId, title, description, preparation)
         }
@@ -200,27 +202,29 @@ class ExposureViewModel @Inject constructor(
     }
 
     fun addReview() {
-        val emotions = listOf(
-            fear to Emotion.FEAR,
-            sadness to Emotion.SADNESS,
-            anxiety to Emotion.ANXIETY,
-            guilt to Emotion.GUILT,
-            shame to Emotion.SHAME,
-            happiness to Emotion.HAPPINESS
-        )
-            .filter { it.first.value }
-            .map { it.second }
-        val review = Review(
-            emotions = emotions,
-            thoughts = reviewThoughts,
-            sensations = reviewSensations,
-            behaviors = reviewBehaviors,
-            experiencing = experiencingRating.floatValue,
-            anchoring = anchoringRating.floatValue,
-            thinking = thinkingRating.floatValue,
-            engaging = engagingRating.floatValue,
-            learnings = learnings.value
-        )
+        val emotions =
+            listOf(
+                fear to Emotion.FEAR,
+                sadness to Emotion.SADNESS,
+                anxiety to Emotion.ANXIETY,
+                guilt to Emotion.GUILT,
+                shame to Emotion.SHAME,
+                happiness to Emotion.HAPPINESS
+            )
+                .filter { it.first.value }
+                .map { it.second }
+        val review =
+            Review(
+                emotions = emotions,
+                thoughts = reviewThoughts,
+                sensations = reviewSensations,
+                behaviors = reviewBehaviors,
+                experiencing = experiencingRating.floatValue,
+                anchoring = anchoringRating.floatValue,
+                thinking = thinkingRating.floatValue,
+                engaging = engagingRating.floatValue,
+                learnings = learnings.value
+            )
         viewModelScope.launch {
             storageService.updateExposure(userId, exposureId, review)
         }

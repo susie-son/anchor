@@ -6,16 +6,17 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class ExposuresViewModel @Inject constructor(
+class ExposuresViewModel
+@Inject
+constructor(
     private val authService: AuthService,
     private val storageService: StorageService
 ) : ViewModel() {
-
     private lateinit var userId: String
 
     val exposures = MutableStateFlow<List<Exposure>?>(null)

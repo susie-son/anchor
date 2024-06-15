@@ -8,13 +8,14 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.model.Status
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 interface StorageService {
     suspend fun addExposure(userId: String): String
+
     suspend fun updateExposure(
         userId: String,
         exposureId: String,
@@ -24,20 +25,24 @@ interface StorageService {
     )
 
     suspend fun updateExposure(userId: String, exposureId: String, review: Review)
+
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
+
     suspend fun getExposureList(userId: String): Flow<List<Exposure>>
+
     suspend fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
+
     suspend fun deleteExposure(userId: String, exposureId: String)
 }
 
-class StorageServiceImpl @Inject constructor(
+class StorageServiceImpl
+@Inject
+constructor(
     private val firestore: FirebaseFirestore
 ) : StorageService {
-
-    private fun exposuresCollectionRef(userId: String) =
-        firestore.collection(USERS_COLLECTION)
-            .document(userId)
-            .collection(EXPOSURES_COLLECTION)
+    private fun exposuresCollectionRef(userId: String) = firestore.collection(USERS_COLLECTION)
+        .document(userId)
+        .collection(EXPOSURES_COLLECTION)
 
     private fun exposureDocumentRef(userId: String, exposureId: String) =
         exposuresCollectionRef(userId)
@@ -45,9 +50,10 @@ class StorageServiceImpl @Inject constructor(
 
     override suspend fun addExposure(userId: String): String {
         val exposure = Exposure()
-        val document = exposuresCollectionRef(userId)
-            .add(exposure)
-            .await()
+        val document =
+            exposuresCollectionRef(userId)
+                .add(exposure)
+                .await()
         val exposureWithId = exposure.copy(id = document.id, updatedAt = Timestamp.now())
         document.set(exposureWithId)
         return document.id

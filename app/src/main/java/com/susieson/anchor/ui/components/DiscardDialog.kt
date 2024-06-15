@@ -11,16 +11,20 @@ import com.susieson.anchor.R
 import com.susieson.anchor.ui.theme.AnchorTheme
 
 @Composable
-fun DiscardDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun DiscardDialog(onConfirm: () -> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     AlertDialog(
         text = { Text(stringResource(R.string.discard_dialog_text)) },
         onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(R.string.discard_dialog_confirm)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.discard_dialog_dismiss)) } },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm
+            ) { Text(stringResource(R.string.discard_dialog_confirm)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) { Text(stringResource(R.string.discard_dialog_dismiss)) }
+        },
         modifier = modifier
     )
 }

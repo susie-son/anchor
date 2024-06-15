@@ -6,14 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class MainViewModel
+@Inject
+constructor(
     private val authService: AuthService
-): ViewModel() {
-
+) : ViewModel() {
     lateinit var userId: String
     val topAppBar = mutableStateOf(AnchorTopAppBarState.Default)
     var isInitialized = false

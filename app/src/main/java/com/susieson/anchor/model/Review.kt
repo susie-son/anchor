@@ -13,5 +13,10 @@ data class Review(
 )
 
 enum class Emotion {
-    FEAR, SADNESS, ANXIETY, GUILT, SHAME, HAPPINESS
+    FEAR,
+    SADNESS,
+    ANXIETY,
+    GUILT,
+    SHAME,
+    HAPPINESS
 }

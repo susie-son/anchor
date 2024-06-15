@@ -40,15 +40,16 @@ fun ExposureReady(
     onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val checked = remember { mutableStateListOf(false, false) }
 
-    val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
-    } else {
-        null
-    }
+    val postNotificationPermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            null
+        }
 
     setTopAppBar(
         AnchorTopAppBarState(
@@ -82,7 +83,8 @@ fun ExposureReady(
             OutlinedButton(onClick = onBack) { Text(stringResource(R.string.ready_dismiss_button)) }
             FilledTonalButton(
                 onClick = onNext,
-                enabled = checked.all { it }) { Text(stringResource(R.string.ready_confirm_button)) }
+                enabled = checked.all { it }
+            ) { Text(stringResource(R.string.ready_confirm_button)) }
         }
     }
 }
@@ -99,7 +101,8 @@ fun ReadyCheckList(
             trailingContent = {
                 Checkbox(
                     checked = checked[0],
-                    onCheckedChange = { onCheckedChange(0, it) })
+                    onCheckedChange = { onCheckedChange(0, it) }
+                )
             },
             modifier = modifier.height(40.dp)
         )
@@ -108,7 +111,8 @@ fun ReadyCheckList(
             trailingContent = {
                 Checkbox(
                     checked = checked[1],
-                    onCheckedChange = { onCheckedChange(1, it) })
+                    onCheckedChange = { onCheckedChange(1, it) }
+                )
             },
             modifier = modifier.height(40.dp)
         )
@@ -117,10 +121,7 @@ fun ReadyCheckList(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun NotificationCard(
-    modifier: Modifier = Modifier,
-    postNotificationPermission: PermissionState,
-) {
+fun NotificationCard(modifier: Modifier = Modifier, postNotificationPermission: PermissionState) {
     val context = LocalContext.current
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
@@ -149,15 +150,16 @@ fun NotificationCard(
 }
 
 fun openAppSettings(context: Context) {
-    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+    val intent =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            }
+        } else {
+            Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
+                putExtra("app_package", context.packageName)
+                putExtra("app_uid", context.applicationInfo.uid)
+            }
         }
-    } else {
-        Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
-            putExtra("app_package", context.packageName)
-            putExtra("app_uid", context.applicationInfo.uid)
-        }
-    }
     context.startActivity(intent)
 }

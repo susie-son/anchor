@@ -39,9 +39,12 @@ fun AnchorNavHost(
             )
         }
         composable<ExposureNav>(
-            deepLinks = listOf(navDeepLink {
-                uriPattern = "https://anchor.susieson.com/exposure/{userId}/{exposureId}"
-            })
+            deepLinks =
+            listOf(
+                navDeepLink {
+                    uriPattern = "https://anchor.susieson.com/exposure/{userId}/{exposureId}"
+                }
+            )
         ) { backStackEntry ->
             val nav: ExposureNav = backStackEntry.toRoute()
             ExposureScreen(

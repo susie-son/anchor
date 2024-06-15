@@ -28,10 +28,10 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.Loading
+import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
-import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
@@ -105,11 +105,12 @@ fun ExposureList(
                     if (timestamp == null) {
                         value = null
                     } else {
-                        val formattedTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
-                        } else {
-                            DateFormat.getDateTimeInstance().format(timestamp.toDate())
-                        }
+                        val formattedTime =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
+                            } else {
+                                DateFormat.getDateTimeInstance().format(timestamp.toDate())
+                            }
                         value = formattedTime
                     }
                     delay(60_000)
@@ -125,8 +126,20 @@ fun ExposureList(
                         )
                     }
                 },
-                headlineContent = { Text(exposure.title.ifBlank { stringResource(R.string.exposures_no_title) }) },
-                supportingContent = { Text(exposure.description.ifBlank { stringResource(R.string.exposures_no_description) }) },
+                headlineContent = {
+                    Text(
+                        exposure.title.ifBlank { stringResource(R.string.exposures_no_title) }
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        exposure.description.ifBlank {
+                            stringResource(
+                                R.string.exposures_no_description
+                            )
+                        }
+                    )
+                },
                 modifier = modifier.clickable { onItemClick(exposure.id) }
             )
             HorizontalDivider(modifier = modifier)
@@ -135,19 +148,16 @@ fun ExposureList(
 }
 
 @Composable
-fun StatusWithTimestamp(
-    time: String,
-    status: Status,
-    modifier: Modifier = Modifier
-) {
-    val statusText = stringResource(
-        when (status) {
-            Status.COMPLETED -> R.string.exposure_completed_date
-            Status.IN_PROGRESS -> R.string.exposure_in_progress_date
-            Status.READY -> R.string.exposure_ready_date
-            Status.DRAFT -> R.string.exposure_draft_date
-        },
-        time
-    )
+fun StatusWithTimestamp(time: String, status: Status, modifier: Modifier = Modifier) {
+    val statusText =
+        stringResource(
+            when (status) {
+                Status.COMPLETED -> R.string.exposure_completed_date
+                Status.IN_PROGRESS -> R.string.exposure_in_progress_date
+                Status.READY -> R.string.exposure_ready_date
+                Status.DRAFT -> R.string.exposure_draft_date
+            },
+            time
+        )
     Text(statusText, style = MaterialTheme.typography.bodySmall, modifier = modifier)
 }

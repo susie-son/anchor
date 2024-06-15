@@ -41,20 +41,23 @@ fun PreparationForm(
     onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var openDiscardDialog by remember { mutableStateOf(false) }
 
     val isValid =
-        title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() && interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
+        title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
+            interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
     val isEmpty =
-        title.isBlank() && description.isBlank() && thoughts.isEmpty() && interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+        title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
+            interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     setTopAppBar(
         AnchorTopAppBarState(
             title = R.string.preparation_top_bar_title,
             onBack = onBack,
-            formState = AnchorFormState(
+            formState =
+            AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
                 onDiscard = { openDiscardDialog = true },
@@ -77,7 +80,8 @@ fun PreparationForm(
     }
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .verticalScroll(rememberScrollState())
             .imePadding()
     ) {
@@ -86,7 +90,7 @@ fun PreparationForm(
             description = description,
             onTitleChange = setTitle,
             onDescriptionChange = setDescription,
-            modifier = modifier,
+            modifier = modifier
         )
         PreparationFormSection(
             thoughts = thoughts,
@@ -101,7 +105,7 @@ fun PreparationForm(
             removeInterpretation = removeInterpretation,
             removeBehavior = removeBehavior,
             removeAction = removeAction,
-            modifier = modifier,
+            modifier = modifier
         )
     }
 }
@@ -112,7 +116,7 @@ fun BasicFormSection(
     description: String,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     FormSection(
         modifier = modifier,
@@ -124,9 +128,10 @@ fun BasicFormSection(
                 isError = title.isBlank(),
                 imeAction = ImeAction.Next,
                 onValueChange = onTitleChange,
-                modifier = modifier,
+                modifier = modifier
             )
-        }, {
+        },
+        {
             FormTextField(
                 value = description,
                 label = R.string.preparation_description_label,
@@ -134,7 +139,7 @@ fun BasicFormSection(
                 isError = description.isBlank(),
                 imeAction = ImeAction.Done,
                 onValueChange = onDescriptionChange,
-                modifier = modifier,
+                modifier = modifier
             )
         }
     )
@@ -154,7 +159,7 @@ fun PreparationFormSection(
     removeInterpretation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     FormSection(
         modifier = modifier,
@@ -165,7 +170,7 @@ fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_thoughts_body,
                 onAdd = addThought,
                 onDelete = removeThought,
-                modifier = modifier,
+                modifier = modifier
             )
             LabeledFormTextFieldColumn(
                 texts = interpretations,
@@ -173,7 +178,7 @@ fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_interpretations_body,
                 onAdd = addInterpretation,
                 onDelete = removeInterpretation,
-                modifier = modifier,
+                modifier = modifier
             )
         },
         {
@@ -183,7 +188,7 @@ fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_behaviors_body,
                 onAdd = addBehavior,
                 onDelete = removeBehavior,
-                modifier = modifier,
+                modifier = modifier
             )
         },
         {
@@ -193,8 +198,8 @@ fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_actions_body,
                 onAdd = addAction,
                 onDelete = removeAction,
-                modifier = modifier,
+                modifier = modifier
             )
-        },
+        }
     )
 }

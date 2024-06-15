@@ -13,10 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
 
 @Composable
-fun AnchorFloatingActionButton(
-    onAction: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun AnchorFloatingActionButton(onAction: () -> Unit, modifier: Modifier = Modifier) {
     ExtendedFloatingActionButton(
         onClick = onAction,
         content = {

@@ -67,7 +67,7 @@ fun LabeledSlider(
         steps = steps,
         thumb = thumb,
         track = track,
-        valueRange = valueRange,
+        valueRange = valueRange
     )
 }
 

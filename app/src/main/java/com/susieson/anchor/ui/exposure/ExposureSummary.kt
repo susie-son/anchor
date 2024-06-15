@@ -30,7 +30,7 @@ fun ExposureSummary(
     exposure: Exposure,
     onBack: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     setTopAppBar(
         AnchorTopAppBarState(
@@ -40,7 +40,8 @@ fun ExposureSummary(
     )
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -48,7 +49,7 @@ fun ExposureSummary(
             exposure.updatedAt,
             exposure.title,
             exposure.description,
-            modifier,
+            modifier
         )
         exposure.preparation?.let {
             PreparationSummarySection(it, modifier)
@@ -64,7 +65,7 @@ fun BasicSummarySection(
     updatedAt: Timestamp?,
     title: String,
     description: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     SummarySection(
         modifier = modifier,
@@ -79,117 +80,113 @@ fun BasicSummarySection(
             }
         },
         { TextSummaryItem(text = title, textStyle = MaterialTheme.typography.titleLarge) },
-        { TextSummaryItem(text = description) },
+        { TextSummaryItem(text = description) }
     )
 }
 
 @Composable
-fun PreparationSummarySection(
-    preparation: Preparation,
-    modifier: Modifier = Modifier,
-) {
+fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Modifier) {
     SummarySection(
         modifier = modifier,
         {
             LineSeparatedListSummaryItem(
                 label = R.string.preparation_thoughts_label,
-                list = preparation.thoughts,
+                list = preparation.thoughts
             )
         },
         {
             LineSeparatedListSummaryItem(
                 label = R.string.preparation_interpretations_label,
-                list = preparation.interpretations,
+                list = preparation.interpretations
             )
         },
         {
             LineSeparatedListSummaryItem(
                 label = R.string.preparation_behaviors_label,
-                list = preparation.behaviors,
+                list = preparation.behaviors
             )
         },
         {
             LineSeparatedListSummaryItem(
                 label = R.string.preparation_actions_label,
-                list = preparation.actions,
+                list = preparation.actions
             )
-        })
+        }
+    )
 }
 
 @Composable
-fun ReviewSummarySection(
-    review: Review,
-    modifier: Modifier = Modifier,
-) {
-    val emotions = review.emotions.map {
-        stringResource(
-            when (it) {
-                Emotion.FEAR -> R.string.review_fear_chip
-                Emotion.SADNESS -> R.string.review_sadness_chip
-                Emotion.ANXIETY -> R.string.review_anxiety_chip
-                Emotion.GUILT -> R.string.review_guilt_chip
-                Emotion.SHAME -> R.string.review_shame_chip
-                Emotion.HAPPINESS -> R.string.review_happiness_chip
-            }
-        )
-    }
+fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
+    val emotions =
+        review.emotions.map {
+            stringResource(
+                when (it) {
+                    Emotion.FEAR -> R.string.review_fear_chip
+                    Emotion.SADNESS -> R.string.review_sadness_chip
+                    Emotion.ANXIETY -> R.string.review_anxiety_chip
+                    Emotion.GUILT -> R.string.review_guilt_chip
+                    Emotion.SHAME -> R.string.review_shame_chip
+                    Emotion.HAPPINESS -> R.string.review_happiness_chip
+                }
+            )
+        }
     SummarySection(
         modifier = modifier,
         {
             CommaSeparatedListSummaryItem(
                 label = R.string.review_emotions_label,
-                list = emotions,
+                list = emotions
             )
         },
         {
             LineSeparatedListSummaryItem(
                 label = R.string.review_thoughts_label,
-                list = review.thoughts,
+                list = review.thoughts
             )
         },
         {
             LineSeparatedListSummaryItem(
                 label = R.string.review_sensations_label,
-                list = review.sensations,
+                list = review.sensations
             )
         },
         {
             LineSeparatedListSummaryItem(
                 label = R.string.review_behaviors_label,
-                list = review.behaviors,
+                list = review.behaviors
             )
         },
         { HorizontalDivider(Modifier.padding(8.dp)) },
         {
             RatingSummaryItem(
                 label = R.string.review_experiencing_label,
-                rating = review.experiencing,
+                rating = review.experiencing
             )
         },
         {
             RatingSummaryItem(
                 label = R.string.review_anchoring_label,
-                rating = review.anchoring,
+                rating = review.anchoring
             )
         },
         {
             RatingSummaryItem(
                 label = R.string.review_thinking_label,
-                rating = review.thinking,
+                rating = review.thinking
             )
         },
         {
             RatingSummaryItem(
                 label = R.string.review_engaging_label,
-                rating = review.engaging,
+                rating = review.engaging
             )
         },
         { HorizontalDivider(Modifier.padding(8.dp)) },
         {
             TextSummaryItem(
                 label = R.string.review_learnings_label,
-                text = review.learnings,
+                text = review.learnings
             )
-        },
+        }
     )
 }

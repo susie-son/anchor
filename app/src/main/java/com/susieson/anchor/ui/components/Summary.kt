@@ -20,7 +20,7 @@ fun SummaryItem(
     label: Int?,
     modifier: Modifier = Modifier,
     isOnSameLine: Boolean = false,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     label?.let {
         LabeledItem(it, modifier = modifier, isOnSameLine = isOnSameLine) {
@@ -36,7 +36,7 @@ fun CommaSeparatedListSummaryItem(
     list: List<String>,
     modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null,
+    label: Int? = null
 ) {
     SummaryItem(label, modifier) {
         Text(
@@ -51,7 +51,7 @@ fun LineSeparatedListSummaryItem(
     list: List<String>,
     modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null,
+    label: Int? = null
 ) {
     SummaryItem(label, modifier) {
         list.forEach {
@@ -65,7 +65,7 @@ fun RatingSummaryItem(
     rating: Float,
     modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null,
+    label: Int? = null
 ) {
     SummaryItem(label, modifier, isOnSameLine = true) {
         Text(
@@ -89,10 +89,7 @@ fun TextSummaryItem(
 }
 
 @Composable
-fun SummarySection(
-    modifier: Modifier = Modifier,
-    vararg items: @Composable () -> Unit,
-) {
+fun SummarySection(modifier: Modifier = Modifier, vararg items: @Composable () -> Unit) {
     OutlinedCard(modifier = modifier.padding(horizontal = 16.dp)) {
         Column(
             modifier = modifier.padding(16.dp),

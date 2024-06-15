@@ -47,7 +47,7 @@ fun LabeledFormSection(
     @StringRes
     descriptionLabel: Int?,
     modifier: Modifier = Modifier,
-    vararg items: @Composable () -> Unit,
+    vararg items: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier.padding(16.dp),
@@ -55,12 +55,12 @@ fun LabeledFormSection(
     ) {
         Text(
             text = stringResource(label),
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge
         )
         descriptionLabel?.let {
             Text(
                 text = stringResource(it),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall
             )
         }
         items.forEach {
@@ -70,10 +70,7 @@ fun LabeledFormSection(
 }
 
 @Composable
-fun FormSection(
-    modifier: Modifier = Modifier,
-    vararg items: @Composable () -> Unit,
-) {
+fun FormSection(modifier: Modifier = Modifier, vararg items: @Composable () -> Unit) {
     Column(
         modifier = modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -95,7 +92,7 @@ fun FormTextField(
     imeAction: ImeAction,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    singleLine: Boolean = true,
+    singleLine: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
@@ -106,7 +103,7 @@ fun FormTextField(
         keyboardOptions = KeyboardOptions(imeAction = imeAction),
         isError = isError,
         supportingText = { if (isError) errorLabel?.let { Text(stringResource(it)) } },
-        modifier = modifier,
+        modifier = modifier
     )
 }
 
@@ -117,13 +114,20 @@ fun FormSelectFilterItem(
     label: Int,
     filters: Map<Int, Boolean>,
     onFilterChange: (Int) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     LabeledItem(
         label = label,
         modifier = modifier,
         isOnSameLine = false,
-        color = if (filters.none { it.value }) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        color = if (filters.none {
+                it.value
+            }
+        ) {
+            MaterialTheme.colorScheme.error
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
     ) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -148,14 +152,14 @@ fun LabeledFormTextFieldColumn(
     onDelete: (String) -> Unit,
     modifier: Modifier = Modifier,
     @StringRes
-    descriptionLabel: Int? = null,
+    descriptionLabel: Int? = null
 ) {
     val isError = texts.isEmpty()
 
     val labelItem: @Composable () -> Unit = {
         Text(
             stringResource(label),
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge
         )
     }
     val descriptionItem: @Composable () -> Unit = {
@@ -163,7 +167,11 @@ fun LabeledFormTextFieldColumn(
             Text(
                 text = stringResource(it),
                 style = MaterialTheme.typography.bodySmall,
-                color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                color = if (isError) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
             )
         }
     }
@@ -189,7 +197,7 @@ fun FormTextFieldColumn(
     texts: List<String>,
     onAdd: (String) -> Unit,
     onDelete: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var field by rememberSaveable { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -202,7 +210,8 @@ fun FormTextFieldColumn(
                     value = field,
                     onValueChange = { field = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = {
+                    keyboardActions =
+                    KeyboardActions(onDone = {
                         if (field.isNotEmpty()) {
                             onAdd(field)
                             field = ""
@@ -210,11 +219,12 @@ fun FormTextFieldColumn(
                     }),
                     interactionSource = interactionSource,
                     singleLine = true,
-                    textStyle = TextStyle.Default.copy(
+                    textStyle =
+                    TextStyle.Default.copy(
                         color = OutlinedTextFieldDefaults.colors().focusedTextColor
                     ),
                     cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
-                    modifier = modifier,
+                    modifier = modifier
                 ) { innerTextField ->
                     OutlinedTextFieldDefaults.DecorationBox(
                         value = field,
@@ -223,7 +233,8 @@ fun FormTextFieldColumn(
                         singleLine = true,
                         visualTransformation = VisualTransformation.None,
                         interactionSource = interactionSource,
-                        contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                        contentPadding =
+                        OutlinedTextFieldDefaults.contentPadding(
                             0.dp,
                             0.dp,
                             0.dp,
@@ -234,7 +245,9 @@ fun FormTextFieldColumn(
                     )
                 }
             },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            colors = ListItemDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
             trailingContent = {
                 IconButton(onClick = {
                     if (field.isNotEmpty()) {
@@ -247,7 +260,8 @@ fun FormTextFieldColumn(
                         contentDescription = stringResource(R.string.content_description_add)
                     )
                 }
-            })
+            }
+        )
         texts.forEach { text ->
             HorizontalDivider(modifier = modifier)
             ListItem(
@@ -257,7 +271,9 @@ fun FormTextFieldColumn(
                     IconButton(onClick = { onDelete(text) }) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.content_description_delete)
+                            contentDescription = stringResource(
+                                R.string.content_description_delete
+                            )
                         )
                     }
                 }
@@ -273,12 +289,16 @@ fun FormRatingItem(
     label: Int,
     value: Float,
     onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     LabeledItem(
         label = label,
         modifier = modifier,
-        color = if (value == 0f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+        color = if (value == 0f) {
+            MaterialTheme.colorScheme.error
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
         isOnSameLine = false
     ) {
         LabeledSlider(

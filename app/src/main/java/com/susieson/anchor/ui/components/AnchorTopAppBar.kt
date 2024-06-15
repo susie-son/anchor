@@ -23,12 +23,13 @@ data class AnchorTopAppBarState(
     val onAction: (() -> Unit)? = null
 ) {
     companion object {
-        val Default = AnchorTopAppBarState(
-            title = R.string.app_name,
-            formState = null,
-            onBack = null,
-            onAction = null
-        )
+        val Default =
+            AnchorTopAppBarState(
+                title = R.string.app_name,
+                formState = null,
+                onBack = null,
+                onAction = null
+            )
     }
 }
 
