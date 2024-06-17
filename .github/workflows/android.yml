@@ -4,7 +4,7 @@ on:
       - main
   pull_request:
     branches:
-      - main
+      - '*'
 
 jobs:
   setup:
@@ -29,6 +29,9 @@ jobs:
     needs: setup
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Build project
         run: ./gradlew build
 
@@ -38,6 +41,9 @@ jobs:
     needs: setup
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Ktlint
         run: ./gradlew ktlintCheck
 
@@ -47,6 +53,9 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Upload debug APK
         if: success()
         uses: actions/upload-artifact@v4
