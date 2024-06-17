@@ -1,4 +1,4 @@
-package com.susieson.anchor
+package com.susieson.anchor.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.susieson.anchor.model.AnchorUser
-import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import kotlinx.serialization.Serializable
