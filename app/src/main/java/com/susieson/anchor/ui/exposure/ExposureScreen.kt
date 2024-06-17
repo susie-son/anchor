@@ -28,7 +28,10 @@ fun ExposureScreen(
         Status.DRAFT -> {
             PreparationScreenContent(
                 viewModel = viewModel,
-                onDiscard = onDiscard,
+                onDiscard = {
+                    onDiscard()
+                    viewModel.deleteExposure(userId, exposure!!.id)
+                },
                 onSubmit = { viewModel.addPreparation(userId, exposure!!.id) },
                 setScreenState = setScreenState,
                 modifier = modifier

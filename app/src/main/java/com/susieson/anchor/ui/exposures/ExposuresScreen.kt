@@ -58,17 +58,15 @@ fun ExposuresScreen(
     )
 
     val exposures by viewModel.exposures.collectAsState()
-
-    val filteredExposures = exposures?.filterNot { it.status == Status.DRAFT } ?: emptyList()
+    val exposuresList = exposures
 
     when {
-        exposures == null -> Loading(modifier = modifier)
-        filteredExposures.isNotEmpty() -> ExposureList(
+        exposuresList == null -> Loading(modifier = modifier)
+        exposuresList.isNotEmpty() -> ExposureList(
             modifier = modifier,
-            exposures = filteredExposures,
+            exposures = exposuresList,
             onItemClick = onItemSelect
         )
-
         else -> EmptyExposureList(modifier = modifier)
     }
 
