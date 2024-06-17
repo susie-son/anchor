@@ -34,13 +34,14 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExposureReady(
     onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val checked = remember { mutableStateListOf(false, false) }
@@ -52,9 +53,9 @@ fun ExposureReady(
             null
         }
 
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.ready_top_bar_title,
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState(R.string.ready_top_bar_title)
         )
     )
 

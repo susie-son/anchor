@@ -1,8 +1,6 @@
 package com.susieson.anchor.ui.components
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -10,19 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.susieson.anchor.R
 
 @Composable
-fun AnchorFloatingActionButton(onAction: () -> Unit, modifier: Modifier = Modifier) {
+fun AnchorFloatingActionButton(state: AnchorFabState, modifier: Modifier = Modifier) {
     ExtendedFloatingActionButton(
-        onClick = onAction,
+        onClick = state.onClick,
         content = {
             Icon(
-                Icons.Default.Add,
+                state.icon,
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(stringResource(R.string.exposures_start_button))
+            Text(stringResource(state.text))
         },
         modifier = modifier
     )

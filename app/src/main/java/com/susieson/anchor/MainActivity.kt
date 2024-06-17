@@ -59,23 +59,19 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    val topAppBar by remember { viewModel.topAppBar }
+    val screenState by remember { viewModel.screenState }
     val user by viewModel.user.collectAsState(null)
 
     Scaffold(
         modifier = modifier,
-        topBar = { AnchorTopAppBar(topAppBar) },
-        floatingActionButton = {
-            topAppBar.onAction?.let {
-                AnchorFloatingActionButton(it)
-            }
-        }
+        topBar = { AnchorTopAppBar(screenState.topAppBarState) },
+        floatingActionButton = { screenState.fabState?.let { AnchorFloatingActionButton(it) } }
     ) { innerPadding ->
         Box(modifier = modifier.padding(innerPadding)) {
             AnchorNavHost(
                 user = user,
-                setTopAppBar = viewModel::setTopAppBar,
                 navController = navController,
+                setScreenState = viewModel::setScreenState,
                 modifier = modifier
             )
         }

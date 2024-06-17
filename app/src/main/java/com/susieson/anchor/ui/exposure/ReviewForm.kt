@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.FormRatingItem
@@ -54,7 +55,7 @@ fun ReviewForm(
     removeSensation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
     onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val emotionsFilters =
@@ -88,14 +89,12 @@ fun ReviewForm(
             engagingRating == 0f &&
             learnings.isEmpty()
 
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.review_top_bar_title,
-            formState =
-            AnchorFormState(
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState(R.string.review_top_bar_title),
+            formState = AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
-                onConfirm = onNext
             )
         )
     )

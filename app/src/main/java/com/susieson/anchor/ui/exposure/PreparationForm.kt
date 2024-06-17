@@ -6,13 +6,11 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.FormSection
@@ -39,7 +37,7 @@ fun PreparationForm(
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
     onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isValid =
@@ -49,14 +47,12 @@ fun PreparationForm(
         title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
             interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.preparation_top_bar_title,
-            formState =
-            AnchorFormState(
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState(R.string.preparation_top_bar_title),
+            formState = AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
-                onConfirm = onNext
             )
         )
     )

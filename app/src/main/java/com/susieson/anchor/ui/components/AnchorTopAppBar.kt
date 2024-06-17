@@ -6,29 +6,32 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.susieson.anchor.R
 
 data class AnchorTopAppBarState(
     @StringRes
     val title: Int,
-    val formState: AnchorFormState? = null,
-    val onAction: (() -> Unit)? = null
 ) {
     companion object {
         val Default =
             AnchorTopAppBarState(
                 title = R.string.app_name,
-                formState = null,
-                onAction = null
             )
     }
 }
 
+data class AnchorFabState(
+    @StringRes
+    val text: Int,
+    val onClick: () -> Unit,
+    val icon: ImageVector,
+)
+
 data class AnchorFormState(
     val isEmpty: Boolean,
     val isValid: Boolean,
-    val onConfirm: () -> Unit
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

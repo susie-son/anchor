@@ -6,14 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.Loading
 
 @Composable
 fun ExposureScreen(
     userId: String,
     exposureId: String,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel()
 ) {
@@ -28,7 +28,7 @@ fun ExposureScreen(
             PreparationScreenContent(
                 viewModel = viewModel,
                 onNext = { viewModel.addPreparation(userId, exposure!!.id) },
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -38,7 +38,7 @@ fun ExposureScreen(
                 onNext = {
                     viewModel.markAsInProgress(userId, exposure!!.id)
                 },
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -47,7 +47,7 @@ fun ExposureScreen(
             ReviewScreenContent(
                 viewModel = viewModel,
                 onNext = { viewModel.addReview(userId, exposure!!.id) },
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -55,7 +55,7 @@ fun ExposureScreen(
         Status.COMPLETED -> {
             ExposureSummary(
                 exposure = exposure!!,
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -66,7 +66,7 @@ fun ExposureScreen(
 private fun PreparationScreenContent(
     viewModel: ExposureViewModel,
     onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title by viewModel.title
@@ -94,7 +94,7 @@ private fun PreparationScreenContent(
         removeBehavior = viewModel::removePreparationBehavior,
         removeAction = viewModel::removePreparationAction,
         onNext = onNext,
-        setTopAppBar = setTopAppBar,
+        setScreenState = setScreenState,
         modifier = modifier
     )
 }
@@ -103,7 +103,7 @@ private fun PreparationScreenContent(
 private fun ReviewScreenContent(
     viewModel: ExposureViewModel,
     onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val fear by viewModel.fear
@@ -157,7 +157,7 @@ private fun ReviewScreenContent(
         removeSensation = viewModel::removeReviewSensation,
         removeBehavior = viewModel::removeReviewBehavior,
         onNext = onNext,
-        setTopAppBar = setTopAppBar,
+        setScreenState = setScreenState,
         modifier = modifier
     )
 }

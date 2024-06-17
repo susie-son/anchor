@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -27,27 +29,31 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
+import com.susieson.anchor.ui.AnchorScreenState
+import com.susieson.anchor.ui.components.AnchorFabState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.Loading
-import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
+import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
     userId: String,
     modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.app_name,
-            onAction = {
-                viewModel.addExposure(userId)
-            }
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState.Default,
+            fabState = AnchorFabState(
+                text = R.string.exposures_start_button,
+                icon = Icons.Default.Add,
+                onClick = { viewModel.addExposure(userId) }
+            )
         )
     )
 

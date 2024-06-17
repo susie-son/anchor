@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.susieson.anchor.model.AnchorUser
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import kotlinx.serialization.Serializable
@@ -22,7 +22,7 @@ data class ExposureNav(val exposureId: String)
 @Composable
 fun AnchorNavHost(
     user: AnchorUser?,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -37,7 +37,7 @@ fun AnchorNavHost(
                 onItemSelect = { exposureId ->
                     navController.navigate(ExposureNav(exposureId))
                 },
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -53,7 +53,7 @@ fun AnchorNavHost(
             ExposureScreen(
                 userId = userId,
                 exposureId = nav.exposureId,
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
