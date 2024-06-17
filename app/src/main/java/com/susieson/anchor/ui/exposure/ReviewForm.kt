@@ -6,13 +6,17 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormRatingItem
 import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormSelectFilterItem
@@ -54,10 +58,13 @@ fun ReviewForm(
     removeThought: (String) -> Unit,
     removeSensation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
+    onDiscard: () -> Unit,
     onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showDiscardConfirmation by remember { mutableStateOf(false) }
+
     val emotionsFilters =
         mapOf(
             R.string.review_fear_chip to fear,
@@ -95,6 +102,7 @@ fun ReviewForm(
             formState = AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
+                onDiscard = { showDiscardConfirmation = true },
                 onSubmit = onSubmit
             ),
             canNavigateUp = true,
@@ -214,6 +222,16 @@ fun ReviewForm(
                     modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
+            }
+        )
+    }
+
+    if (showDiscardConfirmation) {
+        DiscardConfirmationDialog(
+            onDismiss = { showDiscardConfirmation = false },
+            onConfirm = {
+                showDiscardConfirmation = false
+                onDiscard()
             }
         )
     }

@@ -56,7 +56,7 @@ fun AnchorTopAppBar(
                         }
                     }
                     false -> {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = state.formState.onDiscard) {
                             Icon(
                                 Icons.Default.Close,
                                 contentDescription = stringResource(R.string.content_description_close)

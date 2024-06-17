@@ -68,6 +68,7 @@ fun AnchorNavHost(
             ExposureScreen(
                 userId = userId,
                 exposureId = nav.exposureId,
+                onDiscard = navController::navigateUp,
                 setScreenState = setScreenState,
                 modifier = modifier
             )

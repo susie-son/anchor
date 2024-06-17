@@ -14,6 +14,7 @@ fun ExposureScreen(
     userId: String,
     exposureId: String,
     setScreenState: (AnchorScreenState) -> Unit,
+    onDiscard: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel()
 ) {
@@ -27,6 +28,7 @@ fun ExposureScreen(
         Status.DRAFT -> {
             PreparationScreenContent(
                 viewModel = viewModel,
+                onDiscard = onDiscard,
                 onSubmit = { viewModel.addPreparation(userId, exposure!!.id) },
                 setScreenState = setScreenState,
                 modifier = modifier
@@ -46,6 +48,7 @@ fun ExposureScreen(
         Status.IN_PROGRESS -> {
             ReviewScreenContent(
                 viewModel = viewModel,
+                onDiscard = onDiscard,
                 onSubmit = { viewModel.addReview(userId, exposure!!.id) },
                 setScreenState = setScreenState,
                 modifier = modifier
@@ -65,6 +68,7 @@ fun ExposureScreen(
 @Composable
 private fun PreparationScreenContent(
     viewModel: ExposureViewModel,
+    onDiscard: () -> Unit,
     onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
@@ -93,6 +97,7 @@ private fun PreparationScreenContent(
         removeInterpretation = viewModel::removePreparationInterpretation,
         removeBehavior = viewModel::removePreparationBehavior,
         removeAction = viewModel::removePreparationAction,
+        onDiscard = onDiscard,
         onSubmit = onSubmit,
         setScreenState = setScreenState,
         modifier = modifier
@@ -102,6 +107,7 @@ private fun PreparationScreenContent(
 @Composable
 private fun ReviewScreenContent(
     viewModel: ExposureViewModel,
+    onDiscard: () -> Unit,
     onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
@@ -156,6 +162,7 @@ private fun ReviewScreenContent(
         removeThought = viewModel::removeReviewThought,
         removeSensation = viewModel::removeReviewSensation,
         removeBehavior = viewModel::removeReviewBehavior,
+        onDiscard = onDiscard,
         onSubmit = onSubmit,
         setScreenState = setScreenState,
         modifier = modifier
