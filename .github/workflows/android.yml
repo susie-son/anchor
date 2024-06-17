@@ -28,22 +28,28 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v4
       - run: ./gradlew assembleDebug
   test:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
       - run: ./gradlew test
   lint:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v4
       - run: ./gradlew lint
       - run: ./gradlew ktlintCheck
   debug:
     runs-on: ubuntu-latest
     needs: assemble
     steps:
+      - uses: actions/checkout@v4
+      - run: ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
