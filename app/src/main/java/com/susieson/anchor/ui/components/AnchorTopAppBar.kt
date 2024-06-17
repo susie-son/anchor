@@ -40,17 +40,28 @@ fun AnchorTopAppBar(
         title = { Text(stringResource(state.topAppBarState.title)) },
         navigationIcon = {
             if (state.canNavigateUp) {
-                IconButton(onClick = navController::navigateUp) {
-                    if (state.formState != null) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.content_description_close)
-                        )
-                    } else {
+                when (state.formState?.isEmpty) {
+                    null -> IconButton(onClick = navController::navigateUp) {
                         Icon(
                             Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = stringResource(R.string.content_description_back)
                         )
+                    }
+                    true -> {
+                        IconButton(onClick = navController::navigateUp) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.content_description_close)
+                            )
+                        }
+                    }
+                    false -> {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.content_description_close)
+                            )
+                        }
                     }
                 }
             }
