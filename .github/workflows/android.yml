@@ -8,6 +8,10 @@ on:
     branches:
       - "*"
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,7 +48,7 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: ktlint
+      - name: Ktlint
         run: ./gradlew ktlintCheck
 
   debug:
