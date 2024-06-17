@@ -60,8 +60,13 @@ fun PreparationForm(
             topAppBarState = AnchorTopAppBarState(R.string.preparation_top_bar_title),
             formState = AnchorFormState(
                 isValid = isValid,
-                isEmpty = isEmpty,
-                onDiscard = { showDiscardConfirmation = true },
+                onDiscard = {
+                    if (isEmpty) {
+                        onDiscard()
+                    } else {
+                        showDiscardConfirmation = true
+                    }
+                },
                 onSubmit = onSubmit
             ),
             canNavigateUp = true,

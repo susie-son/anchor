@@ -51,7 +51,6 @@ data class AnchorFormState(
     val isValid: Boolean,
     val onSubmit: () -> Unit,
     val onDiscard: () -> Unit,
-    val isEmpty: Boolean,
 )
 
 @Composable
