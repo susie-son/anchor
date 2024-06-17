@@ -19,12 +19,12 @@ import com.susieson.anchor.ui.AnchorScreenState
 
 data class AnchorTopAppBarState(
     @StringRes
-    val title: Int,
+    val title: Int
 ) {
     companion object {
         val Default =
             AnchorTopAppBarState(
-                title = R.string.app_name,
+                title = R.string.app_name
             )
     }
 }
@@ -51,7 +51,9 @@ fun AnchorTopAppBar(
                         IconButton(onClick = state.formState.onDiscard) {
                             Icon(
                                 Icons.Default.Close,
-                                contentDescription = stringResource(R.string.content_description_close)
+                                contentDescription = stringResource(
+                                    R.string.content_description_close
+                                )
                             )
                         }
                     }

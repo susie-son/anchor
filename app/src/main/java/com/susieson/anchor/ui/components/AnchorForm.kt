@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 data class AnchorFormState(
     val isValid: Boolean,
     val onSubmit: () -> Unit,
-    val onDiscard: () -> Unit,
+    val onDiscard: () -> Unit
 )
 
 @Composable

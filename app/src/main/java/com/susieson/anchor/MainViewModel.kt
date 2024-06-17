@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.service.AuthService
 import com.susieson.anchor.ui.AnchorScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel

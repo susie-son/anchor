@@ -50,10 +50,10 @@ fun PreparationForm(
 
     val isValid =
         title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
-                interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
+            interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
-                interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+            interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     setScreenState(
         AnchorScreenState(
@@ -69,7 +69,7 @@ fun PreparationForm(
                 },
                 onSubmit = onSubmit
             ),
-            canNavigateUp = true,
+            canNavigateUp = true
         )
     )
 

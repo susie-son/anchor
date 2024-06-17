@@ -35,7 +35,7 @@ fun ExposureSummary(
     setScreenState(
         AnchorScreenState(
             topAppBarState = AnchorTopAppBarState(R.string.summary_top_bar_title),
-            canNavigateUp = true,
+            canNavigateUp = true
         )
     )
 

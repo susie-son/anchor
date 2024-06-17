@@ -15,7 +15,7 @@ data class AnchorFabState(
     @StringRes
     val text: Int,
     val onClick: () -> Unit,
-    val icon: ImageVector,
+    val icon: ImageVector
 )
 
 @Composable

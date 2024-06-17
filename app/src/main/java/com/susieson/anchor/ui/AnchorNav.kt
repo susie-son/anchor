@@ -25,7 +25,7 @@ data class AnchorScreenState(
     val topAppBarState: AnchorTopAppBarState,
     val fabState: AnchorFabState? = null,
     val formState: AnchorFormState? = null,
-    val canNavigateUp: Boolean = false,
+    val canNavigateUp: Boolean = false
 ) {
     companion object {
         val Default = AnchorScreenState(
