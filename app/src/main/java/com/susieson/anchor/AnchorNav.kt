@@ -53,7 +53,6 @@ fun AnchorNavHost(
             ExposureScreen(
                 userId = userId,
                 exposureId = nav.exposureId,
-                onBack = navController::popBackStack,
                 setTopAppBar = setTopAppBar,
                 modifier = modifier
             )

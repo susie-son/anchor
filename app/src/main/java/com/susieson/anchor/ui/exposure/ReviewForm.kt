@@ -6,16 +6,12 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
-import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.FormRatingItem
 import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormSelectFilterItem
@@ -57,13 +53,10 @@ fun ReviewForm(
     removeThought: (String) -> Unit,
     removeSensation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
-    onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDiscardDialog by remember { mutableStateOf(false) }
-
     val emotionsFilters =
         mapOf(
             R.string.review_fear_chip to fear,
@@ -95,31 +88,14 @@ fun ReviewForm(
             engagingRating == 0f &&
             learnings.isEmpty()
 
-    if (openDiscardDialog) {
-        DiscardDialog(
-            onConfirm = {
-                openDiscardDialog = false
-                onBack()
-            },
-            onDismiss = {
-                openDiscardDialog = false
-            }
-        )
-    }
-
     setTopAppBar(
         AnchorTopAppBarState(
             title = R.string.review_top_bar_title,
-            onBack = onBack,
             formState =
             AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
-                onDiscard = { openDiscardDialog = true },
-                onConfirm = {
-                    onNext()
-                    onBack()
-                }
+                onConfirm = onNext
             )
         )
     )

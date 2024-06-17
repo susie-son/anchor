@@ -13,7 +13,6 @@ import com.susieson.anchor.ui.components.Loading
 fun ExposureScreen(
     userId: String,
     exposureId: String,
-    onBack: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel()
@@ -28,8 +27,6 @@ fun ExposureScreen(
         Status.DRAFT -> {
             PreparationScreenContent(
                 viewModel = viewModel,
-                onDiscard = { viewModel.deleteExposure(userId, exposure!!.id) },
-                onBack = onBack,
                 onNext = { viewModel.addPreparation(userId, exposure!!.id) },
                 setTopAppBar = setTopAppBar,
                 modifier = modifier
@@ -38,10 +35,8 @@ fun ExposureScreen(
 
         Status.READY -> {
             ExposureReady(
-                onBack = onBack,
                 onNext = {
                     viewModel.markAsInProgress(userId, exposure!!.id)
-                    onBack()
                 },
                 setTopAppBar = setTopAppBar,
                 modifier = modifier
@@ -51,7 +46,6 @@ fun ExposureScreen(
         Status.IN_PROGRESS -> {
             ReviewScreenContent(
                 viewModel = viewModel,
-                onBack = onBack,
                 onNext = { viewModel.addReview(userId, exposure!!.id) },
                 setTopAppBar = setTopAppBar,
                 modifier = modifier
@@ -61,7 +55,6 @@ fun ExposureScreen(
         Status.COMPLETED -> {
             ExposureSummary(
                 exposure = exposure!!,
-                onBack = onBack,
                 setTopAppBar = setTopAppBar,
                 modifier = modifier
             )
@@ -72,8 +65,6 @@ fun ExposureScreen(
 @Composable
 private fun PreparationScreenContent(
     viewModel: ExposureViewModel,
-    onDiscard: () -> Unit,
-    onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier
@@ -102,8 +93,6 @@ private fun PreparationScreenContent(
         removeInterpretation = viewModel::removePreparationInterpretation,
         removeBehavior = viewModel::removePreparationBehavior,
         removeAction = viewModel::removePreparationAction,
-        onDiscard = onDiscard,
-        onBack = onBack,
         onNext = onNext,
         setTopAppBar = setTopAppBar,
         modifier = modifier
@@ -113,7 +102,6 @@ private fun PreparationScreenContent(
 @Composable
 private fun ReviewScreenContent(
     viewModel: ExposureViewModel,
-    onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier
@@ -168,7 +156,6 @@ private fun ReviewScreenContent(
         removeThought = viewModel::removeReviewThought,
         removeSensation = viewModel::removeReviewSensation,
         removeBehavior = viewModel::removeReviewBehavior,
-        onBack = onBack,
         onNext = onNext,
         setTopAppBar = setTopAppBar,
         modifier = modifier

@@ -28,14 +28,12 @@ import java.text.DateFormat
 @Composable
 fun ExposureSummary(
     exposure: Exposure,
-    onBack: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     setTopAppBar(
         AnchorTopAppBarState(
             title = R.string.summary_top_bar_title,
-            onBack = onBack
         )
     )
 

@@ -39,7 +39,6 @@ import com.susieson.anchor.ui.components.AnchorTopAppBarState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExposureReady(
-    onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier
@@ -56,7 +55,6 @@ fun ExposureReady(
     setTopAppBar(
         AnchorTopAppBarState(
             title = R.string.ready_top_bar_title,
-            onBack = onBack
         )
     )
 
@@ -82,7 +80,6 @@ fun ExposureReady(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = modifier.padding(horizontal = 16.dp)
         ) {
-            OutlinedButton(onClick = onBack) { Text(stringResource(R.string.ready_dismiss_button)) }
             FilledTonalButton(
                 onClick = onNext,
                 enabled = checked.all { it }

@@ -15,7 +15,6 @@ import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
-import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormTextField
 import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
@@ -39,14 +38,10 @@ fun PreparationForm(
     removeInterpretation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
-    onDiscard: () -> Unit,
-    onBack: () -> Unit,
     onNext: () -> Unit,
     setTopAppBar: (AnchorTopAppBarState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDiscardDialog by remember { mutableStateOf(false) }
-
     val isValid =
         title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
             interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
@@ -57,29 +52,14 @@ fun PreparationForm(
     setTopAppBar(
         AnchorTopAppBarState(
             title = R.string.preparation_top_bar_title,
-            onBack = onBack,
             formState =
             AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
-                onDiscard = { openDiscardDialog = true },
                 onConfirm = onNext
             )
         )
     )
-
-    if (openDiscardDialog) {
-        DiscardDialog(
-            onConfirm = {
-                onDiscard()
-                openDiscardDialog = false
-                onBack()
-            },
-            onDismiss = {
-                openDiscardDialog = false
-            }
-        )
-    }
 
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
