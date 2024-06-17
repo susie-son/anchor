@@ -11,7 +11,11 @@ import com.susieson.anchor.R
 import com.susieson.anchor.ui.theme.AnchorTheme
 
 @Composable
-fun DiscardDialog(onConfirm: () -> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+fun DiscardConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     AlertDialog(
         text = { Text(stringResource(R.string.discard_dialog_text)) },
         onDismissRequest = onDismiss,
@@ -31,9 +35,9 @@ fun DiscardDialog(onConfirm: () -> Unit, onDismiss: () -> Unit, modifier: Modifi
 
 @Preview(showBackground = true)
 @Composable
-fun DiscardDialogPreview() {
+fun DiscardConfirmationDialogPreview() {
     AnchorTheme {
-        DiscardDialog(
+        DiscardConfirmationDialog(
             onConfirm = {},
             onDismiss = {}
         )

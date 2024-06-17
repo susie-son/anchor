@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -13,9 +14,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
-import com.susieson.anchor.ui.components.DiscardDialog
+import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormTextField
 import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
@@ -40,12 +42,11 @@ fun PreparationForm(
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
     onDiscard: () -> Unit,
-    onBack: () -> Unit,
-    onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    onSubmit: () -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDiscardDialog by remember { mutableStateOf(false) }
+    var showDiscardConfirmation by remember { mutableStateOf(false) }
 
     val isValid =
         title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
@@ -54,32 +55,23 @@ fun PreparationForm(
         title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
             interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.preparation_top_bar_title,
-            onBack = onBack,
-            formState =
-            AnchorFormState(
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState(R.string.preparation_top_bar_title),
+            formState = AnchorFormState(
                 isValid = isValid,
-                isEmpty = isEmpty,
-                onDiscard = { openDiscardDialog = true },
-                onConfirm = onNext
-            )
+                onDiscard = {
+                    if (isEmpty) {
+                        onDiscard()
+                    } else {
+                        showDiscardConfirmation = true
+                    }
+                },
+                onSubmit = onSubmit
+            ),
+            canNavigateUp = true
         )
     )
-
-    if (openDiscardDialog) {
-        DiscardDialog(
-            onConfirm = {
-                onDiscard()
-                openDiscardDialog = false
-                onBack()
-            },
-            onDismiss = {
-                openDiscardDialog = false
-            }
-        )
-    }
 
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
@@ -110,6 +102,24 @@ fun PreparationForm(
             modifier = modifier,
             bringIntoViewRequester = bringIntoViewRequester
         )
+    }
+
+    if (showDiscardConfirmation) {
+        DiscardConfirmationDialog(
+            onDismiss = { showDiscardConfirmation = false },
+            onConfirm = {
+                showDiscardConfirmation = false
+                onDiscard()
+            }
+        )
+    }
+
+    BackHandler {
+        if (isEmpty) {
+            onDiscard()
+        } else {
+            showDiscardConfirmation = true
+        }
     }
 }
 

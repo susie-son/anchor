@@ -17,6 +17,7 @@ import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.CommaSeparatedListSummaryItem
 import com.susieson.anchor.ui.components.LineSeparatedListSummaryItem
@@ -28,14 +29,13 @@ import java.text.DateFormat
 @Composable
 fun ExposureSummary(
     exposure: Exposure,
-    onBack: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.summary_top_bar_title,
-            onBack = onBack
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState(R.string.summary_top_bar_title),
+            canNavigateUp = true
         )
     )
 

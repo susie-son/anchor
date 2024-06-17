@@ -25,7 +25,7 @@ constructor(
     private val notificationService: NotificationService
 ) : ViewModel() {
 
-    fun getExposure(userId: String, exposureId: String): Flow<Exposure> {
+    fun getExposure(userId: String, exposureId: String): Flow<Exposure?> {
         return storageService.getExposure(userId, exposureId)
     }
 

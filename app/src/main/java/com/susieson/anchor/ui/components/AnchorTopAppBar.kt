@@ -13,62 +13,57 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScreenState
 
 data class AnchorTopAppBarState(
     @StringRes
-    val title: Int,
-    val formState: AnchorFormState? = null,
-    val onBack: (() -> Unit)? = null,
-    val onAction: (() -> Unit)? = null
+    val title: Int
 ) {
     companion object {
         val Default =
             AnchorTopAppBarState(
-                title = R.string.app_name,
-                formState = null,
-                onBack = null,
-                onAction = null
+                title = R.string.app_name
             )
     }
 }
 
-data class AnchorFormState(
-    val isEmpty: Boolean,
-    val onDiscard: () -> Unit,
-    val isValid: Boolean,
-    val onConfirm: () -> Unit
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnchorTopAppBar(state: AnchorTopAppBarState, modifier: Modifier = Modifier) {
+fun AnchorTopAppBar(
+    state: AnchorScreenState,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     CenterAlignedTopAppBar(
-        title = { Text(stringResource(state.title)) },
+        title = { Text(stringResource(state.topAppBarState.title)) },
         navigationIcon = {
-            state.onBack?.let {
-                if (state.formState == null) {
-                    IconButton(onClick = it) {
+            if (state.canNavigateUp) {
+                when (state.formState) {
+                    null -> IconButton(onClick = navController::navigateUp) {
                         Icon(
                             Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = stringResource(R.string.content_description_back)
                         )
                     }
-                } else {
-                    val (isEmpty, onDiscard) = state.formState
-                    IconButton(onClick = { if (isEmpty) it() else onDiscard() }) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.content_description_close)
-                        )
+                    else -> {
+                        IconButton(onClick = state.formState.onDiscard) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(
+                                    R.string.content_description_close
+                                )
+                            )
+                        }
                     }
                 }
             }
         },
         actions = {
             if (state.formState != null) {
-                val (_, _, isValid, onConfirm) = state.formState
-                IconButton(onClick = onConfirm, enabled = isValid) {
+                val (isValid, onSubmit) = state.formState
+                IconButton(onClick = onSubmit, enabled = isValid) {
                     Icon(
                         Icons.Default.Done,
                         contentDescription = stringResource(R.string.content_description_done)

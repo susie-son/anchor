@@ -17,7 +17,7 @@ import kotlinx.coroutines.tasks.await
 
 interface StorageService {
 
-    fun getExposure(userId: String, exposureId: String): Flow<Exposure>
+    fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
 
     suspend fun addExposure(userId: String): String
 
@@ -62,7 +62,7 @@ constructor(
         return document.id
     }
 
-    override fun getExposure(userId: String, exposureId: String): Flow<Exposure> = callbackFlow {
+    override fun getExposure(userId: String, exposureId: String): Flow<Exposure?> = callbackFlow {
         val listener = exposureDocumentRef(
             userId,
             exposureId
@@ -72,7 +72,7 @@ constructor(
                 return@addSnapshotListener
             }
             if (value != null) {
-                trySend(value.toObject(Exposure::class.java)!!)
+                trySend(value.toObject(Exposure::class.java))
             }
         }
         awaitClose { listener.remove() }

@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -13,9 +14,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
-import com.susieson.anchor.ui.components.DiscardDialog
+import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormRatingItem
 import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormSelectFilterItem
@@ -57,12 +59,12 @@ fun ReviewForm(
     removeThought: (String) -> Unit,
     removeSensation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
-    onBack: () -> Unit,
-    onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    onDiscard: () -> Unit,
+    onSubmit: () -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDiscardDialog by remember { mutableStateOf(false) }
+    var showDiscardConfirmation by remember { mutableStateOf(false) }
 
     val emotionsFilters =
         mapOf(
@@ -95,32 +97,21 @@ fun ReviewForm(
             engagingRating == 0f &&
             learnings.isEmpty()
 
-    if (openDiscardDialog) {
-        DiscardDialog(
-            onConfirm = {
-                openDiscardDialog = false
-                onBack()
-            },
-            onDismiss = {
-                openDiscardDialog = false
-            }
-        )
-    }
-
-    setTopAppBar(
-        AnchorTopAppBarState(
-            title = R.string.review_top_bar_title,
-            onBack = onBack,
-            formState =
-            AnchorFormState(
+    setScreenState(
+        AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState(R.string.review_top_bar_title),
+            formState = AnchorFormState(
                 isValid = isValid,
-                isEmpty = isEmpty,
-                onDiscard = { openDiscardDialog = true },
-                onConfirm = {
-                    onNext()
-                    onBack()
-                }
-            )
+                onDiscard = {
+                    if (isEmpty) {
+                        onDiscard()
+                    } else {
+                        showDiscardConfirmation = true
+                    }
+                },
+                onSubmit = onSubmit
+            ),
+            canNavigateUp = true
         )
     )
 
@@ -239,5 +230,23 @@ fun ReviewForm(
                 )
             }
         )
+    }
+
+    if (showDiscardConfirmation) {
+        DiscardConfirmationDialog(
+            onDismiss = { showDiscardConfirmation = false },
+            onConfirm = {
+                showDiscardConfirmation = false
+                onDiscard()
+            }
+        )
+    }
+
+    BackHandler {
+        if (isEmpty) {
+            onDiscard()
+        } else {
+            showDiscardConfirmation = true
+        }
     }
 }

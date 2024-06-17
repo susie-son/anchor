@@ -1,4 +1,4 @@
-package com.susieson.anchor
+package com.susieson.anchor.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.susieson.anchor.model.AnchorUser
+import com.susieson.anchor.ui.components.AnchorFabState
+import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
@@ -19,10 +21,23 @@ object ExposuresNav
 @Serializable
 data class ExposureNav(val exposureId: String)
 
+data class AnchorScreenState(
+    val topAppBarState: AnchorTopAppBarState,
+    val fabState: AnchorFabState? = null,
+    val formState: AnchorFormState? = null,
+    val canNavigateUp: Boolean = false
+) {
+    companion object {
+        val Default = AnchorScreenState(
+            topAppBarState = AnchorTopAppBarState.Default
+        )
+    }
+}
+
 @Composable
 fun AnchorNavHost(
     user: AnchorUser?,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -37,7 +52,7 @@ fun AnchorNavHost(
                 onItemSelect = { exposureId ->
                     navController.navigate(ExposureNav(exposureId))
                 },
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -53,8 +68,8 @@ fun AnchorNavHost(
             ExposureScreen(
                 userId = userId,
                 exposureId = nav.exposureId,
-                onBack = navController::popBackStack,
-                setTopAppBar = setTopAppBar,
+                onDiscard = navController::navigateUp,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }

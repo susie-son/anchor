@@ -6,15 +6,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.Loading
 
 @Composable
 fun ExposureScreen(
     userId: String,
     exposureId: String,
-    onBack: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
+    onDiscard: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel()
 ) {
@@ -28,22 +28,22 @@ fun ExposureScreen(
         Status.DRAFT -> {
             PreparationScreenContent(
                 viewModel = viewModel,
-                onDiscard = { viewModel.deleteExposure(userId, exposure!!.id) },
-                onBack = onBack,
-                onNext = { viewModel.addPreparation(userId, exposure!!.id) },
-                setTopAppBar = setTopAppBar,
+                onDiscard = {
+                    onDiscard()
+                    viewModel.deleteExposure(userId, exposure!!.id)
+                },
+                onSubmit = { viewModel.addPreparation(userId, exposure!!.id) },
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
 
         Status.READY -> {
             ExposureReady(
-                onBack = onBack,
                 onNext = {
                     viewModel.markAsInProgress(userId, exposure!!.id)
-                    onBack()
                 },
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -51,9 +51,9 @@ fun ExposureScreen(
         Status.IN_PROGRESS -> {
             ReviewScreenContent(
                 viewModel = viewModel,
-                onBack = onBack,
-                onNext = { viewModel.addReview(userId, exposure!!.id) },
-                setTopAppBar = setTopAppBar,
+                onDiscard = onDiscard,
+                onSubmit = { viewModel.addReview(userId, exposure!!.id) },
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -61,8 +61,7 @@ fun ExposureScreen(
         Status.COMPLETED -> {
             ExposureSummary(
                 exposure = exposure!!,
-                onBack = onBack,
-                setTopAppBar = setTopAppBar,
+                setScreenState = setScreenState,
                 modifier = modifier
             )
         }
@@ -73,9 +72,8 @@ fun ExposureScreen(
 private fun PreparationScreenContent(
     viewModel: ExposureViewModel,
     onDiscard: () -> Unit,
-    onBack: () -> Unit,
-    onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    onSubmit: () -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title by viewModel.title
@@ -103,9 +101,8 @@ private fun PreparationScreenContent(
         removeBehavior = viewModel::removePreparationBehavior,
         removeAction = viewModel::removePreparationAction,
         onDiscard = onDiscard,
-        onBack = onBack,
-        onNext = onNext,
-        setTopAppBar = setTopAppBar,
+        onSubmit = onSubmit,
+        setScreenState = setScreenState,
         modifier = modifier
     )
 }
@@ -113,9 +110,9 @@ private fun PreparationScreenContent(
 @Composable
 private fun ReviewScreenContent(
     viewModel: ExposureViewModel,
-    onBack: () -> Unit,
-    onNext: () -> Unit,
-    setTopAppBar: (AnchorTopAppBarState) -> Unit,
+    onDiscard: () -> Unit,
+    onSubmit: () -> Unit,
+    setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val fear by viewModel.fear
@@ -168,9 +165,9 @@ private fun ReviewScreenContent(
         removeThought = viewModel::removeReviewThought,
         removeSensation = viewModel::removeReviewSensation,
         removeBehavior = viewModel::removeReviewBehavior,
-        onBack = onBack,
-        onNext = onNext,
-        setTopAppBar = setTopAppBar,
+        onDiscard = onDiscard,
+        onSubmit = onSubmit,
+        setScreenState = setScreenState,
         modifier = modifier
     )
 }
