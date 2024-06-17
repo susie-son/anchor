@@ -54,7 +54,7 @@ fun ReviewForm(
     removeThought: (String) -> Unit,
     removeSensation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
-    onNext: () -> Unit,
+    onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -95,7 +95,9 @@ fun ReviewForm(
             formState = AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
-            )
+                onSubmit = onSubmit
+            ),
+            canNavigateUp = true,
         )
     )
 

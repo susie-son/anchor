@@ -47,6 +47,12 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
 import kotlinx.coroutines.launch
 
+data class AnchorFormState(
+    val isValid: Boolean,
+    val onSubmit: () -> Unit,
+    val isEmpty: Boolean,
+)
+
 @Composable
 fun LabeledFormSection(
     @StringRes

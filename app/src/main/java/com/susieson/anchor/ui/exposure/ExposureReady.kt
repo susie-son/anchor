@@ -55,7 +55,8 @@ fun ExposureReady(
 
     setScreenState(
         AnchorScreenState(
-            topAppBarState = AnchorTopAppBarState(R.string.ready_top_bar_title)
+            topAppBarState = AnchorTopAppBarState(R.string.ready_top_bar_title),
+            canNavigateUp = true,
         )
     )
 

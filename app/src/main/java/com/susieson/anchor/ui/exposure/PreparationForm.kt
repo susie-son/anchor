@@ -36,7 +36,7 @@ fun PreparationForm(
     removeInterpretation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
-    onNext: () -> Unit,
+    onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -53,7 +53,9 @@ fun PreparationForm(
             formState = AnchorFormState(
                 isValid = isValid,
                 isEmpty = isEmpty,
-            )
+                onSubmit = onSubmit
+            ),
+            canNavigateUp = true,
         )
     )
 

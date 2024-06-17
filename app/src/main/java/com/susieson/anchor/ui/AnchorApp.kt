@@ -21,7 +21,7 @@ fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
-        topBar = { AnchorTopAppBar(screenState.topAppBarState) },
+        topBar = { AnchorTopAppBar(screenState, navController) },
         floatingActionButton = { screenState.fabState?.let { AnchorFloatingActionButton(it) } }
     ) { innerPadding ->
         Box(modifier = modifier.padding(innerPadding)) {
