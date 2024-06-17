@@ -1,5 +1,3 @@
-name: Android CI
-
 on:
   push:
     branches:
@@ -28,6 +26,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    needs: setup
+
     steps:
       - name: Build project
         run: ./gradlew build
@@ -35,12 +35,16 @@ jobs:
   ktlint:
     runs-on: ubuntu-latest
 
+    needs: setup
+
     steps:
       - name: Ktlint
         run: ./gradlew ktlintCheck
 
   debug:
     runs-on: ubuntu-latest
+
+    needs: build
 
     steps:
       - name: Upload debug APK
