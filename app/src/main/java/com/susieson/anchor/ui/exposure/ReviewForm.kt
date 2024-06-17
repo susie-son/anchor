@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -77,24 +78,24 @@ fun ReviewForm(
 
     val isValid =
         emotionsFilters.values.contains(true) &&
-            thoughts.isNotEmpty() &&
-            sensations.isNotEmpty() &&
-            behaviors.isNotEmpty() &&
-            experiencingRating > 0 &&
-            anchoringRating > 0 &&
-            thinkingRating > 0 &&
-            engagingRating > 0 &&
-            learnings.isNotEmpty()
+                thoughts.isNotEmpty() &&
+                sensations.isNotEmpty() &&
+                behaviors.isNotEmpty() &&
+                experiencingRating > 0 &&
+                anchoringRating > 0 &&
+                thinkingRating > 0 &&
+                engagingRating > 0 &&
+                learnings.isNotEmpty()
     val isEmpty =
         emotionsFilters.values.all { !it } &&
-            thoughts.isEmpty() &&
-            sensations.isEmpty() &&
-            behaviors.isEmpty() &&
-            experiencingRating == 0f &&
-            anchoringRating == 0f &&
-            thinkingRating == 0f &&
-            engagingRating == 0f &&
-            learnings.isEmpty()
+                thoughts.isEmpty() &&
+                sensations.isEmpty() &&
+                behaviors.isEmpty() &&
+                experiencingRating == 0f &&
+                anchoringRating == 0f &&
+                thinkingRating == 0f &&
+                engagingRating == 0f &&
+                learnings.isEmpty()
 
     setScreenState(
         AnchorScreenState(
@@ -234,5 +235,13 @@ fun ReviewForm(
                 onDiscard()
             }
         )
+    }
+
+    BackHandler {
+        if (isEmpty) {
+            onDiscard()
+        } else {
+            showDiscardConfirmation = true
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -49,10 +50,10 @@ fun PreparationForm(
 
     val isValid =
         title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
-            interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
+                interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
     val isEmpty =
         title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
-            interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+                interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     setScreenState(
         AnchorScreenState(
@@ -106,6 +107,14 @@ fun PreparationForm(
                 onDiscard()
             }
         )
+    }
+
+    BackHandler {
+        if (isEmpty) {
+            onDiscard()
+        } else {
+            showDiscardConfirmation = true
+        }
     }
 }
 
