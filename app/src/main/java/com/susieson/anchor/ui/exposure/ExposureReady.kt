@@ -7,7 +7,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -78,14 +77,12 @@ fun ExposureReady(
             checked = checked,
             onCheckedChange = { index, value -> checked[index] = value }
         )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = modifier.padding(horizontal = 16.dp)
+        FilledTonalButton(
+            onClick = onNext,
+            enabled = checked.all { it },
+            modifier = Modifier.padding(16.dp).fillMaxWidth()
         ) {
-            FilledTonalButton(
-                onClick = onNext,
-                enabled = checked.all { it }
-            ) { Text(stringResource(R.string.ready_confirm_button)) }
+            Text(stringResource(R.string.ready_confirm_button))
         }
     }
 }
