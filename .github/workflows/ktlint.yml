@@ -1,0 +1,15 @@
+name: Ktlint
+
+on:
+  workflow_run:
+    workflows: ["Setup"]
+    types:
+      - completed
+
+jobs:
+  ktlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ktlint
+        run: ./gradlew ktlintCheck
