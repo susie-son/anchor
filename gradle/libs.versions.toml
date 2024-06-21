@@ -1,6 +1,6 @@
 [versions]
 accompanistPermissions = "0.35.1-alpha"
-agp = "8.4.2"
+agp = "8.5.0"
 coreSplashscreen = "1.0.1"
 firebaseBom = "33.1.0"
 hilt = "2.51.1"
