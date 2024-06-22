@@ -6,15 +6,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.AnchorScreenState
+import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.Loading
 
 @Composable
 fun ExposureScreen(
     userId: String,
     exposureId: String,
-    setScreenState: (AnchorScreenState) -> Unit,
-    onDiscard: () -> Unit,
+    setScaffold: (AnchorScaffold) -> Unit,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel()
 ) {
@@ -31,10 +31,10 @@ fun ExposureScreen(
                 exposureId = exposureId,
                 viewModel = viewModel,
                 onDiscard = {
-                    onDiscard()
+                    onNavigateUp()
                     viewModel.deleteExposure(userId, exposure!!.id)
                 },
-                setScreenState = setScreenState,
+                setScaffold = setScaffold,
                 modifier = modifier
             )
         }
@@ -45,7 +45,8 @@ fun ExposureScreen(
                 exposureId = exposureId,
                 title = exposure!!.title,
                 viewModel = viewModel,
-                setScreenState = setScreenState,
+                onNavigateUp = onNavigateUp,
+                setScaffold = setScaffold,
                 modifier = modifier
             )
         }
@@ -55,8 +56,8 @@ fun ExposureScreen(
                 userId = userId,
                 exposureId = exposureId,
                 viewModel = viewModel,
-                onDiscard = onDiscard,
-                setScreenState = setScreenState,
+                onDiscard = onNavigateUp,
+                setScaffold = setScaffold,
                 modifier = modifier
             )
         }
@@ -64,7 +65,8 @@ fun ExposureScreen(
         Status.COMPLETED -> {
             ExposureSummary(
                 exposure = exposure!!,
-                setScreenState = setScreenState,
+                onNavigateUp = onNavigateUp,
+                setScaffold = setScaffold,
                 modifier = modifier
             )
         }

@@ -17,21 +17,27 @@ import com.susieson.anchor.ui.components.AnchorTopAppBar
 
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
-    var screenState by remember { mutableStateOf(AnchorScreenState.Default) }
+    var scaffold by remember { mutableStateOf(AnchorScaffold.Default) }
     val navController = rememberNavController()
 
     val user by viewModel.user.collectAsState(null)
 
     Scaffold(
         modifier = modifier,
-        topBar = { AnchorTopAppBar(screenState, navController) },
-        floatingActionButton = { screenState.fabState?.let { AnchorFloatingActionButton(it) } }
+        topBar = { AnchorTopAppBar(scaffold.topAppBar) },
+        floatingActionButton = {
+            scaffold.floatingActionButton?.let {
+                AnchorFloatingActionButton(
+                    it
+                )
+            }
+        }
     ) { innerPadding ->
         Box(modifier = modifier.padding(innerPadding)) {
             AnchorNavHost(
                 user = user,
                 navController = navController,
-                setScreenState = { screenState = it },
+                setScaffold = { scaffold = it },
                 modifier = modifier
             )
         }

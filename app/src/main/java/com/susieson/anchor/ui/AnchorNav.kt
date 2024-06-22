@@ -8,9 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.susieson.anchor.model.AnchorUser
-import com.susieson.anchor.ui.components.AnchorFabState
-import com.susieson.anchor.ui.components.AnchorFormState
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.components.AnchorFloatingActionButton
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.login.LoginScreen
@@ -22,23 +21,19 @@ object ExposuresNav
 @Serializable
 data class ExposureNav(val exposureId: String)
 
-data class AnchorScreenState(
-    val topAppBarState: AnchorTopAppBarState,
-    val fabState: AnchorFabState? = null,
-    val formState: AnchorFormState? = null,
-    val canNavigateUp: Boolean = false
+data class AnchorScaffold(
+    val topAppBar: AnchorTopAppBar,
+    val floatingActionButton: AnchorFloatingActionButton? = null
 ) {
     companion object {
-        val Default = AnchorScreenState(
-            topAppBarState = AnchorTopAppBarState.Default
-        )
+        val Default = AnchorScaffold(AnchorTopAppBar.Default)
     }
 }
 
 @Composable
 fun AnchorNavHost(
     user: AnchorUser?,
-    setScreenState: (AnchorScreenState) -> Unit,
+    setScaffold: (AnchorScaffold) -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -57,7 +52,7 @@ fun AnchorNavHost(
                 onItemSelect = { exposureId ->
                     navController.navigate(ExposureNav(exposureId))
                 },
-                setScreenState = setScreenState,
+                setScaffold = setScaffold,
                 modifier = modifier
             )
         }
@@ -73,8 +68,8 @@ fun AnchorNavHost(
             ExposureScreen(
                 userId = userId,
                 exposureId = nav.exposureId,
-                onDiscard = navController::navigateUp,
-                setScreenState = setScreenState,
+                onNavigateUp = navController::navigateUp,
+                setScaffold = setScaffold,
                 modifier = modifier
             )
         }

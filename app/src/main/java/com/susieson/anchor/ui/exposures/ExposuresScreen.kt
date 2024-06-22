@@ -29,9 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.AnchorScreenState
-import com.susieson.anchor.ui.components.AnchorFabState
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScaffold
+import com.susieson.anchor.ui.components.AnchorFloatingActionButton
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
 import java.text.DateFormat
 import kotlinx.coroutines.delay
@@ -43,16 +43,16 @@ fun ExposuresScreen(
     userId: String,
     modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
-    setScreenState: (AnchorScreenState) -> Unit,
+    setScaffold: (AnchorScaffold) -> Unit,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
     val exposureId by viewModel.exposureId.collectAsState()
     val exposures by viewModel.exposures.collectAsState()
 
-    setScreenState(
-        AnchorScreenState(
-            topAppBarState = AnchorTopAppBarState.Default,
-            fabState = AnchorFabState(
+    setScaffold(
+        AnchorScaffold(
+            topAppBar = AnchorTopAppBar.Default,
+            floatingActionButton = AnchorFloatingActionButton(
                 text = R.string.exposures_start_button,
                 icon = Icons.Default.Add,
                 onClick = { viewModel.addExposure(userId) }
