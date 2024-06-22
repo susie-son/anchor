@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val mainViewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +26,11 @@ class MainActivity : ComponentActivity() {
             object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     // Check whether the initial data is ready.
-                    return if (mainViewModel.isReady) {
+                    return if (viewModel.isReady) {
                         setContent {
                             AnchorTheme {
                                 AnchorApp(
-                                    viewModel = mainViewModel,
+                                    viewModel = viewModel,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }

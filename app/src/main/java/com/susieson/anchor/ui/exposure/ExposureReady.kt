@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
@@ -33,8 +35,9 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.AnchorScreenState
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScaffold
+import com.susieson.anchor.ui.components.AnchorIconButton
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -43,7 +46,8 @@ fun ExposureReady(
     exposureId: String,
     title: String,
     viewModel: ExposureViewModel,
-    setScreenState: (AnchorScreenState) -> Unit,
+    onNavigateUp: () -> Unit,
+    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val checked = remember { mutableStateListOf(false, false) }
@@ -55,10 +59,16 @@ fun ExposureReady(
             null
         }
 
-    setScreenState(
-        AnchorScreenState(
-            topAppBarState = AnchorTopAppBarState(R.string.ready_top_bar_title),
-            canNavigateUp = true
+    setScaffold(
+        AnchorScaffold(
+            topAppBar = AnchorTopAppBar(
+                title = R.string.ready_top_bar_title,
+                navigationIcon = AnchorIconButton(
+                    onClick = onNavigateUp,
+                    icon = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = R.string.content_description_back
+                )
+            )
         )
     )
 

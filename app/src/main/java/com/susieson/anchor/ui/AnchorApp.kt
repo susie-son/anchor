@@ -10,28 +10,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
 import com.susieson.anchor.MainViewModel
 import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 
+data class AnchorScaffold(
+    val topAppBar: AnchorTopAppBar,
+    val floatingActionButton: AnchorFloatingActionButton? = null
+) {
+    companion object {
+        val Default = AnchorScaffold(AnchorTopAppBar.Default)
+    }
+}
+
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
-    var screenState by remember { mutableStateOf(AnchorScreenState.Default) }
-    val navController = rememberNavController()
+    var scaffold by remember { mutableStateOf(AnchorScaffold.Default) }
 
     val user by viewModel.user.collectAsState(null)
 
     Scaffold(
         modifier = modifier,
-        topBar = { AnchorTopAppBar(screenState, navController) },
-        floatingActionButton = { screenState.fabState?.let { AnchorFloatingActionButton(it) } }
+        topBar = { AnchorTopAppBar(scaffold.topAppBar) },
+        floatingActionButton = {
+            scaffold.floatingActionButton?.let {
+                AnchorFloatingActionButton(
+                    it
+                )
+            }
+        }
     ) { innerPadding ->
         Box(modifier = modifier.padding(innerPadding)) {
             AnchorNavHost(
                 user = user,
-                navController = navController,
-                setScreenState = { screenState = it },
+                setScaffold = { scaffold = it },
                 modifier = modifier
             )
         }

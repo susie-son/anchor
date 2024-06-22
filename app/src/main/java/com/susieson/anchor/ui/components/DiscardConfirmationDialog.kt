@@ -27,7 +27,7 @@ fun DiscardConfirmationDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss
-            ) { Text(stringResource(R.string.discard_dialog_dismiss)) }
+            ) { Text(stringResource(R.string.dialog_dismiss)) }
         },
         modifier = modifier
     )

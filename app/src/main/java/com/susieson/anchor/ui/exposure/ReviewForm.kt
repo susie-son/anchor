@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -16,9 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.AnchorScreenState
-import com.susieson.anchor.ui.components.AnchorFormState
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScaffold
+import com.susieson.anchor.ui.components.AnchorIconButton
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormRatingItem
 import com.susieson.anchor.ui.components.FormSection
@@ -34,7 +37,7 @@ fun ReviewForm(
     exposureId: String,
     viewModel: ExposureViewModel,
     onDiscard: () -> Unit,
-    setScreenState: (AnchorScreenState) -> Unit,
+    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var fear by remember { mutableStateOf(false) }
@@ -88,40 +91,49 @@ fun ReviewForm(
             engagingRating == 0f &&
             learnings.isEmpty()
 
-    setScreenState(
-        AnchorScreenState(
-            topAppBarState = AnchorTopAppBarState(R.string.review_top_bar_title),
-            formState = AnchorFormState(
-                isValid = isValid,
-                onDiscard = {
-                    if (isEmpty) {
-                        onDiscard()
-                    } else {
-                        showDiscardConfirmation = true
-                    }
-                },
-                onSubmit = {
-                    viewModel.addReview(
-                        userId,
-                        exposureId,
-                        fear,
-                        sadness,
-                        anxiety,
-                        guilt,
-                        shame,
-                        happiness,
-                        thoughts,
-                        sensations,
-                        behaviors,
-                        experiencingRating,
-                        anchoringRating,
-                        thinkingRating,
-                        engagingRating,
-                        learnings
+    setScaffold(
+        AnchorScaffold(
+            topAppBar = AnchorTopAppBar(
+                title = R.string.review_top_bar_title,
+                navigationIcon = AnchorIconButton(
+                    onClick = {
+                        if (isEmpty) {
+                            onDiscard()
+                        } else {
+                            showDiscardConfirmation = true
+                        }
+                    },
+                    icon = Icons.Default.Close,
+                    contentDescription = R.string.content_description_close
+                ),
+                actions = listOf(
+                    AnchorIconButton(
+                        onClick = {
+                            viewModel.addReview(
+                                userId,
+                                exposureId,
+                                fear,
+                                sadness,
+                                anxiety,
+                                guilt,
+                                shame,
+                                happiness,
+                                thoughts,
+                                sensations,
+                                behaviors,
+                                experiencingRating,
+                                anchoringRating,
+                                thinkingRating,
+                                engagingRating,
+                                learnings
+                            )
+                        },
+                        icon = Icons.Default.Done,
+                        contentDescription = R.string.content_description_done,
+                        enabled = isValid
                     )
-                }
-            ),
-            canNavigateUp = true
+                )
+            )
         )
     )
 

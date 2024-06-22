@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -17,8 +19,9 @@ import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
-import com.susieson.anchor.ui.AnchorScreenState
-import com.susieson.anchor.ui.components.AnchorTopAppBarState
+import com.susieson.anchor.ui.AnchorScaffold
+import com.susieson.anchor.ui.components.AnchorIconButton
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.CommaSeparatedListSummaryItem
 import com.susieson.anchor.ui.components.LineSeparatedListSummaryItem
 import com.susieson.anchor.ui.components.RatingSummaryItem
@@ -29,13 +32,20 @@ import java.text.DateFormat
 @Composable
 fun ExposureSummary(
     exposure: Exposure,
-    setScreenState: (AnchorScreenState) -> Unit,
+    onNavigateUp: () -> Unit,
+    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    setScreenState(
-        AnchorScreenState(
-            topAppBarState = AnchorTopAppBarState(R.string.summary_top_bar_title),
-            canNavigateUp = true
+    setScaffold(
+        AnchorScaffold(
+            topAppBar = AnchorTopAppBar(
+                title = R.string.summary_top_bar_title,
+                navigationIcon = AnchorIconButton(
+                    onClick = onNavigateUp,
+                    icon = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = R.string.content_description_back
+                )
+            )
         )
     )
 

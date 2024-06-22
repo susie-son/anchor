@@ -16,7 +16,7 @@
     <string name="preparation_actions_body">Identify other behaviors that will allow you to fully engage with the emotions brought up by the exposure.</string>
     <string name="discard_dialog_text">Are you sure you want to discard?</string>
     <string name="discard_dialog_confirm">Discard</string>
-    <string name="discard_dialog_dismiss">Cancel</string>
+    <string name="dialog_dismiss">Cancel</string>
     <string name="preparation_title_error">Please enter a title.</string>
     <string name="preparation_description_error">Please enter a description.</string>
     <string name="review_top_bar_title">Review</string>
@@ -64,4 +64,19 @@
     <string name="review_thoughts_body">List the thoughts you encountered while completing this exposure.</string>
     <string name="review_sensations_body">List the physical sensations you experienced while completing this exposure.</string>
     <string name="review_behaviors_body">List the behaviors you exhibited while completing this exposure.</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_email_error">Please enter a valid email address.</string>
+    <string name="login_password_error">Please enter a password that is at least 6 characters.</string>
+    <string name="login_button">Login</string>
+    <string name="login_create_account_button">Create account</string>
+    <string name="login_anonymous_button">Create an account later</string>
+    <string name="content_description_settings">Settings</string>
+    <string name="settings_top_bar_title">Settings</string>
+    <string name="settings_logout_button">Logout</string>
+    <string name="settings_delete_account_button">Delete account</string>
+    <string name="user_settings_email_label">You are logged in as: %s</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="re_authenticate_dialog_body">Please re-enter your credentials to perform this action.</string>
+    <string name="anonymous_settings_body">Create an account to save your progress on multiple devices.</string>
 </resources>

@@ -11,21 +11,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-data class AnchorFabState(
+data class AnchorFloatingActionButton(
     @StringRes
     val text: Int,
     val onClick: () -> Unit,
-    val icon: ImageVector
+    val icon: ImageVector,
+    @StringRes
+    val contentDescription: Int? = null
 )
 
 @Composable
-fun AnchorFloatingActionButton(state: AnchorFabState, modifier: Modifier = Modifier) {
+fun AnchorFloatingActionButton(state: AnchorFloatingActionButton, modifier: Modifier = Modifier) {
     ExtendedFloatingActionButton(
         onClick = state.onClick,
         content = {
             Icon(
                 state.icon,
-                contentDescription = null,
+                contentDescription = state.contentDescription?.let { stringResource(it) },
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(stringResource(state.text))

@@ -1,74 +1,36 @@
 package com.susieson.anchor.ui.components
 
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.AnchorScreenState
 
-data class AnchorTopAppBarState(
+data class AnchorTopAppBar(
     @StringRes
-    val title: Int
+    val title: Int,
+    val navigationIcon: AnchorIconButton? = null,
+    val actions: List<AnchorIconButton>? = null
 ) {
     companion object {
-        val Default =
-            AnchorTopAppBarState(
-                title = R.string.app_name
-            )
+        val Default = AnchorTopAppBar(R.string.app_name)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnchorTopAppBar(
-    state: AnchorScreenState,
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
+fun AnchorTopAppBar(state: AnchorTopAppBar, modifier: Modifier = Modifier) {
     CenterAlignedTopAppBar(
-        title = { Text(stringResource(state.topAppBarState.title)) },
+        title = { Text(stringResource(state.title)) },
         navigationIcon = {
-            if (state.canNavigateUp) {
-                when (state.formState) {
-                    null -> IconButton(onClick = navController::navigateUp) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.content_description_back)
-                        )
-                    }
-                    else -> {
-                        IconButton(onClick = state.formState.onDiscard) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = stringResource(
-                                    R.string.content_description_close
-                                )
-                            )
-                        }
-                    }
-                }
-            }
+            state.navigationIcon?.let { AnchorIconButton(it) }
         },
         actions = {
-            if (state.formState != null) {
-                val (isValid, onSubmit) = state.formState
-                IconButton(onClick = onSubmit, enabled = isValid) {
-                    Icon(
-                        Icons.Default.Done,
-                        contentDescription = stringResource(R.string.content_description_done)
-                    )
-                }
+            state.actions?.forEach {
+                AnchorIconButton(it)
             }
         },
         modifier = modifier
