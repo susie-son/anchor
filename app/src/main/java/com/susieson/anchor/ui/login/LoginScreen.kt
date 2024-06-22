@@ -34,7 +34,7 @@ fun LoginScreen(
     setScaffold(AnchorScaffold.Default)
 
     Column(
-        modifier = modifier.padding(32.dp),
+        modifier = modifier.padding(32.dp)
     ) {
         LoginForm(
             email = email,
@@ -46,7 +46,7 @@ fun LoginScreen(
             onPasswordVisibleChange = { passwordVisible = !passwordVisible },
             onSubmit = { viewModel.login(email, password) },
             submitButtonText = R.string.login_button,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         )
         OutlinedButton(
             onClick = viewModel::createAnonymousAccount,

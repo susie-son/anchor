@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseUser
 data class AnchorUser(
     val id: String,
     val isAnonymous: Boolean,
-    val email: String? = null,
+    val email: String? = null
 )
 
 fun FirebaseUser?.toAnchorUser(): AnchorUser? {
@@ -13,6 +13,6 @@ fun FirebaseUser?.toAnchorUser(): AnchorUser? {
     return AnchorUser(
         id = uid,
         isAnonymous = isAnonymous,
-        email = email,
+        email = email
     )
 }

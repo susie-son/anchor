@@ -35,10 +35,10 @@ import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
+import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
-import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
@@ -59,7 +59,7 @@ fun ExposuresScreen(
                     AnchorIconButton(
                         onClick = onSettings,
                         icon = Icons.Default.Settings,
-                        contentDescription = R.string.content_description_settings,
+                        contentDescription = R.string.content_description_settings
                     )
                 )
             ),
@@ -67,7 +67,7 @@ fun ExposuresScreen(
                 text = R.string.exposures_start_button,
                 icon = Icons.Default.Add,
                 onClick = { viewModel.addExposure(userId) }
-            ),
+            )
         )
     )
 

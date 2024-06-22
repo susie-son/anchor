@@ -35,7 +35,7 @@ fun SettingsScreen(
     onNavigateUp: () -> Unit,
     setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = hiltViewModel(),
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val error by viewModel.error.collectAsState()
 
@@ -92,15 +92,18 @@ fun AnonymousSettings(
     error: String?,
     onLinkAccount: (String, String) -> Unit,
     onDeleteAccount: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         Card {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 Text(stringResource(R.string.anonymous_settings_body))
                 LoginForm(
                     email = email,
@@ -133,7 +136,7 @@ fun UserSettings(
     onAuthenticate: (String, String, () -> Unit) -> Unit,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var showAuthenticateDialog by remember { mutableStateOf(false) }
     var sensitiveAction by remember { mutableStateOf({}) }

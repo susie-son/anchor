@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,17 +23,18 @@ fun AuthenticateDialog(
     error: String?,
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = modifier,
+            modifier = modifier
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(stringResource(R.string.re_authenticate_dialog_body))
                 LoginForm(
@@ -40,6 +42,7 @@ fun AuthenticateDialog(
                     password = password,
                     passwordVisible = passwordVisible,
                     error = error,
+                    emailEnabled = false,
                     onEmailChange = {},
                     onPasswordChange = { password = it },
                     onPasswordVisibleChange = { passwordVisible = !passwordVisible },

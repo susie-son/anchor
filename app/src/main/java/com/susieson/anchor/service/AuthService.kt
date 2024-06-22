@@ -4,11 +4,11 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.susieson.anchor.model.AnchorUser
 import com.susieson.anchor.model.toAnchorUser
+import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 interface AuthService {
     val user: Flow<AnchorUser?>
