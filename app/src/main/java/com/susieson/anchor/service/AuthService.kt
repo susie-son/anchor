@@ -14,10 +14,10 @@ interface AuthService {
     val user: Flow<AnchorUser?>
     suspend fun createAnonymousAccount()
     suspend fun authenticate(email: String, password: String)
-    suspend fun createAccount(email: String, password: String)
     suspend fun signOut()
     suspend fun deleteAccount()
-    suspend fun reauthenticate(email: String, password: String)
+    suspend fun reAuthenticate(email: String, password: String)
+    suspend fun linkAccount(email: String, password: String)
 }
 
 class AuthServiceImpl
@@ -39,10 +39,6 @@ constructor(private val auth: FirebaseAuth) : AuthService {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
-    override suspend fun createAccount(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password).await()
-    }
-
     override suspend fun signOut() {
         auth.signOut()
     }
@@ -51,8 +47,13 @@ constructor(private val auth: FirebaseAuth) : AuthService {
         auth.currentUser!!.delete().await()
     }
 
-    override suspend fun reauthenticate(email: String, password: String) {
+    override suspend fun reAuthenticate(email: String, password: String) {
         val credential = EmailAuthProvider.getCredential(email, password)
         auth.currentUser!!.reauthenticate(credential).await()
+    }
+
+    override suspend fun linkAccount(email: String, password: String) {
+        val credential = EmailAuthProvider.getCredential(email, password)
+        auth.currentUser!!.linkWithCredential(credential).await()
     }
 }

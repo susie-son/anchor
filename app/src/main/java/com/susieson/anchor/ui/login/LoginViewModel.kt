@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val authService: AuthService) : ViewModel() {
@@ -31,17 +31,6 @@ class LoginViewModel @Inject constructor(private val authService: AuthService) :
             _error.value = null
             try {
                 authService.authenticate(email, password)
-            } catch (e: Exception) {
-                _error.value = e.message
-            }
-        }
-    }
-
-    fun createAccount(email: String, password: String) {
-        viewModelScope.launch {
-            _error.value = null
-            try {
-                authService.createAccount(email, password)
             } catch (e: Exception) {
                 _error.value = e.message
             }

@@ -16,9 +16,6 @@ class SettingsViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val _actionComplete = MutableStateFlow(false)
-    val actionComplete: StateFlow<Boolean> = _actionComplete
-
     val user = authService.user
 
     fun logout() {
@@ -33,20 +30,26 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun reauthenticate(email: String, password: String, action: () -> Unit) {
+    fun reAuthenticate(email: String, password: String, action: () -> Unit) {
         viewModelScope.launch {
             _error.value = null
             try {
-                authService.reauthenticate(email, password)
+                authService.reAuthenticate(email, password)
                 action()
-                _actionComplete.value = true
             } catch (e: Exception) {
                 _error.value = e.message
             }
         }
     }
 
-    fun onActionComplete() {
-        _actionComplete.value = false
+    fun linkAccount(email: String, password: String) {
+        viewModelScope.launch {
+            _error.value = null
+            try {
+                authService.linkAccount(email, password)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
     }
 }

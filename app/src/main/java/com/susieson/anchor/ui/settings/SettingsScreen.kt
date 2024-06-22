@@ -2,12 +2,15 @@ package com.susieson.anchor.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,6 +28,7 @@ import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
+import com.susieson.anchor.ui.components.LoginForm
 
 @Composable
 fun SettingsScreen(
@@ -34,10 +38,6 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val error by viewModel.error.collectAsState()
-    val actionComplete = viewModel.actionComplete.collectAsState()
-
-    var showAuthenticateDialog by remember { mutableStateOf(false) }
-    var sensitiveAction by remember { mutableStateOf({}) }
 
     val user by viewModel.user.collectAsState(null)
 
@@ -59,80 +59,106 @@ fun SettingsScreen(
         return
     }
 
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        when (user!!.isAnonymous) {
-            true -> AnonymousSettings(
-                onLogout = viewModel::logout,
-                onDeleteAccount = viewModel::deleteAccount,
-                modifier = modifier
-            )
-
-            false -> UserSettings(
-                email = user!!.email!!,
-                onLogout = viewModel::logout,
-                onDeleteAccount = viewModel::deleteAccount,
-                setSensitiveAction = { sensitiveAction = it },
-                setAuthenticateDialog = { showAuthenticateDialog = it },
-                modifier = modifier
-            )
-        }
-    }
-
-    if (actionComplete.value) {
-        showAuthenticateDialog = false
-        sensitiveAction = {}
-        viewModel.onActionComplete()
-    }
-
-    if (showAuthenticateDialog) {
-        AuthenticateDialog(
+    when (user!!.isAnonymous) {
+        true -> AnonymousSettings(
             error = error,
-            onDismiss = { showAuthenticateDialog = false },
-            onConfirm = { password ->
-                viewModel.reauthenticate(user!!.email!!, password, sensitiveAction)
-            }
+            onLinkAccount = viewModel::linkAccount,
+            onDeleteAccount = viewModel::deleteAccount,
+            modifier = modifier
+        )
+
+        false -> UserSettings(
+            email = user!!.email!!,
+            error = error,
+            onAuthenticate = { email: String, password: String, action: () -> Unit ->
+                viewModel.reAuthenticate(
+                    email,
+                    password,
+                    action
+                )
+            },
+            onLogout = viewModel::logout,
+            onDeleteAccount = viewModel::deleteAccount,
+            modifier = modifier
         )
     }
 }
 
 @Composable
 fun AnonymousSettings(
-    onLogout: () -> Unit,
+    error: String?,
+    onLinkAccount: (String, String) -> Unit,
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text("Anonymous Settings")
-    Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.settings_logout_button))
-    }
-    FilledTonalButton(
-        onClick = onDeleteAccount,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(stringResource(R.string.settings_delete_account_button))
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Card {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(stringResource(R.string.anonymous_settings_body))
+                LoginForm(
+                    email = email,
+                    password = password,
+                    passwordVisible = passwordVisible,
+                    error = error,
+                    onEmailChange = { email = it },
+                    onPasswordChange = { password = it },
+                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                    onSubmit = { onLinkAccount(email, password) },
+                    submitButtonText = R.string.login_create_account_button,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        OutlinedButton(
+            onClick = onDeleteAccount,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.settings_delete_account_button))
+        }
     }
 }
 
 @Composable
 fun UserSettings(
     email: String,
+    error: String?,
+    onAuthenticate: (String, String, () -> Unit) -> Unit,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
-    setSensitiveAction: (() -> Unit) -> Unit,
-    setAuthenticateDialog: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(stringResource(R.string.user_settings_email_label, email))
-    Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.settings_logout_button))
+    var showAuthenticateDialog by remember { mutableStateOf(false) }
+    var sensitiveAction by remember { mutableStateOf({}) }
+
+    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(stringResource(R.string.user_settings_email_label, email))
+        Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.settings_logout_button))
+        }
+        FilledTonalButton(
+            onClick = {
+                sensitiveAction = onDeleteAccount
+                showAuthenticateDialog = true
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.settings_delete_account_button))
+        }
     }
-    FilledTonalButton(
-        onClick = {
-            setSensitiveAction(onDeleteAccount)
-            setAuthenticateDialog(true)
-        },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(stringResource(R.string.settings_delete_account_button))
+
+    if (showAuthenticateDialog) {
+        AuthenticateDialog(
+            error = error,
+            email = email,
+            onDismiss = { showAuthenticateDialog = false },
+            onConfirm = { password ->
+                onAuthenticate(email, password, sensitiveAction)
+            }
+        )
     }
 }
