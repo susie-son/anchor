@@ -64,4 +64,11 @@
     <string name="review_thoughts_body">List the thoughts you encountered while completing this exposure.</string>
     <string name="review_sensations_body">List the physical sensations you experienced while completing this exposure.</string>
     <string name="review_behaviors_body">List the behaviors you exhibited while completing this exposure.</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_email_error">Please enter a valid email address.</string>
+    <string name="login_password_error">Please enter a password that is at least 6 characters.</string>
+    <string name="login_button">Login</string>
+    <string name="login_create_account_button">Create an account</string>
+    <string name="login_anonymous_button">Continue without an account</string>
 </resources>

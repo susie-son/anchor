@@ -13,6 +13,7 @@ import com.susieson.anchor.ui.components.AnchorFormState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
+import com.susieson.anchor.ui.login.LoginScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -41,7 +42,11 @@ fun AnchorNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val userId = user?.id ?: return // TODO: Show login screen
+    val userId = user?.id
+    if (userId == null) {
+        LoginScreen(modifier = modifier)
+        return
+    }
     NavHost(
         navController = navController,
         startDestination = ExposuresNav

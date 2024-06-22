@@ -12,6 +12,8 @@ import kotlinx.coroutines.tasks.await
 interface AuthService {
     val user: Flow<AnchorUser?>
     suspend fun createAnonymousAccount()
+    suspend fun authenticate(email: String, password: String)
+    suspend fun createAccount(email: String, password: String)
 }
 
 class AuthServiceImpl
@@ -27,5 +29,13 @@ constructor(private val auth: FirebaseAuth) : AuthService {
 
     override suspend fun createAnonymousAccount() {
         auth.signInAnonymously().await()
+    }
+
+    override suspend fun authenticate(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password).await()
+    }
+
+    override suspend fun createAccount(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password).await()
     }
 }
