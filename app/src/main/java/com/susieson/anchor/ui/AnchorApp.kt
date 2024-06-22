@@ -6,7 +6,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.susieson.anchor.MainViewModel
@@ -15,8 +17,9 @@ import com.susieson.anchor.ui.components.AnchorTopAppBar
 
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
+    var screenState by remember { mutableStateOf(AnchorScreenState.Default) }
     val navController = rememberNavController()
-    val screenState by remember { viewModel.screenState }
+
     val user by viewModel.user.collectAsState(null)
 
     Scaffold(
@@ -28,7 +31,7 @@ fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
             AnchorNavHost(
                 user = user,
                 navController = navController,
-                setScreenState = viewModel::setScreenState,
+                setScreenState = { screenState = it },
                 modifier = modifier
             )
         }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,42 +30,31 @@ import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ReviewForm(
-    fear: Boolean,
-    sadness: Boolean,
-    anxiety: Boolean,
-    guilt: Boolean,
-    shame: Boolean,
-    happiness: Boolean,
-    thoughts: List<String>,
-    sensations: List<String>,
-    behaviors: List<String>,
-    experiencingRating: Float,
-    anchoringRating: Float,
-    thinkingRating: Float,
-    engagingRating: Float,
-    learnings: String,
-    setFear: () -> Unit,
-    setSadness: () -> Unit,
-    setAnxiety: () -> Unit,
-    setGuilt: () -> Unit,
-    setShame: () -> Unit,
-    setHappiness: () -> Unit,
-    addThought: (String) -> Unit,
-    addSensation: (String) -> Unit,
-    addBehavior: (String) -> Unit,
-    setExperiencingRating: (Float) -> Unit,
-    setAnchoringRating: (Float) -> Unit,
-    setThinkingRating: (Float) -> Unit,
-    setEngagingRating: (Float) -> Unit,
-    setLearnings: (String) -> Unit,
-    removeThought: (String) -> Unit,
-    removeSensation: (String) -> Unit,
-    removeBehavior: (String) -> Unit,
+    userId: String,
+    exposureId: String,
+    viewModel: ExposureViewModel,
     onDiscard: () -> Unit,
-    onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var fear by remember { mutableStateOf(false) }
+    var sadness by remember { mutableStateOf(false) }
+    var anxiety by remember { mutableStateOf(false) }
+    var guilt by remember { mutableStateOf(false) }
+    var shame by remember { mutableStateOf(false) }
+    var happiness by remember { mutableStateOf(false) }
+
+    val thoughts = remember { mutableStateListOf<String>() }
+    val sensations = remember { mutableStateListOf<String>() }
+    val behaviors = remember { mutableStateListOf<String>() }
+
+    var experiencingRating by remember { mutableFloatStateOf(0f) }
+    var anchoringRating by remember { mutableFloatStateOf(0f) }
+    var thinkingRating by remember { mutableFloatStateOf(0f) }
+    var engagingRating by remember { mutableFloatStateOf(0f) }
+
+    var learnings by remember { mutableStateOf("") }
+
     var showDiscardConfirmation by remember { mutableStateOf(false) }
 
     val emotionsFilters =
@@ -109,7 +100,26 @@ fun ReviewForm(
                         showDiscardConfirmation = true
                     }
                 },
-                onSubmit = onSubmit
+                onSubmit = {
+                    viewModel.addReview(
+                        userId,
+                        exposureId,
+                        fear,
+                        sadness,
+                        anxiety,
+                        guilt,
+                        shame,
+                        happiness,
+                        thoughts,
+                        sensations,
+                        behaviors,
+                        experiencingRating,
+                        anchoringRating,
+                        thinkingRating,
+                        engagingRating,
+                        learnings
+                    )
+                }
             ),
             canNavigateUp = true
         )
@@ -128,12 +138,29 @@ fun ReviewForm(
                     filters = emotionsFilters,
                     onFilterChange = {
                         when (it) {
-                            R.string.review_fear_chip -> setFear()
-                            R.string.review_sadness_chip -> setSadness()
-                            R.string.review_anxiety_chip -> setAnxiety()
-                            R.string.review_guilt_chip -> setGuilt()
-                            R.string.review_shame_chip -> setShame()
-                            R.string.review_happiness_chip -> setHappiness()
+                            R.string.review_fear_chip -> {
+                                fear = !fear
+                            }
+
+                            R.string.review_sadness_chip -> {
+                                sadness = !sadness
+                            }
+
+                            R.string.review_anxiety_chip -> {
+                                anxiety = !anxiety
+                            }
+
+                            R.string.review_guilt_chip -> {
+                                guilt = !guilt
+                            }
+
+                            R.string.review_shame_chip -> {
+                                shame = !shame
+                            }
+
+                            R.string.review_happiness_chip -> {
+                                happiness = !happiness
+                            }
                         }
                     }
                 )
@@ -146,8 +173,8 @@ fun ReviewForm(
                     texts = thoughts,
                     label = R.string.review_thoughts_label,
                     descriptionLabel = R.string.review_thoughts_body,
-                    onAdd = addThought,
-                    onDelete = removeThought,
+                    onAdd = { thoughts.add(it) },
+                    onDelete = { thoughts.remove(it) },
                     modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
@@ -157,8 +184,8 @@ fun ReviewForm(
                     texts = sensations,
                     label = R.string.review_sensations_label,
                     descriptionLabel = R.string.review_sensations_body,
-                    onAdd = addSensation,
-                    onDelete = removeSensation,
+                    onAdd = { sensations.add(it) },
+                    onDelete = { sensations.remove(it) },
                     modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
@@ -168,8 +195,8 @@ fun ReviewForm(
                     texts = behaviors,
                     label = R.string.review_behaviors_label,
                     descriptionLabel = R.string.review_behaviors_body,
-                    onAdd = addBehavior,
-                    onDelete = removeBehavior,
+                    onAdd = { behaviors.add(it) },
+                    onDelete = { behaviors.remove(it) },
                     modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
@@ -183,7 +210,7 @@ fun ReviewForm(
                 FormRatingItem(
                     label = R.string.review_experiencing_label,
                     value = experiencingRating,
-                    onValueChange = setExperiencingRating,
+                    onValueChange = { experiencingRating = it },
                     modifier = modifier
                 )
             },
@@ -191,7 +218,7 @@ fun ReviewForm(
                 FormRatingItem(
                     label = R.string.review_anchoring_label,
                     value = anchoringRating,
-                    onValueChange = setAnchoringRating,
+                    onValueChange = { anchoringRating = it },
                     modifier = modifier
                 )
             },
@@ -199,7 +226,7 @@ fun ReviewForm(
                 FormRatingItem(
                     label = R.string.review_thinking_label,
                     value = thinkingRating,
-                    onValueChange = setThinkingRating,
+                    onValueChange = { thinkingRating = it },
                     modifier = modifier
                 )
             },
@@ -207,7 +234,7 @@ fun ReviewForm(
                 FormRatingItem(
                     label = R.string.review_engaging_label,
                     value = engagingRating,
-                    onValueChange = setEngagingRating,
+                    onValueChange = { engagingRating = it },
                     modifier = modifier
                 )
             }
@@ -223,7 +250,7 @@ fun ReviewForm(
                     errorLabel = R.string.review_learnings_error,
                     isError = learnings.isEmpty(),
                     imeAction = ImeAction.Done,
-                    onValueChange = setLearnings,
+                    onValueChange = { learnings = it },
                     singleLine = false,
                     modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester

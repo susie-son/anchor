@@ -46,6 +46,9 @@ fun ExposuresScreen(
     setScreenState: (AnchorScreenState) -> Unit,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
+    val exposureId by viewModel.exposureId.collectAsState()
+    val exposures by viewModel.exposures.collectAsState()
+
     setScreenState(
         AnchorScreenState(
             topAppBarState = AnchorTopAppBarState.Default,
@@ -57,14 +60,11 @@ fun ExposuresScreen(
         )
     )
 
-    val exposures by viewModel.exposures.collectAsState()
-    val exposuresList = exposures
-
     when {
-        exposuresList == null -> Loading(modifier = modifier)
-        exposuresList.isNotEmpty() -> ExposureList(
+        exposures == null -> Loading(modifier = modifier)
+        exposures!!.isNotEmpty() -> ExposureList(
             modifier = modifier,
-            exposures = exposuresList,
+            exposures = exposures!!,
             onItemClick = onItemSelect
         )
         else -> EmptyExposureList(modifier = modifier)
@@ -73,8 +73,6 @@ fun ExposuresScreen(
     LaunchedEffect(userId) {
         viewModel.getExposureList(userId)
     }
-
-    val exposureId = viewModel.exposureId
 
     DisposableEffect(exposureId) {
         onDispose {

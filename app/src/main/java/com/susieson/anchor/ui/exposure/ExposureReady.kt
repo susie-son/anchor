@@ -39,7 +39,10 @@ import com.susieson.anchor.ui.components.AnchorTopAppBarState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExposureReady(
-    onNext: () -> Unit,
+    userId: String,
+    exposureId: String,
+    title: String,
+    viewModel: ExposureViewModel,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +64,7 @@ fun ExposureReady(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
-        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
+        modifier = modifier.padding(16.dp).verticalScroll(rememberScrollState())
     ) {
         postNotificationPermission?.let {
             if (!it.status.isGranted) {
@@ -78,7 +81,7 @@ fun ExposureReady(
             onCheckedChange = { index, value -> checked[index] = value }
         )
         FilledTonalButton(
-            onClick = onNext,
+            onClick = { viewModel.markAsInProgress(userId, exposureId, title) },
             enabled = checked.all { it },
             modifier = Modifier.padding(16.dp).fillMaxWidth()
         ) {

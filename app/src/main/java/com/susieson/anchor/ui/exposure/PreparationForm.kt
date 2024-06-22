@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,27 +26,21 @@ import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PreparationForm(
-    title: String,
-    description: String,
-    thoughts: List<String>,
-    interpretations: List<String>,
-    behaviors: List<String>,
-    actions: List<String>,
-    setTitle: (String) -> Unit,
-    setDescription: (String) -> Unit,
-    addThought: (String) -> Unit,
-    addInterpretation: (String) -> Unit,
-    addBehavior: (String) -> Unit,
-    addAction: (String) -> Unit,
-    removeThought: (String) -> Unit,
-    removeInterpretation: (String) -> Unit,
-    removeBehavior: (String) -> Unit,
-    removeAction: (String) -> Unit,
+    userId: String,
+    exposureId: String,
+    viewModel: ExposureViewModel,
     onDiscard: () -> Unit,
-    onSubmit: () -> Unit,
     setScreenState: (AnchorScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    val thoughts = remember { mutableStateListOf<String>() }
+    val interpretations = remember { mutableStateListOf<String>() }
+    val behaviors = remember { mutableStateListOf<String>() }
+    val actions = remember { mutableStateListOf<String>() }
+
     var showDiscardConfirmation by remember { mutableStateOf(false) }
 
     val isValid =
@@ -67,7 +62,18 @@ fun PreparationForm(
                         showDiscardConfirmation = true
                     }
                 },
-                onSubmit = onSubmit
+                onSubmit = {
+                    viewModel.addPreparation(
+                        userId,
+                        exposureId,
+                        title,
+                        description,
+                        thoughts,
+                        interpretations,
+                        behaviors,
+                        actions
+                    )
+                }
             ),
             canNavigateUp = true
         )
@@ -81,8 +87,8 @@ fun PreparationForm(
         BasicFormSection(
             title = title,
             description = description,
-            onTitleChange = setTitle,
-            onDescriptionChange = setDescription,
+            onTitleChange = { title = it },
+            onDescriptionChange = { description = it },
             modifier = modifier,
             bringIntoViewRequester = bringIntoViewRequester
         )
@@ -91,14 +97,14 @@ fun PreparationForm(
             interpretations = interpretations,
             behaviors = behaviors,
             actions = actions,
-            addThought = addThought,
-            addInterpretation = addInterpretation,
-            addBehavior = addBehavior,
-            addAction = addAction,
-            removeThought = removeThought,
-            removeInterpretation = removeInterpretation,
-            removeBehavior = removeBehavior,
-            removeAction = removeAction,
+            addThought = { thoughts.add(it) },
+            addInterpretation = { interpretations.add(it) },
+            addBehavior = { behaviors.add(it) },
+            addAction = { actions.add(it) },
+            removeThought = { thoughts.remove(it) },
+            removeInterpretation = { interpretations.remove(it) },
+            removeBehavior = { behaviors.remove(it) },
+            removeAction = { actions.remove(it) },
             modifier = modifier,
             bringIntoViewRequester = bringIntoViewRequester
         )

@@ -1,8 +1,5 @@
 package com.susieson.anchor.ui.exposures
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Exposure
@@ -10,6 +7,7 @@ import com.susieson.anchor.service.StorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -19,23 +17,26 @@ constructor(
     private val storageService: StorageService
 ) : ViewModel() {
 
-    val exposures = MutableStateFlow<List<Exposure>?>(null)
-    var exposureId by mutableStateOf<String?>(null)
+    private val _exposures = MutableStateFlow<List<Exposure>?>(null)
+    private var _exposureId = MutableStateFlow<String?>(null)
+
+    val exposures: StateFlow<List<Exposure>?> = _exposures
+    val exposureId: StateFlow<String?> = _exposureId
 
     fun addExposure(userId: String) {
         viewModelScope.launch {
-            exposureId = storageService.addExposure(userId)
+            _exposureId.value = storageService.addExposure(userId)
         }
     }
 
     fun resetExposureId() {
-        exposureId = null
+        _exposureId.value = null
     }
 
     fun getExposureList(userId: String) {
         viewModelScope.launch {
             storageService.getExposureList(userId).collect {
-                exposures.value = it
+                _exposures.value = it
             }
         }
     }

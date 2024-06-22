@@ -265,7 +265,7 @@ fun AnchorTheme(
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content:
-    @Composable()
+    @Composable
     () -> Unit
 ) {
     val colorScheme = when {
