@@ -16,7 +16,7 @@
     <string name="preparation_actions_body">Identify other behaviors that will allow you to fully engage with the emotions brought up by the exposure.</string>
     <string name="discard_dialog_text">Are you sure you want to discard?</string>
     <string name="discard_dialog_confirm">Discard</string>
-    <string name="discard_dialog_dismiss">Cancel</string>
+    <string name="dialog_dismiss">Cancel</string>
     <string name="preparation_title_error">Please enter a title.</string>
     <string name="preparation_description_error">Please enter a description.</string>
     <string name="review_top_bar_title">Review</string>
@@ -76,4 +76,5 @@
     <string name="settings_logout_button">Logout</string>
     <string name="settings_delete_account_button">Delete account</string>
     <string name="user_settings_email_label">You are logged in as: %s</string>
+    <string name="dialog_confirm">Confirm</string>
 </resources>
