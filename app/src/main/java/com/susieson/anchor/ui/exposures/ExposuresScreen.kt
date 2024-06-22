@@ -33,10 +33,10 @@ import com.susieson.anchor.ui.AnchorScreenState
 import com.susieson.anchor.ui.components.AnchorFabState
 import com.susieson.anchor.ui.components.AnchorTopAppBarState
 import com.susieson.anchor.ui.components.Loading
-import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
+import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
