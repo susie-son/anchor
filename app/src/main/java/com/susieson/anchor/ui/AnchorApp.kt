@@ -15,10 +15,18 @@ import com.susieson.anchor.MainViewModel
 import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 
+data class AnchorScaffold(
+    val topAppBar: AnchorTopAppBar,
+    val floatingActionButton: AnchorFloatingActionButton? = null
+) {
+    companion object {
+        val Default = AnchorScaffold(AnchorTopAppBar.Default)
+    }
+}
+
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     var scaffold by remember { mutableStateOf(AnchorScaffold.Default) }
-    val navController = rememberNavController()
 
     val user by viewModel.user.collectAsState(null)
 
@@ -36,7 +44,6 @@ fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
         Box(modifier = modifier.padding(innerPadding)) {
             AnchorNavHost(
                 user = user,
-                navController = navController,
                 setScaffold = { scaffold = it },
                 modifier = modifier
             )

@@ -62,7 +62,10 @@ fun SettingsScreen(
     when (user!!.isAnonymous) {
         true -> AnonymousSettings(
             error = error,
-            onLinkAccount = viewModel::linkAccount,
+            onLinkAccount = { email, password ->
+                viewModel.linkAccount(email, password)
+                onNavigateUp()
+            },
             onDeleteAccount = viewModel::deleteAccount,
             modifier = modifier
         )
