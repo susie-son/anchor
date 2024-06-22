@@ -13,6 +13,7 @@ import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.login.LoginScreen
+import com.susieson.anchor.ui.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,6 +21,9 @@ object ExposuresNav
 
 @Serializable
 data class ExposureNav(val exposureId: String)
+
+@Serializable
+object SettingsNav
 
 data class AnchorScaffold(
     val topAppBar: AnchorTopAppBar,
@@ -39,19 +43,30 @@ fun AnchorNavHost(
 ) {
     val userId = user?.id
     if (userId == null) {
-        LoginScreen(modifier = modifier)
+        LoginScreen(
+            setScaffold = setScaffold,
+            modifier = modifier
+        )
         return
     }
     NavHost(
         navController = navController,
         startDestination = ExposuresNav
     ) {
+        composable<SettingsNav> {
+            SettingsScreen(
+                onNavigateUp = navController::navigateUp,
+                setScaffold = setScaffold,
+                modifier = modifier
+            )
+        }
         composable<ExposuresNav> {
             ExposuresScreen(
                 userId = userId,
                 onItemSelect = { exposureId ->
                     navController.navigate(ExposureNav(exposureId))
                 },
+                onSettings = { navController.navigate(SettingsNav) },
                 setScaffold = setScaffold,
                 modifier = modifier
             )

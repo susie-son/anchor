@@ -1,19 +1,23 @@
 package com.susieson.anchor.service
 
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.susieson.anchor.model.AnchorUser
 import com.susieson.anchor.model.toAnchorUser
-import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 interface AuthService {
     val user: Flow<AnchorUser?>
     suspend fun createAnonymousAccount()
     suspend fun authenticate(email: String, password: String)
     suspend fun createAccount(email: String, password: String)
+    suspend fun signOut()
+    suspend fun deleteAccount()
+    suspend fun reauthenticate(email: String, password: String)
 }
 
 class AuthServiceImpl
@@ -37,5 +41,18 @@ constructor(private val auth: FirebaseAuth) : AuthService {
 
     override suspend fun createAccount(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password).await()
+    }
+
+    override suspend fun signOut() {
+        auth.signOut()
+    }
+
+    override suspend fun deleteAccount() {
+        auth.currentUser!!.delete().await()
+    }
+
+    override suspend fun reauthenticate(email: String, password: String) {
+        val credential = EmailAuthProvider.getCredential(email, password)
+        auth.currentUser!!.reauthenticate(credential).await()
     }
 }

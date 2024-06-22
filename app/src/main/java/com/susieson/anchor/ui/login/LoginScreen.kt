@@ -32,9 +32,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.AnchorScaffold
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, viewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(
+    setScaffold: (AnchorScaffold) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
     val error by viewModel.error.collectAsState()
 
     var email by remember { mutableStateOf("") }
@@ -45,6 +50,8 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: LoginViewModel = hiltV
     val passwordError = password.length in 1..5
 
     val isValid = email.isNotEmpty() && password.isNotEmpty() && !emailError && !passwordError
+
+    setScaffold(AnchorScaffold.Default)
 
     Column(
         modifier = modifier.padding(32.dp),

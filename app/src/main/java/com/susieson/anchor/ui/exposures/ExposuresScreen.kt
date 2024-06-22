@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -31,18 +32,20 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorFloatingActionButton
+import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
-import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
+import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
     userId: String,
     modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
+    onSettings: () -> Unit,
     setScaffold: (AnchorScaffold) -> Unit,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
@@ -51,12 +54,20 @@ fun ExposuresScreen(
 
     setScaffold(
         AnchorScaffold(
-            topAppBar = AnchorTopAppBar.Default,
+            topAppBar = AnchorTopAppBar.Default.copy(
+                actions = listOf(
+                    AnchorIconButton(
+                        onClick = onSettings,
+                        icon = Icons.Default.Settings,
+                        contentDescription = R.string.content_description_settings,
+                    )
+                )
+            ),
             floatingActionButton = AnchorFloatingActionButton(
                 text = R.string.exposures_start_button,
                 icon = Icons.Default.Add,
                 onClick = { viewModel.addExposure(userId) }
-            )
+            ),
         )
     )
 
