@@ -15,7 +15,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -355,6 +357,32 @@ fun FormRatingItem(
         )
     }
 }
+
+@Composable
+fun formTopAppBar(
+    @StringRes
+    title: Int,
+    isValid: Boolean,
+    isEmpty: Boolean,
+    onDiscard: () -> Unit,
+    onShowDiscardConfirmation: () -> Unit,
+    onActionClick: () -> Unit,
+) = AnchorTopAppBar(
+    title = title,
+    navigationIcon = AnchorIconButton(
+        onClick = if (isEmpty) onDiscard else onShowDiscardConfirmation,
+        icon = Icons.Default.Close,
+        contentDescription = R.string.content_description_close
+    ),
+    actions = listOf(
+        AnchorIconButton(
+            onClick = onActionClick,
+            icon = Icons.Default.Done,
+            contentDescription = R.string.content_description_done,
+            enabled = isValid
+        )
+    )
+)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Preview

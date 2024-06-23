@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -19,13 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Preparation
-import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorScaffold
-import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormSection
 import com.susieson.anchor.ui.components.FormTextField
 import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
+import com.susieson.anchor.ui.components.formTopAppBar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,31 +50,17 @@ fun PreparationForm(
 
     setScaffold(
         AnchorScaffold(
-            topAppBar = AnchorTopAppBar(
+            topAppBar = formTopAppBar(
                 title = R.string.preparation_top_bar_title,
-                navigationIcon = AnchorIconButton(
-                    onClick = {
-                        if (isEmpty) {
-                            onDiscard()
-                        } else {
-                            showDiscardConfirmation = true
-                        }
-                    },
-                    icon = Icons.Default.Close,
-                    contentDescription = R.string.content_description_close
-                ),
-                actions = listOf(
-                    AnchorIconButton(
-                        onClick = {
-                            val preparation =
-                                Preparation(thoughts, interpretations, behaviors, actions)
-                            addPreparation(userId, exposureId, title, description, preparation)
-                        },
-                        icon = Icons.Default.Done,
-                        contentDescription = R.string.content_description_done,
-                        enabled = isValid
-                    )
-                )
+                isValid = isValid,
+                isEmpty = isEmpty,
+                onDiscard = onDiscard,
+                onShowDiscardConfirmation = { showDiscardConfirmation = true },
+                onActionClick = {
+                    val preparation =
+                        Preparation(thoughts, interpretations, behaviors, actions)
+                    addPreparation(userId, exposureId, title, description, preparation)
+                }
             )
         )
     )

@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -21,9 +18,7 @@ import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Review
-import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorScaffold
-import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormRatingItem
 import com.susieson.anchor.ui.components.FormSection
@@ -31,6 +26,7 @@ import com.susieson.anchor.ui.components.FormSelectFilterItem
 import com.susieson.anchor.ui.components.FormTextField
 import com.susieson.anchor.ui.components.LabeledFormSection
 import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
+import com.susieson.anchor.ui.components.formTopAppBar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -95,51 +91,37 @@ fun ReviewForm(
 
     setScaffold(
         AnchorScaffold(
-            topAppBar = AnchorTopAppBar(
+            topAppBar = formTopAppBar(
                 title = R.string.review_top_bar_title,
-                navigationIcon = AnchorIconButton(
-                    onClick = {
-                        if (isEmpty) {
-                            onDiscard()
-                        } else {
-                            showDiscardConfirmation = true
-                        }
-                    },
-                    icon = Icons.Default.Close,
-                    contentDescription = R.string.content_description_close
-                ),
-                actions = listOf(
-                    AnchorIconButton(
-                        onClick = {
-                            val emotions =
-                                listOf(
-                                    fear to Emotion.FEAR,
-                                    sadness to Emotion.SADNESS,
-                                    anxiety to Emotion.ANXIETY,
-                                    guilt to Emotion.GUILT,
-                                    shame to Emotion.SHAME,
-                                    happiness to Emotion.HAPPINESS
-                                )
-                                    .filter { it.first }
-                                    .map { it.second }
-                            val review = Review(
-                                emotions,
-                                thoughts,
-                                sensations,
-                                behaviors,
-                                experiencingRating,
-                                anchoringRating,
-                                thinkingRating,
-                                engagingRating,
-                                learnings
-                            )
-                            addReview(userId, exposureId, review)
-                        },
-                        icon = Icons.Default.Done,
-                        contentDescription = R.string.content_description_done,
-                        enabled = isValid
+                isValid = isValid,
+                isEmpty = isEmpty,
+                onDiscard = onDiscard,
+                onShowDiscardConfirmation = { showDiscardConfirmation = true },
+                onActionClick = {
+                    val emotions =
+                        listOf(
+                            fear to Emotion.FEAR,
+                            sadness to Emotion.SADNESS,
+                            anxiety to Emotion.ANXIETY,
+                            guilt to Emotion.GUILT,
+                            shame to Emotion.SHAME,
+                            happiness to Emotion.HAPPINESS
+                        )
+                            .filter { it.first }
+                            .map { it.second }
+                    val review = Review(
+                        emotions,
+                        thoughts,
+                        sensations,
+                        behaviors,
+                        experiencingRating,
+                        anchoringRating,
+                        thinkingRating,
+                        engagingRating,
+                        learnings
                     )
-                )
+                    addReview(userId, exposureId, review)
+                }
             )
         )
     )
