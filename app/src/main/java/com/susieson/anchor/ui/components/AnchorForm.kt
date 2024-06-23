@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -213,7 +214,7 @@ fun LabeledFormTextFieldColumn(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FormTextFieldColumn(
     texts: List<String>,
@@ -227,89 +228,103 @@ fun FormTextFieldColumn(
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier) {
-        ListItem(
-            headlineContent = {
-                BasicTextField(
-                    value = field,
-                    onValueChange = { field = it },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    keyboardActions =
-                    KeyboardActions(onSend = {
-                        if (field.isNotEmpty()) {
-                            onAdd(field)
-                            field = ""
-                        }
-                    }),
-                    interactionSource = interactionSource,
-                    singleLine = true,
-                    textStyle =
-                    TextStyle.Default.copy(
-                        color = OutlinedTextFieldDefaults.colors().focusedTextColor
-                    ),
-                    cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
-                    modifier = Modifier
-                        .bringIntoViewRequester(bringIntoViewRequester)
-                        .onFocusChanged {
-                            if (it.isFocused) {
-                                coroutineScope.launch {
-                                    bringIntoViewRequester.bringIntoView()
-                                }
-                            }
-                        }
-                        .focusTarget()
-                ) { innerTextField ->
-                    OutlinedTextFieldDefaults.DecorationBox(
-                        value = field,
-                        innerTextField = innerTextField,
-                        enabled = true,
-                        singleLine = true,
-                        visualTransformation = VisualTransformation.None,
-                        interactionSource = interactionSource,
-                        contentPadding =
-                        OutlinedTextFieldDefaults.contentPadding(
-                            0.dp,
-                            0.dp,
-                            0.dp,
-                            0.dp
-                        ),
-                        placeholder = { Text(stringResource(R.string.text_field_placeholder)) },
-                        container = {}
-                    )
+        FormAddTextField(field, onAdd, interactionSource, bringIntoViewRequester, coroutineScope) {
+            field = it
+        }
+        FormTextList(texts, onDelete)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun FormAddTextField(
+    field: String,
+    onAdd: (String) -> Unit,
+    interactionSource: MutableInteractionSource,
+    bringIntoViewRequester: BringIntoViewRequester,
+    coroutineScope: CoroutineScope,
+    onFieldChange: (String) -> Unit,
+) {
+    val onAddAndClear = {
+        if (field.isNotEmpty()) {
+            onAdd(field)
+            onFieldChange("")
+        }
+    }
+    ListItem(
+        headlineContent = {
+            BasicTextFieldWithDecoration(
+                value = field,
+                onValueChange = onFieldChange,
+                onAddAndClear = onAddAndClear,
+                interactionSource = interactionSource,
+                bringIntoViewRequester = bringIntoViewRequester,
+                coroutineScope = coroutineScope
+            )
+        },
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        trailingContent = {
+            IconButton(onClick = onAddAndClear) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.content_description_add))
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun BasicTextFieldWithDecoration(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onAddAndClear: () -> Unit,
+    interactionSource: MutableInteractionSource,
+    bringIntoViewRequester: BringIntoViewRequester,
+    coroutineScope: CoroutineScope
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+        keyboardActions = KeyboardActions(onSend = { onAddAndClear() }),
+        interactionSource = interactionSource,
+        singleLine = true,
+        textStyle = TextStyle.Default.copy(color = OutlinedTextFieldDefaults.colors().focusedTextColor),
+        cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
+        modifier = Modifier
+            .bringIntoViewRequester(bringIntoViewRequester)
+            .onFocusChanged {
+                if (it.isFocused) {
+                    coroutineScope.launch { bringIntoViewRequester.bringIntoView() }
                 }
-            },
-            colors = ListItemDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-            ),
+            }
+            .focusTarget()
+    ) { innerTextField ->
+        OutlinedTextFieldDefaults.DecorationBox(
+            value = value,
+            innerTextField = innerTextField,
+            enabled = true,
+            singleLine = true,
+            visualTransformation = VisualTransformation.None,
+            interactionSource = interactionSource,
+            contentPadding = OutlinedTextFieldDefaults.contentPadding(0.dp),
+            placeholder = { Text(stringResource(R.string.text_field_placeholder)) },
+            container = {}
+        )
+    }
+}
+
+@Composable
+private fun FormTextList(texts: List<String>, onDelete: (String) -> Unit) {
+    texts.forEach { text ->
+        HorizontalDivider()
+        ListItem(
+            headlineContent = { Text(text = text) },
             trailingContent = {
-                IconButton(onClick = {
-                    if (field.isNotEmpty()) {
-                        onAdd(field)
-                        field = ""
-                    }
-                }) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.content_description_add)
-                    )
+                IconButton(onClick = { onDelete(text) }) {
+                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.content_description_delete))
                 }
             }
         )
-        texts.forEach { text ->
-            HorizontalDivider()
-            ListItem(
-                headlineContent = { Text(text = text) },
-                trailingContent = {
-                    IconButton(onClick = { onDelete(text) }) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = stringResource(
-                                R.string.content_description_delete
-                            )
-                        )
-                    }
-                }
-            )
-        }
     }
 }
 
