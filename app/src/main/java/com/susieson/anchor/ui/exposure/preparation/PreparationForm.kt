@@ -7,27 +7,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Preparation
-import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.form.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.form.FormBackHandler
-import com.susieson.anchor.ui.components.form.formTopAppBar
+import com.susieson.anchor.ui.components.form.FormTopAppBar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PreparationForm(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
     userId: String,
     exposureId: String,
     onDiscard: () -> Unit,
     addPreparation: (String, String, String, String, Preparation) -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val basicState = remember { mutableStateOf(BasicFormSectionState()) }
@@ -50,20 +51,18 @@ fun PreparationForm(
 
     val preparation = Preparation(thoughts, interpretations, behaviors, actions)
 
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = formTopAppBar(
-                title = R.string.preparation_top_bar_title,
-                isValid = isValid,
-                isEmpty = isEmpty,
-                onDiscard = onDiscard,
-                onShowDiscardConfirmation = { showDiscardConfirmation = true },
-                onActionClick = {
-                    addPreparation(userId, exposureId, title, description, preparation)
-                }
-            )
+    onTopBarChange {
+        FormTopAppBar(
+            title = { Text(stringResource(R.string.preparation_top_bar_title)) },
+            isValid = isValid,
+            isEmpty = isEmpty,
+            onDiscard = onDiscard,
+            onShowDiscardConfirmation = { showDiscardConfirmation = true },
+            onActionClick = {
+                addPreparation(userId, exposureId, title, description, preparation)
+            }
         )
-    )
+    }
 
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())

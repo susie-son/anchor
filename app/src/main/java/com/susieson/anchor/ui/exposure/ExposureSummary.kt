@@ -9,7 +9,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,7 +23,6 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.CommaSeparatedListSummaryItem
 import com.susieson.anchor.ui.components.LineSeparatedListSummaryItem
@@ -32,23 +33,24 @@ import java.text.DateFormat
 
 @Composable
 fun ExposureSummary(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
     exposure: Exposure,
     onNavigateUp: () -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = AnchorTopAppBar(
-                title = R.string.summary_top_bar_title,
-                navigationIcon = AnchorIconButton(
+    onTopBarChange {
+        AnchorTopAppBar(
+            title = { Text(stringResource(R.string.summary_top_bar_title)) },
+            navigationIcon = {
+                AnchorIconButton(
                     onClick = onNavigateUp,
-                    icon = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = R.string.content_description_back
+                    icon = {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
+                    }
                 )
-            )
+            }
         )
-    )
+    }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),

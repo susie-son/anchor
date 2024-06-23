@@ -11,14 +11,19 @@ import com.susieson.anchor.MainViewModel
 
 @Composable
 fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
-    var scaffold by remember { mutableStateOf(AnchorScaffold.Default) }
-
     val user by viewModel.user.collectAsState(null)
+    var topBar by remember { mutableStateOf<@Composable () -> Unit>({ AnchorTopAppBar() }) }
+    var fab by remember { mutableStateOf<@Composable () -> Unit>({}) }
 
-    AnchorScaffold(state = scaffold, modifier = modifier) {
+    AnchorScaffold(
+        topBar = topBar,
+        floatingActionButton = fab,
+        modifier = modifier
+    ) {
         AnchorNavHost(
             user = user,
-            setScaffold = { scaffold = it }
+            onTopBarChange = { topBar = it },
+            onFloatingActionButtonChange = { fab = it },
         )
     }
 }

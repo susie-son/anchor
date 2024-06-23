@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
@@ -36,26 +36,32 @@ import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun SettingsScreen(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     onNavigateUp: () -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val error by viewModel.error.collectAsState()
     val user by viewModel.user.collectAsState(null)
 
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = AnchorTopAppBar(
-                title = R.string.settings_top_bar_title,
-                navigationIcon = AnchorIconButton(
+    onTopBarChange {
+        AnchorTopAppBar(
+            title = { Text(stringResource(R.string.settings_top_bar_title)) },
+            navigationIcon = {
+                AnchorIconButton(
                     onClick = onNavigateUp,
-                    icon = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = R.string.content_description_back
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            stringResource(R.string.content_description_back)
+                        )
+                    }
                 )
-            )
+            }
         )
-    )
+    }
+    onFloatingActionButtonChange {}
 
     when (val state = getUserSettingsState(user, error)) {
         is UserSettingsState.Loading -> Loading(modifier = modifier.fillMaxSize())

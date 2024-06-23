@@ -16,14 +16,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.AnchorScaffold
+import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.form.LoginForm
 import com.susieson.anchor.ui.components.form.LoginFormListener
 import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun LoginScreen(
-    setScaffold: (AnchorScaffold) -> Unit,
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
@@ -43,7 +44,8 @@ fun LoginScreen(
         }
     }
 
-    setScaffold(AnchorScaffold.Default)
+    onTopBarChange { AnchorTopAppBar() }
+    onFloatingActionButtonChange {}
 
     Column(
         modifier = modifier.padding(32.dp)

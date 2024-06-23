@@ -26,13 +26,15 @@ data class ExposureNav(val exposureId: String)
 @Composable
 fun AnchorNavHost(
     user: AnchorUser?,
-    setScaffold: (AnchorScaffold) -> Unit,
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val userId = user?.id
     if (userId == null) {
         LoginScreen(
-            setScaffold = setScaffold,
+            onTopBarChange = onTopBarChange,
+            onFloatingActionButtonChange = onFloatingActionButtonChange,
             modifier = modifier
         )
         return
@@ -46,19 +48,21 @@ fun AnchorNavHost(
     ) {
         composable<ExposuresNav> {
             ExposuresScreen(
+                onTopBarChange = onTopBarChange,
+                onFloatingActionButtonChange = onFloatingActionButtonChange,
                 userId = userId,
                 onItemSelect = { exposureId ->
                     navController.navigate(ExposureNav(exposureId))
                 },
                 onSettings = { navController.navigate(SettingsNav) },
-                setScaffold = setScaffold,
                 modifier = modifier
             )
         }
         composable<SettingsNav> {
             SettingsScreen(
+                onTopBarChange = onTopBarChange,
+                onFloatingActionButtonChange = onFloatingActionButtonChange,
                 onNavigateUp = navController::navigateUp,
-                setScaffold = setScaffold,
                 modifier = modifier
             )
         }
@@ -72,10 +76,11 @@ fun AnchorNavHost(
         ) { backStackEntry ->
             val nav: ExposureNav = backStackEntry.toRoute()
             ExposureScreen(
+                onTopBarChange = onTopBarChange,
+                onFloatingActionButtonChange = onFloatingActionButtonChange,
                 userId = userId,
                 exposureId = nav.exposureId,
                 onNavigateUp = navController::navigateUp,
-                setScaffold = setScaffold,
                 modifier = modifier
             )
         }

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,7 +34,6 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
 import kotlinx.coroutines.delay
@@ -45,34 +45,39 @@ const val TimeReloadInterval = 60_000L
 
 @Composable
 fun ExposuresScreen(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     userId: String,
     onItemSelect: (String) -> Unit,
     onSettings: () -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
     val exposureId by viewModel.exposureId.collectAsState()
     val exposures by viewModel.exposures.collectAsState()
 
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = AnchorTopAppBar.Default.copy(
-                actions = listOf(
-                    AnchorIconButton(
-                        onClick = onSettings,
-                        icon = Icons.Default.Settings,
-                        contentDescription = R.string.content_description_settings
-                    )
+    onTopBarChange {
+        AnchorTopAppBar(
+            actions = {
+                AnchorIconButton(
+                    onClick = onSettings,
+                    icon = {
+                        Icon(
+                            Icons.Default.Settings,
+                            stringResource(R.string.content_description_settings)
+                        )
+                    }
                 )
-            ),
-            floatingActionButton = AnchorFloatingActionButton(
-                text = R.string.exposures_start_button,
-                icon = Icons.Default.Add,
-                onClick = { viewModel.addExposure(userId) }
-            )
+            }
         )
-    )
+    }
+    onFloatingActionButtonChange {
+        AnchorFloatingActionButton(
+            text = { Text(stringResource(R.string.exposures_start_button)) },
+            icon = { Icon(Icons.Default.Add, null) },
+            onClick = { viewModel.addExposure(userId) }
+        )
+    }
 
     when (val state = getExposuresState(exposures)) {
         is ExposuresState.Loading -> Loading(modifier = modifier.fillMaxSize())

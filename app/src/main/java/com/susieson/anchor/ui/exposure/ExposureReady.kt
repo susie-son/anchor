@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -36,18 +37,17 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExposureReady(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
     userId: String,
     exposureId: String,
     title: String,
     onNavigateUp: () -> Unit,
     markAsInProgress: (String, String, String) -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val checked = remember { mutableStateListOf(false, false) }
@@ -59,18 +59,19 @@ fun ExposureReady(
             null
         }
 
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = AnchorTopAppBar(
-                title = R.string.ready_top_bar_title,
-                navigationIcon = AnchorIconButton(
+    onTopBarChange {
+        AnchorTopAppBar(
+            title = { Text(stringResource(R.string.ready_top_bar_title)) },
+            navigationIcon = {
+                AnchorIconButton(
                     onClick = onNavigateUp,
-                    icon = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = R.string.content_description_back
+                    icon = {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
+                    },
                 )
-            )
+            },
         )
-    )
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),

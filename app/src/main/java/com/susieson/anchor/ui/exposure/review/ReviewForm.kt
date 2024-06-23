@@ -5,28 +5,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Review
-import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.form.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.form.FormBackHandler
-import com.susieson.anchor.ui.components.form.formTopAppBar
+import com.susieson.anchor.ui.components.form.FormTopAppBar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ReviewForm(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
     userId: String,
     exposureId: String,
     onDiscard: () -> Unit,
     addReview: (String, String, Review) -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showDiscardConfirmation by remember { mutableStateOf(false) }
@@ -68,20 +69,16 @@ fun ReviewForm(
         learningsForm.learnings
     )
 
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = formTopAppBar(
-                title = R.string.review_top_bar_title,
-                isValid = isValid,
-                isEmpty = isEmpty,
-                onDiscard = onDiscard,
-                onShowDiscardConfirmation = { showDiscardConfirmation = true },
-                onActionClick = {
-                    addReview(userId, exposureId, review)
-                }
-            )
+    onTopBarChange {
+        FormTopAppBar(
+            title = { Text(stringResource(R.string.review_top_bar_title)) },
+            isValid = isValid,
+            isEmpty = isEmpty,
+            onDiscard = onDiscard,
+            onShowDiscardConfirmation = { showDiscardConfirmation = true },
+            onActionClick = { addReview(userId, exposureId, review) }
         )
-    )
+    }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())

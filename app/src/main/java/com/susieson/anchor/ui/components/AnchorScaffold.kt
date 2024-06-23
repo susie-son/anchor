@@ -7,29 +7,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun AnchorScaffold(state: AnchorScaffold, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun AnchorScaffold(
+    modifier: Modifier = Modifier,
+    topBar: @Composable () -> Unit = { AnchorTopAppBar() },
+    floatingActionButton: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = {}
+) {
     Scaffold(
         modifier = modifier,
-        topBar = { AnchorTopAppBar(state.topAppBar) },
-        floatingActionButton = {
-            state.floatingActionButton?.let {
-                AnchorFloatingActionButton(
-                    it
-                )
-            }
-        }
+        topBar = topBar,
+        floatingActionButton = floatingActionButton
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             content()
         }
-    }
-}
-
-data class AnchorScaffold(
-    val topAppBar: AnchorTopAppBar,
-    val floatingActionButton: AnchorFloatingActionButton? = null
-) {
-    companion object {
-        val Default = AnchorScaffold(AnchorTopAppBar.Default)
     }
 }
