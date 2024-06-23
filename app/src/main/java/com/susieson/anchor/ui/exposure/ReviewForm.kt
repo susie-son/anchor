@@ -38,56 +38,39 @@ fun ReviewForm(
     setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var fear by remember { mutableStateOf(false) }
-    var sadness by remember { mutableStateOf(false) }
-    var anxiety by remember { mutableStateOf(false) }
-    var guilt by remember { mutableStateOf(false) }
-    var shame by remember { mutableStateOf(false) }
-    var happiness by remember { mutableStateOf(false) }
-
-    val thoughts = remember { mutableStateListOf<String>() }
-    val sensations = remember { mutableStateListOf<String>() }
-    val behaviors = remember { mutableStateListOf<String>() }
-
-    var experiencingRating by remember { mutableFloatStateOf(0f) }
-    var anchoringRating by remember { mutableFloatStateOf(0f) }
-    var thinkingRating by remember { mutableFloatStateOf(0f) }
-    var engagingRating by remember { mutableFloatStateOf(0f) }
-
     var learnings by remember { mutableStateOf("") }
-
     var showDiscardConfirmation by remember { mutableStateOf(false) }
 
-    val emotionsFilters =
-        mapOf(
-            R.string.review_fear_chip to fear,
-            R.string.review_sadness_chip to sadness,
-            R.string.review_anxiety_chip to anxiety,
-            R.string.review_guilt_chip to guilt,
-            R.string.review_shame_chip to shame,
-            R.string.review_happiness_chip to happiness
-        )
+    val emotionsState = EmotionFormSectionState()
+    val ratingsState = RatingFormSectionState()
 
-    val isValid =
-        emotionsFilters.values.contains(true) &&
-            thoughts.isNotEmpty() &&
-            sensations.isNotEmpty() &&
-            behaviors.isNotEmpty() &&
-            experiencingRating > 0 &&
-            anchoringRating > 0 &&
-            thinkingRating > 0 &&
-            engagingRating > 0 &&
-            learnings.isNotEmpty()
-    val isEmpty =
-        emotionsFilters.values.all { !it } &&
-            thoughts.isEmpty() &&
-            sensations.isEmpty() &&
-            behaviors.isEmpty() &&
-            experiencingRating == 0f &&
-            anchoringRating == 0f &&
-            thinkingRating == 0f &&
-            engagingRating == 0f &&
-            learnings.isEmpty()
+    val emotionFormSectionListener = BaseEmotionFormSectionListener(emotionsState)
+    val ratingFormSectionListener = BaseRatingFormSectionListener(ratingsState)
+
+    val isValid = emotionsState.isValid && ratingsState.isValid && learnings.isNotBlank()
+    val isEmpty = emotionsState.isEmpty && ratingsState.isEmpty && learnings.isBlank()
+
+    val emotions = listOf(
+        emotionsState.fear to Emotion.FEAR,
+        emotionsState.sadness to Emotion.SADNESS,
+        emotionsState.anxiety to Emotion.ANXIETY,
+        emotionsState.guilt to Emotion.GUILT,
+        emotionsState.shame to Emotion.SHAME,
+        emotionsState.happiness to Emotion.HAPPINESS
+    ).mapNotNull { (exists, emotion) ->
+        emotion.takeIf { exists }
+    }
+    val review = Review(
+        emotions,
+        emotionsState.thoughts,
+        emotionsState.sensations,
+        emotionsState.behaviors,
+        ratingsState.experiencingRating,
+        ratingsState.anchoringRating,
+        ratingsState.thinkingRating,
+        ratingsState.engagingRating,
+        learnings
+    )
 
     setScaffold(
         AnchorScaffold(
@@ -98,28 +81,6 @@ fun ReviewForm(
                 onDiscard = onDiscard,
                 onShowDiscardConfirmation = { showDiscardConfirmation = true },
                 onActionClick = {
-                    val emotions =
-                        listOf(
-                            fear to Emotion.FEAR,
-                            sadness to Emotion.SADNESS,
-                            anxiety to Emotion.ANXIETY,
-                            guilt to Emotion.GUILT,
-                            shame to Emotion.SHAME,
-                            happiness to Emotion.HAPPINESS
-                        )
-                            .filter { it.first }
-                            .map { it.second }
-                    val review = Review(
-                        emotions,
-                        thoughts,
-                        sensations,
-                        behaviors,
-                        experiencingRating,
-                        anchoringRating,
-                        thinkingRating,
-                        engagingRating,
-                        learnings
-                    )
                     addReview(userId, exposureId, review)
                 }
             )
@@ -130,123 +91,238 @@ fun ReviewForm(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
-
-        FormSection(
-            {
-                FormSelectFilterItem(
-                    label = R.string.review_emotions_label,
-                    filters = emotionsFilters,
-                    onFilterChange = {
-                        when (it) {
-                            R.string.review_fear_chip -> {
-                                fear = !fear
-                            }
-
-                            R.string.review_sadness_chip -> {
-                                sadness = !sadness
-                            }
-
-                            R.string.review_anxiety_chip -> {
-                                anxiety = !anxiety
-                            }
-
-                            R.string.review_guilt_chip -> {
-                                guilt = !guilt
-                            }
-
-                            R.string.review_shame_chip -> {
-                                shame = !shame
-                            }
-
-                            R.string.review_happiness_chip -> {
-                                happiness = !happiness
-                            }
-                        }
-                    }
-                )
-            }
+        EmotionFormSection(
+            emotionsState,
+            emotionFormSectionListener,
+            bringIntoViewRequester
         )
-        FormSection(
-            {
-                LabeledFormTextFieldColumn(
-                    texts = thoughts,
-                    label = R.string.review_thoughts_label,
-                    descriptionLabel = R.string.review_thoughts_body,
-                    onAdd = { thoughts.add(it) },
-                    onDelete = { thoughts.remove(it) },
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-            },
-            {
-                LabeledFormTextFieldColumn(
-                    texts = sensations,
-                    label = R.string.review_sensations_label,
-                    descriptionLabel = R.string.review_sensations_body,
-                    onAdd = { sensations.add(it) },
-                    onDelete = { sensations.remove(it) },
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-            },
-            {
-                LabeledFormTextFieldColumn(
-                    texts = behaviors,
-                    label = R.string.review_behaviors_label,
-                    descriptionLabel = R.string.review_behaviors_body,
-                    onAdd = { behaviors.add(it) },
-                    onDelete = { behaviors.remove(it) },
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-            }
-        )
-        LabeledFormSection(
-            label = R.string.review_effectiveness_label,
-            descriptionLabel = null,
-            {
-                FormRatingItem(
-                    label = R.string.review_experiencing_label,
-                    value = experiencingRating,
-                    onValueChange = { experiencingRating = it },
-                )
-            },
-            {
-                FormRatingItem(
-                    label = R.string.review_anchoring_label,
-                    value = anchoringRating,
-                    onValueChange = { anchoringRating = it },
-                )
-            },
-            {
-                FormRatingItem(
-                    label = R.string.review_thinking_label,
-                    value = thinkingRating,
-                    onValueChange = { thinkingRating = it },
-                )
-            },
-            {
-                FormRatingItem(
-                    label = R.string.review_engaging_label,
-                    value = engagingRating,
-                    onValueChange = { engagingRating = it },
-                )
-            }
-        )
-        LabeledFormSection(
-            label = R.string.review_learnings_label,
-            descriptionLabel = R.string.review_learnings_body,
-            {
-                FormTextField(
-                    value = learnings,
-                    label = null,
-                    errorLabel = R.string.review_learnings_error,
-                    isError = learnings.isEmpty(),
-                    imeAction = ImeAction.Done,
-                    onValueChange = { learnings = it },
-                    singleLine = false,
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-            }
-        )
+        RatingFormSection(ratingsState, ratingFormSectionListener)
+        LearningsSection(learnings, onLearningsChange = { learnings = it }, bringIntoViewRequester)
     }
     DiscardConfirmationDialog(showDiscardConfirmation, onDiscard) { showDiscardConfirmation = it }
     FormBackHandler(isEmpty, onDiscard) { showDiscardConfirmation = true }
+}
+
+class EmotionFormSectionState {
+    var fear by mutableStateOf(false)
+    var sadness by mutableStateOf(false)
+    var anxiety by mutableStateOf(false)
+    var guilt by mutableStateOf(false)
+    var shame by mutableStateOf(false)
+    var happiness by mutableStateOf(false)
+    val thoughts = mutableStateListOf<String>()
+    val sensations = mutableStateListOf<String>()
+    val behaviors = mutableStateListOf<String>()
+    fun getEmotionFilters() = mapOf(
+        R.string.review_fear_chip to fear,
+        R.string.review_sadness_chip to sadness,
+        R.string.review_anxiety_chip to anxiety,
+        R.string.review_guilt_chip to guilt,
+        R.string.review_shame_chip to shame,
+        R.string.review_happiness_chip to happiness
+    )
+    val isValid = getEmotionFilters().values.contains(true) &&
+        thoughts.isNotEmpty() && sensations.isNotEmpty() && behaviors.isNotEmpty()
+    val isEmpty = getEmotionFilters().values.all { !it } &&
+        thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty()
+}
+
+interface EmotionFormSectionListener {
+    fun onEmotionFilterChanged(emotion: Int)
+    fun onThoughtAdded(thought: String)
+    fun onThoughtRemoved(thought: String)
+    fun onSensationAdded(sensation: String)
+    fun onSensationRemoved(sensation: String)
+    fun onBehaviorAdded(behavior: String)
+    fun onBehaviorRemoved(behavior: String)
+}
+
+class BaseEmotionFormSectionListener(private val state: EmotionFormSectionState) :
+    EmotionFormSectionListener {
+    override fun onEmotionFilterChanged(emotion: Int) {
+        when (emotion) {
+            R.string.review_fear_chip -> {
+                state.fear = !state.fear
+            }
+            R.string.review_sadness_chip -> {
+                state.sadness = !state.sadness
+            }
+            R.string.review_anxiety_chip -> {
+                state.anxiety = !state.anxiety
+            }
+            R.string.review_guilt_chip -> {
+                state.guilt = !state.guilt
+            }
+            R.string.review_shame_chip -> {
+                state.shame = !state.shame
+            }
+            R.string.review_happiness_chip -> {
+                state.happiness = !state.happiness
+            }
+        }
+    }
+    override fun onThoughtAdded(thought: String) {
+        state.thoughts.add(thought)
+    }
+    override fun onThoughtRemoved(thought: String) {
+        state.thoughts.remove(thought)
+    }
+    override fun onSensationAdded(sensation: String) {
+        state.sensations.add(sensation)
+    }
+    override fun onSensationRemoved(sensation: String) {
+        state.sensations.remove(sensation)
+    }
+    override fun onBehaviorAdded(behavior: String) {
+        state.behaviors.add(behavior)
+    }
+    override fun onBehaviorRemoved(behavior: String) {
+        state.behaviors.remove(behavior)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun EmotionFormSection(
+    state: EmotionFormSectionState,
+    listener: EmotionFormSectionListener,
+    bringIntoViewRequester: BringIntoViewRequester
+) {
+    FormSection(
+        {
+            FormSelectFilterItem(
+                label = R.string.review_emotions_label,
+                filters = state.getEmotionFilters(),
+                onFilterChange = listener::onEmotionFilterChanged
+            )
+        }
+    )
+    FormSection(
+        {
+            LabeledFormTextFieldColumn(
+                texts = state.thoughts,
+                label = R.string.review_thoughts_label,
+                descriptionLabel = R.string.review_thoughts_body,
+                onAdd = listener::onThoughtAdded,
+                onDelete = listener::onThoughtRemoved,
+                bringIntoViewRequester = bringIntoViewRequester
+            )
+        },
+        {
+            LabeledFormTextFieldColumn(
+                texts = state.sensations,
+                label = R.string.review_sensations_label,
+                descriptionLabel = R.string.review_sensations_body,
+                onAdd = listener::onSensationAdded,
+                onDelete = listener::onSensationRemoved,
+                bringIntoViewRequester = bringIntoViewRequester
+            )
+        },
+        {
+            LabeledFormTextFieldColumn(
+                texts = state.behaviors,
+                label = R.string.review_behaviors_label,
+                descriptionLabel = R.string.review_behaviors_body,
+                onAdd = listener::onBehaviorAdded,
+                onDelete = listener::onBehaviorRemoved,
+                bringIntoViewRequester = bringIntoViewRequester
+            )
+        }
+    )
+}
+
+class RatingFormSectionState {
+    var experiencingRating by mutableFloatStateOf(0f)
+    var anchoringRating by mutableFloatStateOf(0f)
+    var thinkingRating by mutableFloatStateOf(0f)
+    var engagingRating by mutableFloatStateOf(0f)
+    val isValid = experiencingRating > 0f && anchoringRating > 0f && thinkingRating > 0f && engagingRating > 0f
+    val isEmpty = experiencingRating == 0f && anchoringRating == 0f && thinkingRating == 0f && engagingRating == 0f
+}
+
+interface RatingFormSectionListener {
+    fun onExperiencingRatingChanged(rating: Float)
+    fun onAnchoringRatingChanged(rating: Float)
+    fun onThinkingRatingChanged(rating: Float)
+    fun onEngagingRatingChanged(rating: Float)
+}
+
+class BaseRatingFormSectionListener(private val state: RatingFormSectionState) :
+    RatingFormSectionListener {
+    override fun onExperiencingRatingChanged(rating: Float) {
+        state.experiencingRating = rating
+    }
+    override fun onAnchoringRatingChanged(rating: Float) {
+        state.anchoringRating = rating
+    }
+    override fun onThinkingRatingChanged(rating: Float) {
+        state.thinkingRating = rating
+    }
+    override fun onEngagingRatingChanged(rating: Float) {
+        state.engagingRating = rating
+    }
+}
+
+@Composable
+fun RatingFormSection(
+    state: RatingFormSectionState,
+    listener: RatingFormSectionListener
+) {
+    LabeledFormSection(
+        label = R.string.review_effectiveness_label,
+        descriptionLabel = null,
+        {
+            FormRatingItem(
+                label = R.string.review_experiencing_label,
+                value = state.experiencingRating,
+                onValueChange = listener::onExperiencingRatingChanged,
+            )
+        },
+        {
+            FormRatingItem(
+                label = R.string.review_anchoring_label,
+                value = state.anchoringRating,
+                onValueChange = listener::onAnchoringRatingChanged,
+            )
+        },
+        {
+            FormRatingItem(
+                label = R.string.review_thinking_label,
+                value = state.thinkingRating,
+                onValueChange = listener::onThinkingRatingChanged,
+            )
+        },
+        {
+            FormRatingItem(
+                label = R.string.review_engaging_label,
+                value = state.engagingRating,
+                onValueChange = listener::onEngagingRatingChanged,
+            )
+        }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LearningsSection(
+    learnings: String,
+    onLearningsChange: (String) -> Unit,
+    bringIntoViewRequester: BringIntoViewRequester
+) {
+    LabeledFormSection(
+        label = R.string.review_learnings_label,
+        descriptionLabel = R.string.review_learnings_body,
+        {
+            FormTextField(
+                value = learnings,
+                label = null,
+                errorLabel = R.string.review_learnings_error,
+                isError = learnings.isEmpty(),
+                imeAction = ImeAction.Done,
+                onValueChange = onLearningsChange,
+                singleLine = false,
+                bringIntoViewRequester = bringIntoViewRequester
+            )
+        }
+    )
 }
