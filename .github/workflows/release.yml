@@ -7,7 +7,7 @@ on:
     tags:
       - 'v*'
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,11 +15,15 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: ./gradlew assembleRelease
-      - run: ./gradlew app:bundleRelease
+      - run: ./gradlew bundleRelease
+      - uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.UPLOAD_KEYSTORE }}
+          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
       - uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: |
-            app/build/outputs/apk/release/*
-            app/build/outputs/bundle/release/*
+          name: app-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
