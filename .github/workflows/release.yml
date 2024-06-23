@@ -1,6 +1,9 @@
 name: release
 on:
   push:
+    branches:
+      - main
+      - 'release/**'
     tags:
       - 'v*'
 jobs:
@@ -13,7 +16,10 @@ jobs:
           distribution: temurin
           java-version: 17
       - run: ./gradlew assembleRelease
+      - run: ./gradlew app:bundleRelease
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: app/build/outputs/apk/release/app-release.apk
+          path: |
+            app/build/outputs/apk/release/*
+            app/build/outputs/bundle/release/*
