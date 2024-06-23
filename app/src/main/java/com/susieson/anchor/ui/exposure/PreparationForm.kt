@@ -87,6 +87,13 @@ fun PreparationForm(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
+        val state = PreparationFormState(
+            thoughts = thoughts,
+            interpretations = interpretations,
+            behaviors = behaviors,
+            actions = actions
+        )
+        val listener = BasePreparationFormListener(state)
 
         BasicFormSection(
             title = title,
@@ -96,18 +103,8 @@ fun PreparationForm(
             bringIntoViewRequester = bringIntoViewRequester
         )
         PreparationFormSection(
-            thoughts = thoughts,
-            interpretations = interpretations,
-            behaviors = behaviors,
-            actions = actions,
-            addThought = { thoughts.add(it) },
-            addInterpretation = { interpretations.add(it) },
-            addBehavior = { behaviors.add(it) },
-            addAction = { actions.add(it) },
-            removeThought = { thoughts.remove(it) },
-            removeInterpretation = { interpretations.remove(it) },
-            removeBehavior = { behaviors.remove(it) },
-            removeAction = { actions.remove(it) },
+            state = state,
+            listener = listener,
             bringIntoViewRequester = bringIntoViewRequester
         )
     }
@@ -174,18 +171,8 @@ private fun BasicFormSection(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PreparationFormSection(
-    thoughts: List<String>,
-    interpretations: List<String>,
-    behaviors: List<String>,
-    actions: List<String>,
-    addThought: (String) -> Unit,
-    addInterpretation: (String) -> Unit,
-    addBehavior: (String) -> Unit,
-    addAction: (String) -> Unit,
-    removeThought: (String) -> Unit,
-    removeInterpretation: (String) -> Unit,
-    removeBehavior: (String) -> Unit,
-    removeAction: (String) -> Unit,
+    state: PreparationFormState,
+    listener: PreparationFormListener,
     bringIntoViewRequester: BringIntoViewRequester,
     modifier: Modifier = Modifier
 ) {
@@ -194,42 +181,99 @@ private fun PreparationFormSection(
         items = arrayOf(
             {
                 LabeledFormTextFieldColumn(
-                    texts = thoughts,
+                    texts = state.thoughts,
                     label = R.string.preparation_thoughts_label,
                     descriptionLabel = R.string.preparation_thoughts_body,
-                    onAdd = addThought,
-                    onDelete = removeThought,
+                    onAdd = listener::onThoughtAdded,
+                    onDelete = listener::onThoughtRemoved,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
                 LabeledFormTextFieldColumn(
-                    texts = interpretations,
+                    texts = state.interpretations,
                     label = R.string.preparation_interpretations_label,
                     descriptionLabel = R.string.preparation_interpretations_body,
-                    onAdd = addInterpretation,
-                    onDelete = removeInterpretation,
+                    onAdd = listener::onInterpretationAdded,
+                    onDelete = listener::onInterpretationRemoved,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             },
             {
                 LabeledFormTextFieldColumn(
-                    texts = behaviors,
+                    texts = state.behaviors,
                     label = R.string.preparation_behaviors_label,
                     descriptionLabel = R.string.preparation_behaviors_body,
-                    onAdd = addBehavior,
-                    onDelete = removeBehavior,
+                    onAdd = listener::onBehaviorAdded,
+                    onDelete = listener::onBehaviorRemoved,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             },
             {
                 LabeledFormTextFieldColumn(
-                    texts = actions,
+                    texts = state.actions,
                     label = R.string.preparation_actions_label,
                     descriptionLabel = R.string.preparation_actions_body,
-                    onAdd = addAction,
-                    onDelete = removeAction,
+                    onAdd = listener::onActionAdded,
+                    onDelete = listener::onActionRemoved,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             }
         )
     )
+}
+
+class PreparationFormState(
+    thoughts: List<String>,
+    interpretations: List<String>,
+    behaviors: List<String>,
+    actions: List<String>
+) {
+    var thoughts = mutableStateListOf<String>()
+    var interpretations = mutableStateListOf<String>()
+    var behaviors = mutableStateListOf<String>()
+    var actions = mutableStateListOf<String>()
+
+    init {
+        this.thoughts.addAll(thoughts)
+        this.interpretations.addAll(interpretations)
+        this.behaviors.addAll(behaviors)
+        this.actions.addAll(actions)
+    }
+}
+
+interface PreparationFormListener {
+    fun onThoughtAdded(thought: String)
+    fun onThoughtRemoved(thought: String)
+    fun onInterpretationAdded(interpretation: String)
+    fun onInterpretationRemoved(interpretation: String)
+    fun onBehaviorAdded(behavior: String)
+    fun onBehaviorRemoved(behavior: String)
+    fun onActionAdded(action: String)
+    fun onActionRemoved(action: String)
+}
+
+class BasePreparationFormListener(private val state: PreparationFormState) : PreparationFormListener {
+    override fun onThoughtAdded(thought: String) {
+        state.thoughts.add(thought)
+    }
+    override fun onThoughtRemoved(thought: String) {
+        state.thoughts.remove(thought)
+    }
+    override fun onInterpretationAdded(interpretation: String) {
+        state.interpretations.add(interpretation)
+    }
+    override fun onInterpretationRemoved(interpretation: String) {
+        state.interpretations.remove(interpretation)
+    }
+    override fun onBehaviorAdded(behavior: String) {
+        state.behaviors.add(behavior)
+    }
+    override fun onBehaviorRemoved(behavior: String) {
+        state.behaviors.remove(behavior)
+    }
+    override fun onActionAdded(action: String) {
+        state.actions.add(action)
+    }
+    override fun onActionRemoved(action: String) {
+        state.actions.remove(action)
+    }
 }
