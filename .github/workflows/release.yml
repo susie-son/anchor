@@ -1,6 +1,8 @@
 name: release
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,13 +12,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: ./gradlew assemble
-      - run: ./gradlew app:bundleRelease
+      - run: ./gradlew assembleRelease
       - uses: actions/upload-artifact@v4
         with:
-          name: app-release.apk
+          name: app-release
           path: app/build/outputs/apk/release/app-release.apk
-      - uses: actions/upload-artifact@v4
-        with:
-          name: app-release.aab
-          path: app/build/outputs/apk/release/app-release.aab
