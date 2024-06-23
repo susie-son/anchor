@@ -21,12 +21,15 @@ import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun AuthenticateDialog(
+    show: Boolean,
     email: String,
     error: String?,
-    onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
+    onSetShow: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (!show) return
+
     val state = remember {
         mutableStateOf(
             LoginFormState(
@@ -42,7 +45,7 @@ fun AuthenticateDialog(
         }
     }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = { onSetShow(false) }) {
         Card(
             modifier = modifier
         ) {

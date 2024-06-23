@@ -15,27 +15,27 @@ fun DiscardConfirmationDialog(
     onDiscard: () -> Unit,
     onSetShow: (Boolean) -> Unit,
 ) {
-    if (show) {
-        val onDismiss = { onSetShow(false) }
-        val onConfirm = {
-            onSetShow(false)
-            onDiscard()
-        }
-        AlertDialog(
-            text = { Text(stringResource(R.string.discard_dialog_text)) },
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(
-                    onClick = onConfirm
-                ) { Text(stringResource(R.string.discard_dialog_confirm)) }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = onDismiss
-                ) { Text(stringResource(R.string.dialog_dismiss)) }
-            }
-        )
+    if (!show) return
+
+    val onDismiss = { onSetShow(false) }
+    val onConfirm = {
+        onSetShow(false)
+        onDiscard()
     }
+    AlertDialog(
+        text = { Text(stringResource(R.string.discard_dialog_text)) },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm
+            ) { Text(stringResource(R.string.discard_dialog_confirm)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) { Text(stringResource(R.string.dialog_dismiss)) }
+        }
+    )
 }
 
 @Preview(showBackground = true)

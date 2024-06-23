@@ -153,14 +153,13 @@ fun UserSettings(
         }
     }
 
-    if (showAuthenticateDialog) {
-        AuthenticateDialog(
-            error = error,
-            email = email,
-            onDismiss = { showAuthenticateDialog = false },
-            onConfirm = { password ->
-                onAuthenticate(email, password, sensitiveAction)
-            }
-        )
-    }
+    AuthenticateDialog(
+        show = showAuthenticateDialog,
+        error = error,
+        email = email,
+        onConfirm = { password ->
+            onAuthenticate(email, password, sensitiveAction)
+        },
+        onSetShow = { showAuthenticateDialog = it },
+    )
 }
