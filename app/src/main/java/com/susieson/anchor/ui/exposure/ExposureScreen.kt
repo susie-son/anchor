@@ -29,11 +29,11 @@ fun ExposureScreen(
             PreparationForm(
                 userId = userId,
                 exposureId = exposureId,
-                viewModel = viewModel,
                 onDiscard = {
                     onNavigateUp()
                     viewModel.deleteExposure(userId, exposure!!.id)
                 },
+                addPreparation = viewModel::addPreparation,
                 setScaffold = setScaffold,
                 modifier = modifier
             )
@@ -44,8 +44,8 @@ fun ExposureScreen(
                 userId = userId,
                 exposureId = exposureId,
                 title = exposure!!.title,
-                viewModel = viewModel,
                 onNavigateUp = onNavigateUp,
+                markAsInProgress = viewModel::markAsInProgress,
                 setScaffold = setScaffold,
                 modifier = modifier
             )
@@ -55,8 +55,8 @@ fun ExposureScreen(
             ReviewForm(
                 userId = userId,
                 exposureId = exposureId,
-                viewModel = viewModel,
                 onDiscard = onNavigateUp,
+                addReview = viewModel::addReview,
                 setScaffold = setScaffold,
                 modifier = modifier
             )

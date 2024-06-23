@@ -45,8 +45,8 @@ fun ExposureReady(
     userId: String,
     exposureId: String,
     title: String,
-    viewModel: ExposureViewModel,
     onNavigateUp: () -> Unit,
+    markAsInProgress: (String, String, String) -> Unit,
     setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -91,7 +91,7 @@ fun ExposureReady(
             onCheckedChange = { index, value -> checked[index] = value }
         )
         FilledTonalButton(
-            onClick = { viewModel.markAsInProgress(userId, exposureId, title) },
+            onClick = { markAsInProgress(userId, exposureId, title) },
             enabled = checked.all { it },
             modifier = Modifier.padding(16.dp).fillMaxWidth()
         ) {

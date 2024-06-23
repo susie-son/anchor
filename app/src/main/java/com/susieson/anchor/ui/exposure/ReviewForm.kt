@@ -19,6 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Emotion
+import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
@@ -35,8 +37,8 @@ import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 fun ReviewForm(
     userId: String,
     exposureId: String,
-    viewModel: ExposureViewModel,
     onDiscard: () -> Unit,
+    addReview: (String, String, Review) -> Unit,
     setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -109,15 +111,19 @@ fun ReviewForm(
                 actions = listOf(
                     AnchorIconButton(
                         onClick = {
-                            viewModel.addReview(
-                                userId,
-                                exposureId,
-                                fear,
-                                sadness,
-                                anxiety,
-                                guilt,
-                                shame,
-                                happiness,
+                            val emotions =
+                                listOf(
+                                    fear to Emotion.FEAR,
+                                    sadness to Emotion.SADNESS,
+                                    anxiety to Emotion.ANXIETY,
+                                    guilt to Emotion.GUILT,
+                                    shame to Emotion.SHAME,
+                                    happiness to Emotion.HAPPINESS
+                                )
+                                    .filter { it.first }
+                                    .map { it.second }
+                            val review = Review(
+                                emotions,
                                 thoughts,
                                 sensations,
                                 behaviors,
@@ -127,6 +133,7 @@ fun ReviewForm(
                                 engagingRating,
                                 learnings
                             )
+                            addReview(userId, exposureId, review)
                         },
                         icon = Icons.Default.Done,
                         contentDescription = R.string.content_description_done,

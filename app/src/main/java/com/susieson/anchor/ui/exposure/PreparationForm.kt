@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
@@ -31,8 +32,8 @@ import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
 fun PreparationForm(
     userId: String,
     exposureId: String,
-    viewModel: ExposureViewModel,
     onDiscard: () -> Unit,
+    addPreparation: (String, String, String, String, Preparation) -> Unit,
     setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -69,16 +70,9 @@ fun PreparationForm(
                 actions = listOf(
                     AnchorIconButton(
                         onClick = {
-                            viewModel.addPreparation(
-                                userId,
-                                exposureId,
-                                title,
-                                description,
-                                thoughts,
-                                interpretations,
-                                behaviors,
-                                actions
-                            )
+                            val preparation =
+                                Preparation(thoughts, interpretations, behaviors, actions)
+                            addPreparation(userId, exposureId, title, description, preparation)
                         },
                         icon = Icons.Default.Done,
                         contentDescription = R.string.content_description_done,
