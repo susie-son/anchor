@@ -16,12 +16,6 @@ fun AnchorFloatingActionButton(
         content = {
             icon()
             text()
-//            Icon(
-//                state.icon,
-//                contentDescription = state.contentDescription?.let { stringResource(it) },
-//                modifier = Modifier.padding(end = 8.dp)
-//            )
-//            Text(stringResource(state.text))
         },
         modifier = modifier
     )

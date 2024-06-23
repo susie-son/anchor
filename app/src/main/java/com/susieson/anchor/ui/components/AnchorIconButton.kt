@@ -13,9 +13,5 @@ fun AnchorIconButton(
 ) {
     IconButton(onClick = onClick, enabled = enabled, modifier = modifier) {
         icon()
-//        Icon(
-//            state.icon,
-//            contentDescription = stringResource(state.contentDescription)
-//        )
     }
 }
