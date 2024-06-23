@@ -120,6 +120,6 @@ dependencies {
     testImplementation(libs.junit)
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    exclude("**/ui/theme/**") // exclude generated Material 3 theme
+detekt {
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
 }
