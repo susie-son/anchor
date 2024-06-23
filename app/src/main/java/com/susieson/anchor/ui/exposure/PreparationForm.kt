@@ -69,12 +69,7 @@ fun PreparationForm(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
-        val state = PreparationFormState(
-            thoughts = thoughts,
-            interpretations = interpretations,
-            behaviors = behaviors,
-            actions = actions
-        )
+        val state = PreparationFormState()
         val listener = BasePreparationFormListener(state)
 
         BasicFormSection(
@@ -187,23 +182,11 @@ private fun PreparationFormSection(
     )
 }
 
-class PreparationFormState(
-    thoughts: List<String>,
-    interpretations: List<String>,
-    behaviors: List<String>,
-    actions: List<String>
-) {
+class PreparationFormState {
     var thoughts = mutableStateListOf<String>()
     var interpretations = mutableStateListOf<String>()
     var behaviors = mutableStateListOf<String>()
     var actions = mutableStateListOf<String>()
-
-    init {
-        this.thoughts.addAll(thoughts)
-        this.interpretations.addAll(interpretations)
-        this.behaviors.addAll(behaviors)
-        this.actions.addAll(actions)
-    }
 }
 
 interface PreparationFormListener {
