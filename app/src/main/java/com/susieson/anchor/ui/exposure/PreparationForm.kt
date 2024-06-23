@@ -46,12 +46,10 @@ fun PreparationForm(
 
     var showDiscardConfirmation by remember { mutableStateOf(false) }
 
-    val isValid =
-        title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
-            interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
-    val isEmpty =
-        title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
-            interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+    val isValid = title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
+        interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
+    val isEmpty = title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
+        interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
 
     setScaffold(
         AnchorScaffold(
@@ -151,29 +149,31 @@ private fun BasicFormSection(
 ) {
     FormSection(
         modifier = modifier,
-        items = arrayOf({
-            FormTextField(
-                value = title,
-                label = R.string.preparation_title_label,
-                errorLabel = R.string.preparation_title_error,
-                isError = title.isBlank(),
-                imeAction = ImeAction.Next,
-                onValueChange = onTitleChange,
-                bringIntoViewRequester = bringIntoViewRequester
-            )
-        },
-        {
-            FormTextField(
-                value = description,
-                label = R.string.preparation_description_label,
-                errorLabel = R.string.preparation_description_error,
-                isError = description.isBlank(),
-                imeAction = ImeAction.Done,
-                onValueChange = onDescriptionChange,
-                singleLine = false,
-                bringIntoViewRequester = bringIntoViewRequester
-            )
-        })
+        items = arrayOf(
+            {
+                FormTextField(
+                    value = title,
+                    label = R.string.preparation_title_label,
+                    errorLabel = R.string.preparation_title_error,
+                    isError = title.isBlank(),
+                    imeAction = ImeAction.Next,
+                    onValueChange = onTitleChange,
+                    bringIntoViewRequester = bringIntoViewRequester
+                )
+            },
+            {
+                FormTextField(
+                    value = description,
+                    label = R.string.preparation_description_label,
+                    errorLabel = R.string.preparation_description_error,
+                    isError = description.isBlank(),
+                    imeAction = ImeAction.Done,
+                    onValueChange = onDescriptionChange,
+                    singleLine = false,
+                    bringIntoViewRequester = bringIntoViewRequester
+                )
+            }
+        )
     )
 }
 
@@ -197,43 +197,45 @@ private fun PreparationFormSection(
 ) {
     FormSection(
         modifier = modifier,
-        items = arrayOf({
-            LabeledFormTextFieldColumn(
-                texts = thoughts,
-                label = R.string.preparation_thoughts_label,
-                descriptionLabel = R.string.preparation_thoughts_body,
-                onAdd = addThought,
-                onDelete = removeThought,
-                bringIntoViewRequester = bringIntoViewRequester
-            )
-            LabeledFormTextFieldColumn(
-                texts = interpretations,
-                label = R.string.preparation_interpretations_label,
-                descriptionLabel = R.string.preparation_interpretations_body,
-                onAdd = addInterpretation,
-                onDelete = removeInterpretation,
-                bringIntoViewRequester = bringIntoViewRequester
-            )
-        },
-        {
-            LabeledFormTextFieldColumn(
-                texts = behaviors,
-                label = R.string.preparation_behaviors_label,
-                descriptionLabel = R.string.preparation_behaviors_body,
-                onAdd = addBehavior,
-                onDelete = removeBehavior,
-                bringIntoViewRequester = bringIntoViewRequester
-            )
-        },
-        {
-            LabeledFormTextFieldColumn(
-                texts = actions,
-                label = R.string.preparation_actions_label,
-                descriptionLabel = R.string.preparation_actions_body,
-                onAdd = addAction,
-                onDelete = removeAction,
-                bringIntoViewRequester = bringIntoViewRequester
-            )
-        })
+        items = arrayOf(
+            {
+                LabeledFormTextFieldColumn(
+                    texts = thoughts,
+                    label = R.string.preparation_thoughts_label,
+                    descriptionLabel = R.string.preparation_thoughts_body,
+                    onAdd = addThought,
+                    onDelete = removeThought,
+                    bringIntoViewRequester = bringIntoViewRequester
+                )
+                LabeledFormTextFieldColumn(
+                    texts = interpretations,
+                    label = R.string.preparation_interpretations_label,
+                    descriptionLabel = R.string.preparation_interpretations_body,
+                    onAdd = addInterpretation,
+                    onDelete = removeInterpretation,
+                    bringIntoViewRequester = bringIntoViewRequester
+                )
+            },
+            {
+                LabeledFormTextFieldColumn(
+                    texts = behaviors,
+                    label = R.string.preparation_behaviors_label,
+                    descriptionLabel = R.string.preparation_behaviors_body,
+                    onAdd = addBehavior,
+                    onDelete = removeBehavior,
+                    bringIntoViewRequester = bringIntoViewRequester
+                )
+            },
+            {
+                LabeledFormTextFieldColumn(
+                    texts = actions,
+                    label = R.string.preparation_actions_label,
+                    descriptionLabel = R.string.preparation_actions_body,
+                    onAdd = addAction,
+                    onDelete = removeAction,
+                    bringIntoViewRequester = bringIntoViewRequester
+                )
+            }
+        )
     )
 }
