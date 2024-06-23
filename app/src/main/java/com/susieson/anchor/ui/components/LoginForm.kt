@@ -52,7 +52,6 @@ fun LoginForm(
             emailError = emailError,
             emailEnabled = emailEnabled,
             onEmailChange = onEmailChange,
-            modifier = modifier
         )
         PasswordTextField(
             password = password,
@@ -60,7 +59,6 @@ fun LoginForm(
             passwordVisible = passwordVisible,
             onPasswordChange = onPasswordChange,
             onPasswordVisibleChange = onPasswordVisibleChange,
-            modifier = modifier
         )
         error?.let {
             Text(
@@ -73,7 +71,6 @@ fun LoginForm(
         Button(
             onClick = onSubmit,
             enabled = isValid,
-            modifier = modifier
         ) {
             Text(stringResource(submitButtonText))
         }

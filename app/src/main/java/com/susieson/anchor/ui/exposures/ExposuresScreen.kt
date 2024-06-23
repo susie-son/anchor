@@ -35,10 +35,10 @@ import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
-import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
+import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
@@ -163,9 +163,9 @@ fun ExposureList(
                         }
                     )
                 },
-                modifier = modifier.clickable { onItemClick(exposure.id) }
+                modifier = Modifier.clickable { onItemClick(exposure.id) }
             )
-            HorizontalDivider(modifier = modifier)
+            HorizontalDivider()
         }
     }
 }

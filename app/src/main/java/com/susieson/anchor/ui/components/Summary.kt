@@ -22,12 +22,14 @@ fun SummaryItem(
     isOnSameLine: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    label?.let {
-        LabeledItem(it, modifier = modifier, isOnSameLine = isOnSameLine) {
+    if (label != null) {
+        LabeledItem(label, modifier = modifier, isOnSameLine = isOnSameLine) {
             content()
         }
-    } ?: Box(modifier = modifier) {
-        content()
+    } else {
+        Box(modifier = modifier) {
+            content()
+        }
     }
 }
 
@@ -92,7 +94,7 @@ fun TextSummaryItem(
 fun SummarySection(modifier: Modifier = Modifier, vararg items: @Composable () -> Unit) {
     OutlinedCard(modifier = modifier.padding(horizontal = 16.dp)) {
         Column(
-            modifier = modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items.forEach {

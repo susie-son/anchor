@@ -47,20 +47,14 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
 import kotlinx.coroutines.launch
 
-data class AnchorFormState(
-    val isValid: Boolean,
-    val onSubmit: () -> Unit,
-    val onDiscard: () -> Unit
-)
-
 @Composable
 fun LabeledFormSection(
     @StringRes
     label: Int,
     @StringRes
     descriptionLabel: Int?,
+    vararg items: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    vararg items: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier.padding(16.dp),
@@ -83,7 +77,7 @@ fun LabeledFormSection(
 }
 
 @Composable
-fun FormSection(modifier: Modifier = Modifier, vararg items: @Composable () -> Unit) {
+fun FormSection(vararg items: @Composable () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -214,7 +208,6 @@ fun LabeledFormTextFieldColumn(
             texts = texts,
             onAdd = onAdd,
             onDelete = onDelete,
-            modifier = modifier,
             bringIntoViewRequester = bringIntoViewRequester
         )
     }
@@ -235,7 +228,6 @@ fun FormTextFieldColumn(
 
     Column(modifier = modifier) {
         ListItem(
-            modifier = modifier,
             headlineContent = {
                 BasicTextField(
                     value = field,
@@ -255,7 +247,7 @@ fun FormTextFieldColumn(
                         color = OutlinedTextFieldDefaults.colors().focusedTextColor
                     ),
                     cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
-                    modifier = modifier
+                    modifier = Modifier
                         .bringIntoViewRequester(bringIntoViewRequester)
                         .onFocusChanged {
                             if (it.isFocused) {
@@ -303,9 +295,8 @@ fun FormTextFieldColumn(
             }
         )
         texts.forEach { text ->
-            HorizontalDivider(modifier = modifier)
+            HorizontalDivider()
             ListItem(
-                modifier = modifier,
                 headlineContent = { Text(text = text) },
                 trailingContent = {
                     IconButton(onClick = { onDelete(text) }) {
@@ -346,7 +337,6 @@ fun FormRatingItem(
             onValueChange = onValueChange,
             valueRange = 0f..10f,
             steps = 9,
-            modifier = modifier
         )
     }
 }

@@ -40,11 +40,10 @@ fun AnchorApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
             }
         }
     ) { innerPadding ->
-        Box(modifier = modifier.padding(innerPadding)) {
+        Box(modifier = Modifier.padding(innerPadding)) {
             AnchorNavHost(
                 user = user,
-                setScaffold = { scaffold = it },
-                modifier = modifier
+                setScaffold = { scaffold = it }
             )
         }
     }

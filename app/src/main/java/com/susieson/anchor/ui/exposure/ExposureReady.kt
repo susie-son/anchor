@@ -115,7 +115,7 @@ fun ReadyCheckList(
                     onCheckedChange = { onCheckedChange(0, it) }
                 )
             },
-            modifier = modifier.height(40.dp)
+            modifier = Modifier.height(40.dp)
         )
         ListItem(
             headlineContent = { Text(stringResource(R.string.ready_check_2)) },
@@ -125,7 +125,7 @@ fun ReadyCheckList(
                     onCheckedChange = { onCheckedChange(1, it) }
                 )
             },
-            modifier = modifier.height(40.dp)
+            modifier = Modifier.height(40.dp)
         )
     }
 }
@@ -136,7 +136,7 @@ fun NotificationCard(modifier: Modifier = Modifier, postNotificationPermission: 
     val context = LocalContext.current
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(

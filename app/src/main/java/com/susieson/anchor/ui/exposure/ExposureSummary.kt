@@ -50,20 +50,19 @@ fun ExposureSummary(
     )
 
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         BasicSummarySection(
             exposure.updatedAt,
             exposure.title,
             exposure.description,
-            modifier
         )
         exposure.preparation?.let {
-            PreparationSummarySection(it, modifier)
+            PreparationSummarySection(it)
         }
         exposure.review?.let {
-            ReviewSummarySection(it, modifier)
+            ReviewSummarySection(it)
         }
     }
 }

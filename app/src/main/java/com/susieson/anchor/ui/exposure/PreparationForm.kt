@@ -92,7 +92,7 @@ fun PreparationForm(
     )
 
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
@@ -101,7 +101,6 @@ fun PreparationForm(
             description = description,
             onTitleChange = { title = it },
             onDescriptionChange = { description = it },
-            modifier = modifier,
             bringIntoViewRequester = bringIntoViewRequester
         )
         PreparationFormSection(
@@ -117,7 +116,6 @@ fun PreparationForm(
             removeInterpretation = { interpretations.remove(it) },
             removeBehavior = { behaviors.remove(it) },
             removeAction = { actions.remove(it) },
-            modifier = modifier,
             bringIntoViewRequester = bringIntoViewRequester
         )
     }
@@ -153,7 +151,7 @@ private fun BasicFormSection(
 ) {
     FormSection(
         modifier = modifier,
-        {
+        items = arrayOf({
             FormTextField(
                 value = title,
                 label = R.string.preparation_title_label,
@@ -161,7 +159,6 @@ private fun BasicFormSection(
                 isError = title.isBlank(),
                 imeAction = ImeAction.Next,
                 onValueChange = onTitleChange,
-                modifier = modifier,
                 bringIntoViewRequester = bringIntoViewRequester
             )
         },
@@ -174,10 +171,9 @@ private fun BasicFormSection(
                 imeAction = ImeAction.Done,
                 onValueChange = onDescriptionChange,
                 singleLine = false,
-                modifier = modifier,
                 bringIntoViewRequester = bringIntoViewRequester
             )
-        }
+        })
     )
 }
 
@@ -201,14 +197,13 @@ private fun PreparationFormSection(
 ) {
     FormSection(
         modifier = modifier,
-        {
+        items = arrayOf({
             LabeledFormTextFieldColumn(
                 texts = thoughts,
                 label = R.string.preparation_thoughts_label,
                 descriptionLabel = R.string.preparation_thoughts_body,
                 onAdd = addThought,
                 onDelete = removeThought,
-                modifier = modifier,
                 bringIntoViewRequester = bringIntoViewRequester
             )
             LabeledFormTextFieldColumn(
@@ -217,7 +212,6 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_interpretations_body,
                 onAdd = addInterpretation,
                 onDelete = removeInterpretation,
-                modifier = modifier,
                 bringIntoViewRequester = bringIntoViewRequester
             )
         },
@@ -228,7 +222,6 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_behaviors_body,
                 onAdd = addBehavior,
                 onDelete = removeBehavior,
-                modifier = modifier,
                 bringIntoViewRequester = bringIntoViewRequester
             )
         },
@@ -239,9 +232,8 @@ private fun PreparationFormSection(
                 descriptionLabel = R.string.preparation_actions_body,
                 onAdd = addAction,
                 onDelete = removeAction,
-                modifier = modifier,
                 bringIntoViewRequester = bringIntoViewRequester
             )
-        }
+        })
     )
 }

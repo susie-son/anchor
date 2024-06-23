@@ -138,12 +138,11 @@ fun ReviewForm(
     )
 
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
         FormSection(
-            modifier = modifier,
             {
                 FormSelectFilterItem(
                     label = R.string.review_emotions_label,
@@ -179,7 +178,6 @@ fun ReviewForm(
             }
         )
         FormSection(
-            modifier = modifier,
             {
                 LabeledFormTextFieldColumn(
                     texts = thoughts,
@@ -187,7 +185,6 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_thoughts_body,
                     onAdd = { thoughts.add(it) },
                     onDelete = { thoughts.remove(it) },
-                    modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             },
@@ -198,7 +195,6 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_sensations_body,
                     onAdd = { sensations.add(it) },
                     onDelete = { sensations.remove(it) },
-                    modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             },
@@ -209,7 +205,6 @@ fun ReviewForm(
                     descriptionLabel = R.string.review_behaviors_body,
                     onAdd = { behaviors.add(it) },
                     onDelete = { behaviors.remove(it) },
-                    modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             }
@@ -217,13 +212,11 @@ fun ReviewForm(
         LabeledFormSection(
             label = R.string.review_effectiveness_label,
             descriptionLabel = null,
-            modifier = modifier,
             {
                 FormRatingItem(
                     label = R.string.review_experiencing_label,
                     value = experiencingRating,
                     onValueChange = { experiencingRating = it },
-                    modifier = modifier
                 )
             },
             {
@@ -231,7 +224,6 @@ fun ReviewForm(
                     label = R.string.review_anchoring_label,
                     value = anchoringRating,
                     onValueChange = { anchoringRating = it },
-                    modifier = modifier
                 )
             },
             {
@@ -239,7 +231,6 @@ fun ReviewForm(
                     label = R.string.review_thinking_label,
                     value = thinkingRating,
                     onValueChange = { thinkingRating = it },
-                    modifier = modifier
                 )
             },
             {
@@ -247,14 +238,12 @@ fun ReviewForm(
                     label = R.string.review_engaging_label,
                     value = engagingRating,
                     onValueChange = { engagingRating = it },
-                    modifier = modifier
                 )
             }
         )
         LabeledFormSection(
             label = R.string.review_learnings_label,
             descriptionLabel = R.string.review_learnings_body,
-            modifier = modifier,
             {
                 FormTextField(
                     value = learnings,
@@ -264,7 +253,6 @@ fun ReviewForm(
                     imeAction = ImeAction.Done,
                     onValueChange = { learnings = it },
                     singleLine = false,
-                    modifier = modifier,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
             }
