@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     id("io.gitlab.arturbosch.detekt")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
