@@ -155,7 +155,7 @@ fun PasswordTextField(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginFormPreview() {
+private fun LoginFormPreview() {
     AnchorTheme {
         LoginForm(
             email = "email@example.com",

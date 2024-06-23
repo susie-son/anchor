@@ -35,7 +35,7 @@ fun DiscardConfirmationDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun DiscardConfirmationDialogPreview() {
+private fun DiscardConfirmationDialogPreview() {
     AnchorTheme {
         DiscardConfirmationDialog(
             onConfirm = {},

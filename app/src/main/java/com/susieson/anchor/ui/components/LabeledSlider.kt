@@ -74,6 +74,6 @@ fun LabeledSlider(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun LabeledSliderPreview() {
+private fun LabeledSliderPreview() {
     LabeledSlider(value = 0.5f, onValueChange = {})
 }

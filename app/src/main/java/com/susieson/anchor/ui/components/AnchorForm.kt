@@ -344,7 +344,7 @@ fun FormRatingItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
-fun FormTextFieldColumnPreview() {
+private fun FormTextFieldColumnPreview() {
     FormTextFieldColumn(
         texts = mutableListOf("1", "2", "3"),
         onAdd = {},
