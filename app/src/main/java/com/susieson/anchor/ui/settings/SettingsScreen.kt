@@ -28,8 +28,8 @@ import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
-import com.susieson.anchor.ui.components.form.BaseLoginFormListener
 import com.susieson.anchor.ui.components.form.LoginForm
+import com.susieson.anchor.ui.components.form.LoginFormListener
 import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
@@ -96,15 +96,17 @@ fun AnonymousSettings(
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state = LoginFormState(
-        email = "",
-        password = "",
-        passwordVisible = false,
-        error = error
-    )
-    val listener = object : BaseLoginFormListener(state) {
+    val state = remember {
+        mutableStateOf(
+            LoginFormState(
+                error = error
+            )
+        )
+    }
+    val form by state
+    val listener = object : LoginFormListener(state) {
         override fun onSubmit() {
-            onLinkAccount(state.email, state.password)
+            onLinkAccount(form.email, form.password)
         }
     }
 
@@ -116,7 +118,7 @@ fun AnonymousSettings(
             ) {
                 Text(stringResource(R.string.anonymous_settings_body))
                 LoginForm(
-                    state = state,
+                    state = form,
                     listener = listener,
                     submitButtonText = R.string.login_create_account_button,
                     modifier = Modifier.fillMaxWidth()
