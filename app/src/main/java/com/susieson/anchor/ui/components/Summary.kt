@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -36,9 +37,9 @@ fun SummaryItem(
 @Composable
 fun CommaSeparatedListSummaryItem(
     list: List<String>,
-    modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null
+    label: Int?,
+    modifier: Modifier = Modifier,
 ) {
     SummaryItem(label, modifier) {
         Text(
@@ -51,9 +52,9 @@ fun CommaSeparatedListSummaryItem(
 @Composable
 fun LineSeparatedListSummaryItem(
     list: List<String>,
-    modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null
+    label: Int?,
+    modifier: Modifier = Modifier,
 ) {
     SummaryItem(label, modifier) {
         list.forEach {
@@ -65,9 +66,9 @@ fun LineSeparatedListSummaryItem(
 @Composable
 fun RatingSummaryItem(
     rating: Float,
-    modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null
+    label: Int,
+    modifier: Modifier = Modifier,
 ) {
     SummaryItem(label, modifier, isOnSameLine = true) {
         Text(
@@ -80,9 +81,9 @@ fun RatingSummaryItem(
 @Composable
 fun TextSummaryItem(
     text: String,
-    modifier: Modifier = Modifier,
     @StringRes
-    label: Int? = null,
+    label: Int?,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge
 ) {
     SummaryItem(label, modifier) {
@@ -91,7 +92,7 @@ fun TextSummaryItem(
 }
 
 @Composable
-fun SummarySection(modifier: Modifier = Modifier, vararg items: @Composable () -> Unit) {
+fun SummarySection(items: List<@Composable ColumnScope.() -> Unit>, modifier: Modifier = Modifier) {
     OutlinedCard(modifier = modifier.padding(horizontal = 16.dp)) {
         Column(
             modifier = Modifier.padding(16.dp),

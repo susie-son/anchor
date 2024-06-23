@@ -76,18 +76,26 @@ fun BasicSummarySection(
 ) {
     SummarySection(
         modifier = modifier,
-        {
-            updatedAt?.let {
-                val completedAt = DateFormat.getDateInstance().format(it.toDate())
+        items = listOf(
+            {
+                updatedAt?.let {
+                    val completedAt = DateFormat.getDateInstance().format(it.toDate())
+                    TextSummaryItem(
+                        completedAt,
+                        label = R.string.summary_completed_at_label,
+                        textStyle = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            {
                 TextSummaryItem(
-                    label = R.string.summary_completed_at_label,
-                    text = completedAt,
-                    textStyle = MaterialTheme.typography.bodyMedium
+                    title,
+                    label = null,
+                    textStyle = MaterialTheme.typography.titleLarge
                 )
-            }
-        },
-        { TextSummaryItem(text = title, textStyle = MaterialTheme.typography.titleLarge) },
-        { TextSummaryItem(text = description) }
+            },
+            { TextSummaryItem(description, label = null) }
+        )
     )
 }
 
@@ -95,30 +103,32 @@ fun BasicSummarySection(
 fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Modifier) {
     SummarySection(
         modifier = modifier,
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_thoughts_label,
-                list = preparation.thoughts
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_interpretations_label,
-                list = preparation.interpretations
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_behaviors_label,
-                list = preparation.behaviors
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_actions_label,
-                list = preparation.actions
-            )
-        }
+        items = listOf(
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.thoughts,
+                    label = R.string.preparation_thoughts_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.interpretations,
+                    label = R.string.preparation_interpretations_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.behaviors,
+                    label = R.string.preparation_behaviors_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.actions,
+                    label = R.string.preparation_actions_label
+                )
+            }
+        )
     )
 }
 
@@ -139,61 +149,45 @@ fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
         }
     SummarySection(
         modifier = modifier,
-        {
-            CommaSeparatedListSummaryItem(
-                label = R.string.review_emotions_label,
-                list = emotions
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.review_thoughts_label,
-                list = review.thoughts
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.review_sensations_label,
-                list = review.sensations
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.review_behaviors_label,
-                list = review.behaviors
-            )
-        },
-        { HorizontalDivider(Modifier.padding(8.dp)) },
-        {
-            RatingSummaryItem(
-                label = R.string.review_experiencing_label,
-                rating = review.experiencing
-            )
-        },
-        {
-            RatingSummaryItem(
-                label = R.string.review_anchoring_label,
-                rating = review.anchoring
-            )
-        },
-        {
-            RatingSummaryItem(
-                label = R.string.review_thinking_label,
-                rating = review.thinking
-            )
-        },
-        {
-            RatingSummaryItem(
-                label = R.string.review_engaging_label,
-                rating = review.engaging
-            )
-        },
-        { HorizontalDivider(Modifier.padding(8.dp)) },
-        {
-            TextSummaryItem(
-                label = R.string.review_learnings_label,
-                text = review.learnings
-            )
-        }
+        items = listOf(
+            {
+                CommaSeparatedListSummaryItem(emotions, label = R.string.review_emotions_label)
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    review.thoughts,
+                    label = R.string.review_thoughts_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    review.sensations,
+                    label = R.string.review_sensations_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    review.behaviors,
+                    label = R.string.review_behaviors_label
+                )
+            },
+            { HorizontalDivider(Modifier.padding(8.dp)) },
+            {
+                RatingSummaryItem(review.experiencing, label = R.string.review_experiencing_label)
+            },
+            {
+                RatingSummaryItem(review.anchoring, label = R.string.review_anchoring_label)
+            },
+            {
+                RatingSummaryItem(review.thinking, label = R.string.review_thinking_label)
+            },
+            {
+                RatingSummaryItem(review.engaging, label = R.string.review_engaging_label)
+            },
+            { HorizontalDivider(Modifier.padding(8.dp)) },
+            {
+                TextSummaryItem(review.learnings, label = R.string.review_learnings_label)
+            }
+        )
     )
 }
