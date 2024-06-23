@@ -99,9 +99,9 @@ fun FormTextField(
     isError: Boolean,
     imeAction: ImeAction,
     onValueChange: (String) -> Unit,
+    bringIntoViewRequester: BringIntoViewRequester,
     modifier: Modifier = Modifier,
-    singleLine: Boolean = true,
-    bringIntoViewRequester: BringIntoViewRequester
+    singleLine: Boolean = true
 ) {
     val coroutineScope = rememberCoroutineScope()
 

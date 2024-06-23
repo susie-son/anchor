@@ -144,8 +144,8 @@ private fun BasicFormSection(
     description: String,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    bringIntoViewRequester: BringIntoViewRequester
+    bringIntoViewRequester: BringIntoViewRequester,
+    modifier: Modifier = Modifier
 ) {
     FormSection(
         modifier = modifier,
@@ -192,8 +192,8 @@ private fun PreparationFormSection(
     removeInterpretation: (String) -> Unit,
     removeBehavior: (String) -> Unit,
     removeAction: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    bringIntoViewRequester: BringIntoViewRequester
+    bringIntoViewRequester: BringIntoViewRequester,
+    modifier: Modifier = Modifier
 ) {
     FormSection(
         modifier = modifier,

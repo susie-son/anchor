@@ -102,8 +102,8 @@ fun ExposureReady(
 
 @Composable
 fun ReadyCheckList(
-    modifier: Modifier = Modifier,
     checked: List<Boolean>,
+    modifier: Modifier = Modifier,
     onCheckedChange: (Int, Boolean) -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -132,7 +132,7 @@ fun ReadyCheckList(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun NotificationCard(modifier: Modifier = Modifier, postNotificationPermission: PermissionState) {
+fun NotificationCard(postNotificationPermission: PermissionState, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     Card(modifier = modifier.fillMaxWidth()) {
         Column(

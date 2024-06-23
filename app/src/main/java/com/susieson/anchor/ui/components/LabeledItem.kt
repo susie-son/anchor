@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.dp
 fun LabeledItem(
     @StringRes
     label: Int,
+    isOnSameLine: Boolean,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
-    isOnSameLine: Boolean,
     content: @Composable () -> Unit
 ) {
     val labelItem: @Composable (modifier: Modifier) -> Unit = {

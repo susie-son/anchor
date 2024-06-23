@@ -43,10 +43,10 @@ import java.text.DateFormat
 @Composable
 fun ExposuresScreen(
     userId: String,
-    modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
     onSettings: () -> Unit,
     setScaffold: (AnchorScaffold) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
     val exposureId by viewModel.exposureId.collectAsState()
@@ -115,8 +115,8 @@ fun EmptyExposureList(modifier: Modifier = Modifier) {
 
 @Composable
 fun ExposureList(
-    modifier: Modifier = Modifier,
     exposures: List<Exposure>,
+    modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
