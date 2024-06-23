@@ -1,10 +1,9 @@
-package com.susieson.anchor.ui.components
+package com.susieson.anchor.ui.components.form
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.susieson.anchor.R
@@ -12,10 +11,17 @@ import com.susieson.anchor.ui.theme.AnchorTheme
 
 @Composable
 fun DiscardConfirmationDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    show: Boolean,
+    onDiscard: () -> Unit,
+    onSetShow: (Boolean) -> Unit,
 ) {
+    if (!show) return
+
+    val onDismiss = { onSetShow(false) }
+    val onConfirm = {
+        onSetShow(false)
+        onDiscard()
+    }
     AlertDialog(
         text = { Text(stringResource(R.string.discard_dialog_text)) },
         onDismissRequest = onDismiss,
@@ -28,18 +34,18 @@ fun DiscardConfirmationDialog(
             TextButton(
                 onClick = onDismiss
             ) { Text(stringResource(R.string.dialog_dismiss)) }
-        },
-        modifier = modifier
+        }
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun DiscardConfirmationDialogPreview() {
+private fun DiscardConfirmationDialogPreview() {
     AnchorTheme {
         DiscardConfirmationDialog(
-            onConfirm = {},
-            onDismiss = {}
+            show = true,
+            onSetShow = {},
+            onDiscard = {}
         )
     }
 }

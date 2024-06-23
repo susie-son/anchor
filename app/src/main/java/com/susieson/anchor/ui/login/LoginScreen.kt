@@ -6,45 +6,53 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.AnchorScaffold
-import com.susieson.anchor.ui.components.LoginForm
+import com.susieson.anchor.ui.components.AnchorTopAppBar
+import com.susieson.anchor.ui.components.form.LoginForm
+import com.susieson.anchor.ui.components.form.LoginFormListener
+import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun LoginScreen(
-    setScaffold: (AnchorScaffold) -> Unit,
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val error by viewModel.error.collectAsState()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val state = remember {
+        mutableStateOf(
+            LoginFormState(
+                error = error
+            )
+        )
+    }
+    val form by state
+    val listener = object : LoginFormListener(state) {
+        override fun onSubmit() {
+            viewModel.login(form.email, form.password)
+        }
+    }
 
-    setScaffold(AnchorScaffold.Default)
+    onTopBarChange { AnchorTopAppBar() }
+    onFloatingActionButtonChange {}
 
     Column(
         modifier = modifier.padding(32.dp)
     ) {
         LoginForm(
-            email = email,
-            password = password,
-            passwordVisible = passwordVisible,
-            error = error,
-            onEmailChange = { email = it },
-            onPasswordChange = { password = it },
-            onPasswordVisibleChange = { passwordVisible = !passwordVisible },
-            onSubmit = { viewModel.login(email, password) },
+            state = form,
+            listener = listener,
             submitButtonText = R.string.login_button,
             modifier = Modifier.fillMaxWidth()
         )
@@ -54,5 +62,9 @@ fun LoginScreen(
         ) {
             Text(stringResource(R.string.login_anonymous_button))
         }
+    }
+
+    LaunchedEffect(error) {
+        listener.onErrorChange(error)
     }
 }

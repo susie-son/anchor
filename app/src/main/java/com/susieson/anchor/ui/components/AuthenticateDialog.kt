@@ -7,28 +7,39 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.components.form.LoginForm
+import com.susieson.anchor.ui.components.form.LoginFormListener
+import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun AuthenticateDialog(
+    show: Boolean,
     email: String,
     error: String?,
-    onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
+    onSetShow: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    if (!show) return
 
-    Dialog(onDismissRequest = onDismiss) {
+    val state = remember { mutableStateOf(LoginFormState(email = email)) }
+    val form by state
+    val listener = object : LoginFormListener(state) {
+        override fun onSubmit() {
+            onConfirm(form.password)
+        }
+    }
+
+    Dialog(onDismissRequest = { onSetShow(false) }) {
         Card(
             modifier = modifier
         ) {
@@ -38,19 +49,16 @@ fun AuthenticateDialog(
             ) {
                 Text(stringResource(R.string.re_authenticate_dialog_body))
                 LoginForm(
-                    email = email,
-                    password = password,
-                    passwordVisible = passwordVisible,
-                    error = error,
-                    emailEnabled = false,
-                    onEmailChange = {},
-                    onPasswordChange = { password = it },
-                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
-                    onSubmit = { onConfirm(password) },
+                    state = form,
+                    listener = listener,
                     submitButtonText = R.string.dialog_confirm,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
+    }
+
+    LaunchedEffect(error) {
+        listener.onErrorChange(error)
     }
 }

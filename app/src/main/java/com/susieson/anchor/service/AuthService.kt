@@ -4,11 +4,11 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.susieson.anchor.model.AnchorUser
 import com.susieson.anchor.model.toAnchorUser
-import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 interface AuthService {
     val user: Flow<AnchorUser?>
@@ -44,16 +44,19 @@ constructor(private val auth: FirebaseAuth) : AuthService {
     }
 
     override suspend fun deleteAccount() {
-        auth.currentUser!!.delete().await()
+        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
+        user.delete().await()
     }
 
     override suspend fun reAuthenticate(email: String, password: String) {
+        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
         val credential = EmailAuthProvider.getCredential(email, password)
-        auth.currentUser!!.reauthenticate(credential).await()
+        user.reauthenticate(credential).await()
     }
 
     override suspend fun linkAccount(email: String, password: String) {
+        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
         val credential = EmailAuthProvider.getCredential(email, password)
-        auth.currentUser!!.linkWithCredential(credential).await()
+        user.linkWithCredential(credential).await()
     }
 }

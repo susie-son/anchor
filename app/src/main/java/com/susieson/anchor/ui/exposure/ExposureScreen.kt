@@ -1,72 +1,70 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.Loading
+import com.susieson.anchor.ui.exposure.preparation.PreparationForm
+import com.susieson.anchor.ui.exposure.review.ReviewForm
 
 @Composable
 fun ExposureScreen(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     userId: String,
     exposureId: String,
-    setScaffold: (AnchorScaffold) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExposureViewModel = hiltViewModel()
 ) {
     val exposure by viewModel.getExposure(userId, exposureId).collectAsState(null)
 
-    when (exposure?.status) {
-        null -> {
-            Loading(modifier = modifier)
-        }
+    onFloatingActionButtonChange {}
 
-        Status.DRAFT -> {
+    when (val state = getExposureState(exposure)) {
+        is ExposureState.Loading -> Loading(modifier = modifier.fillMaxSize())
+        is ExposureState.Draft -> {
             PreparationForm(
+                onTopBarChange = onTopBarChange,
                 userId = userId,
                 exposureId = exposureId,
-                viewModel = viewModel,
                 onDiscard = {
                     onNavigateUp()
-                    viewModel.deleteExposure(userId, exposure!!.id)
+                    viewModel.deleteExposure(userId, state.exposureId)
                 },
-                setScaffold = setScaffold,
+                addPreparation = viewModel::addPreparation,
                 modifier = modifier
             )
         }
-
-        Status.READY -> {
+        is ExposureState.Ready -> {
             ExposureReady(
+                onTopBarChange = onTopBarChange,
                 userId = userId,
                 exposureId = exposureId,
-                title = exposure!!.title,
-                viewModel = viewModel,
+                title = state.title,
                 onNavigateUp = onNavigateUp,
-                setScaffold = setScaffold,
+                markAsInProgress = viewModel::markAsInProgress,
                 modifier = modifier
             )
         }
-
-        Status.IN_PROGRESS -> {
+        is ExposureState.InProgress -> {
             ReviewForm(
+                onTopBarChange = onTopBarChange,
                 userId = userId,
                 exposureId = exposureId,
-                viewModel = viewModel,
                 onDiscard = onNavigateUp,
-                setScaffold = setScaffold,
+                addReview = viewModel::addReview,
                 modifier = modifier
             )
         }
-
-        Status.COMPLETED -> {
+        is ExposureState.Completed -> {
             ExposureSummary(
-                exposure = exposure!!,
+                onTopBarChange = onTopBarChange,
+                exposure = state.exposure,
                 onNavigateUp = onNavigateUp,
-                setScaffold = setScaffold,
                 modifier = modifier
             )
         }

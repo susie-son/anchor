@@ -2,12 +2,13 @@ package com.susieson.anchor.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.FirebaseException
 import com.susieson.anchor.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val authService: AuthService) : ViewModel() {
@@ -20,8 +21,8 @@ class LoginViewModel @Inject constructor(private val authService: AuthService) :
             _error.value = null
             try {
                 authService.createAnonymousAccount()
-            } catch (e: Exception) {
-                _error.value = e.message
+            } catch (e: FirebaseException) {
+                _error.value = e.localizedMessage
             }
         }
     }
@@ -31,8 +32,8 @@ class LoginViewModel @Inject constructor(private val authService: AuthService) :
             _error.value = null
             try {
                 authService.authenticate(email, password)
-            } catch (e: Exception) {
-                _error.value = e.message
+            } catch (e: FirebaseException) {
+                _error.value = e.localizedMessage
             }
         }
     }

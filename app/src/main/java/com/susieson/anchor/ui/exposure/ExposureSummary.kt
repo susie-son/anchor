@@ -2,13 +2,16 @@ package com.susieson.anchor.ui.exposure
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,7 +22,6 @@ import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
-import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.CommaSeparatedListSummaryItem
@@ -31,39 +33,40 @@ import java.text.DateFormat
 
 @Composable
 fun ExposureSummary(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
     exposure: Exposure,
     onNavigateUp: () -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = AnchorTopAppBar(
-                title = R.string.summary_top_bar_title,
-                navigationIcon = AnchorIconButton(
+    onTopBarChange {
+        AnchorTopAppBar(
+            title = { Text(stringResource(R.string.summary_top_bar_title)) },
+            navigationIcon = {
+                AnchorIconButton(
                     onClick = onNavigateUp,
-                    icon = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = R.string.content_description_back
+                    icon = {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
+                    }
                 )
-            )
+            }
         )
-    )
+    }
 
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         BasicSummarySection(
             exposure.updatedAt,
             exposure.title,
             exposure.description,
-            modifier
+            modifier = Modifier.fillMaxWidth()
         )
         exposure.preparation?.let {
-            PreparationSummarySection(it, modifier)
+            PreparationSummarySection(it, modifier = Modifier.fillMaxWidth())
         }
         exposure.review?.let {
-            ReviewSummarySection(it, modifier)
+            ReviewSummarySection(it, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -77,18 +80,26 @@ fun BasicSummarySection(
 ) {
     SummarySection(
         modifier = modifier,
-        {
-            updatedAt?.let {
-                val completedAt = DateFormat.getDateInstance().format(it.toDate())
+        items = listOf(
+            {
+                updatedAt?.let {
+                    val completedAt = DateFormat.getDateInstance().format(it.toDate())
+                    TextSummaryItem(
+                        completedAt,
+                        label = R.string.summary_completed_at_label,
+                        textStyle = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            {
                 TextSummaryItem(
-                    label = R.string.summary_completed_at_label,
-                    text = completedAt,
-                    textStyle = MaterialTheme.typography.bodyMedium
+                    title,
+                    label = null,
+                    textStyle = MaterialTheme.typography.titleLarge
                 )
-            }
-        },
-        { TextSummaryItem(text = title, textStyle = MaterialTheme.typography.titleLarge) },
-        { TextSummaryItem(text = description) }
+            },
+            { TextSummaryItem(description, label = null) }
+        )
     )
 }
 
@@ -96,30 +107,32 @@ fun BasicSummarySection(
 fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Modifier) {
     SummarySection(
         modifier = modifier,
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_thoughts_label,
-                list = preparation.thoughts
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_interpretations_label,
-                list = preparation.interpretations
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_behaviors_label,
-                list = preparation.behaviors
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.preparation_actions_label,
-                list = preparation.actions
-            )
-        }
+        items = listOf(
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.thoughts,
+                    label = R.string.preparation_thoughts_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.interpretations,
+                    label = R.string.preparation_interpretations_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.behaviors,
+                    label = R.string.preparation_behaviors_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    preparation.actions,
+                    label = R.string.preparation_actions_label
+                )
+            }
+        )
     )
 }
 
@@ -140,61 +153,45 @@ fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
         }
     SummarySection(
         modifier = modifier,
-        {
-            CommaSeparatedListSummaryItem(
-                label = R.string.review_emotions_label,
-                list = emotions
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.review_thoughts_label,
-                list = review.thoughts
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.review_sensations_label,
-                list = review.sensations
-            )
-        },
-        {
-            LineSeparatedListSummaryItem(
-                label = R.string.review_behaviors_label,
-                list = review.behaviors
-            )
-        },
-        { HorizontalDivider(Modifier.padding(8.dp)) },
-        {
-            RatingSummaryItem(
-                label = R.string.review_experiencing_label,
-                rating = review.experiencing
-            )
-        },
-        {
-            RatingSummaryItem(
-                label = R.string.review_anchoring_label,
-                rating = review.anchoring
-            )
-        },
-        {
-            RatingSummaryItem(
-                label = R.string.review_thinking_label,
-                rating = review.thinking
-            )
-        },
-        {
-            RatingSummaryItem(
-                label = R.string.review_engaging_label,
-                rating = review.engaging
-            )
-        },
-        { HorizontalDivider(Modifier.padding(8.dp)) },
-        {
-            TextSummaryItem(
-                label = R.string.review_learnings_label,
-                text = review.learnings
-            )
-        }
+        items = listOf(
+            {
+                CommaSeparatedListSummaryItem(emotions, label = R.string.review_emotions_label)
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    review.thoughts,
+                    label = R.string.review_thoughts_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    review.sensations,
+                    label = R.string.review_sensations_label
+                )
+            },
+            {
+                LineSeparatedListSummaryItem(
+                    review.behaviors,
+                    label = R.string.review_behaviors_label
+                )
+            },
+            { HorizontalDivider(Modifier.padding(8.dp)) },
+            {
+                RatingSummaryItem(review.experiencing, label = R.string.review_experiencing_label)
+            },
+            {
+                RatingSummaryItem(review.anchoring, label = R.string.review_anchoring_label)
+            },
+            {
+                RatingSummaryItem(review.thinking, label = R.string.review_thinking_label)
+            },
+            {
+                RatingSummaryItem(review.engaging, label = R.string.review_engaging_label)
+            },
+            { HorizontalDivider(Modifier.padding(8.dp)) },
+            {
+                TextSummaryItem(review.learnings, label = R.string.review_learnings_label)
+            }
+        )
     )
 }

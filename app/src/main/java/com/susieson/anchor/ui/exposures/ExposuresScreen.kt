@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,55 +32,61 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
-import java.text.DateFormat
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
+import java.text.DateFormat
+
+const val TimeReloadInterval = 60_000L
 
 @Composable
 fun ExposuresScreen(
+    onTopBarChange: (@Composable () -> Unit) -> Unit,
+    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     userId: String,
-    modifier: Modifier = Modifier,
     onItemSelect: (String) -> Unit,
     onSettings: () -> Unit,
-    setScaffold: (AnchorScaffold) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ExposuresViewModel = hiltViewModel()
 ) {
     val exposureId by viewModel.exposureId.collectAsState()
     val exposures by viewModel.exposures.collectAsState()
 
-    setScaffold(
-        AnchorScaffold(
-            topAppBar = AnchorTopAppBar.Default.copy(
-                actions = listOf(
-                    AnchorIconButton(
-                        onClick = onSettings,
-                        icon = Icons.Default.Settings,
-                        contentDescription = R.string.content_description_settings
-                    )
+    onTopBarChange {
+        AnchorTopAppBar(
+            actions = {
+                AnchorIconButton(
+                    onClick = onSettings,
+                    icon = {
+                        Icon(
+                            Icons.Default.Settings,
+                            stringResource(R.string.content_description_settings)
+                        )
+                    }
                 )
-            ),
-            floatingActionButton = AnchorFloatingActionButton(
-                text = R.string.exposures_start_button,
-                icon = Icons.Default.Add,
-                onClick = { viewModel.addExposure(userId) }
-            )
+            }
         )
-    )
+    }
+    onFloatingActionButtonChange {
+        AnchorFloatingActionButton(
+            text = { Text(stringResource(R.string.exposures_start_button)) },
+            icon = { Icon(Icons.Default.Add, null) },
+            onClick = { viewModel.addExposure(userId) }
+        )
+    }
 
-    when {
-        exposures == null -> Loading(modifier = modifier)
-        exposures!!.isNotEmpty() -> ExposureList(
-            modifier = modifier,
-            exposures = exposures!!,
+    when (val state = getExposuresState(exposures)) {
+        is ExposuresState.Loading -> Loading(modifier = modifier.fillMaxSize())
+        is ExposuresState.Empty -> EmptyExposureList(modifier = modifier.fillMaxSize())
+        is ExposuresState.Contained -> ExposureList(
+            modifier = modifier.fillMaxSize(),
+            exposures = state.exposures,
             onItemClick = onItemSelect
         )
-        else -> EmptyExposureList(modifier = modifier)
     }
 
     LaunchedEffect(userId) {
@@ -115,8 +123,8 @@ fun EmptyExposureList(modifier: Modifier = Modifier) {
 
 @Composable
 fun ExposureList(
-    modifier: Modifier = Modifier,
     exposures: List<Exposure>,
+    modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
@@ -136,7 +144,7 @@ fun ExposureList(
                             }
                         value = formattedTime
                     }
-                    delay(60_000)
+                    delay(TimeReloadInterval)
                 }
             }
 
@@ -163,9 +171,9 @@ fun ExposureList(
                         }
                     )
                 },
-                modifier = modifier.clickable { onItemClick(exposure.id) }
+                modifier = Modifier.clickable { onItemClick(exposure.id) }
             )
-            HorizontalDivider(modifier = modifier)
+            HorizontalDivider()
         }
     }
 }

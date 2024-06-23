@@ -2,12 +2,13 @@ package com.susieson.anchor.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.FirebaseException
 import com.susieson.anchor.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -20,13 +21,19 @@ class SettingsViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
+            _error.value = null
             authService.signOut()
         }
     }
 
     fun deleteAccount() {
         viewModelScope.launch {
-            authService.deleteAccount()
+            _error.value = null
+            try {
+                authService.deleteAccount()
+            } catch (e: FirebaseException) {
+                _error.value = e.localizedMessage
+            }
         }
     }
 
@@ -36,8 +43,8 @@ class SettingsViewModel @Inject constructor(
             try {
                 authService.reAuthenticate(email, password)
                 action()
-            } catch (e: Exception) {
-                _error.value = e.message
+            } catch (e: FirebaseException) {
+                _error.value = e.localizedMessage
             }
         }
     }
@@ -47,8 +54,8 @@ class SettingsViewModel @Inject constructor(
             _error.value = null
             try {
                 authService.linkAccount(email, password)
-            } catch (e: Exception) {
-                _error.value = e.message
+            } catch (e: FirebaseException) {
+                _error.value = e.localizedMessage
             }
         }
     }
