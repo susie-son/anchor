@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui
+package com.susieson.anchor.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

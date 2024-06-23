@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.susieson.anchor.ui.AnchorApp
+import com.susieson.anchor.ui.components.AnchorApp
 import com.susieson.anchor.ui.theme.AnchorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
