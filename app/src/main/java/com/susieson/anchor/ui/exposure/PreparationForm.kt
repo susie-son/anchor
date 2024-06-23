@@ -33,20 +33,18 @@ fun PreparationForm(
     setScaffold: (AnchorScaffold) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val state = PreparationFormState()
+    val listener = BasePreparationFormListener(state)
+
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    val thoughts = remember { mutableStateListOf<String>() }
-    val interpretations = remember { mutableStateListOf<String>() }
-    val behaviors = remember { mutableStateListOf<String>() }
-    val actions = remember { mutableStateListOf<String>() }
-
     var showDiscardConfirmation by remember { mutableStateOf(false) }
 
-    val isValid = title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
-        interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
-    val isEmpty = title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
-        interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+    val isValid = title.isNotBlank() && description.isNotBlank() && state.isValid
+    val isEmpty = title.isBlank() && description.isBlank() && state.isEmpty
+
+    val preparation = Preparation(state.thoughts, state.interpretations, state.behaviors, state.actions)
 
     setScaffold(
         AnchorScaffold(
@@ -57,8 +55,6 @@ fun PreparationForm(
                 onDiscard = onDiscard,
                 onShowDiscardConfirmation = { showDiscardConfirmation = true },
                 onActionClick = {
-                    val preparation =
-                        Preparation(thoughts, interpretations, behaviors, actions)
                     addPreparation(userId, exposureId, title, description, preparation)
                 }
             )
@@ -69,8 +65,6 @@ fun PreparationForm(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
-        val state = PreparationFormState()
-        val listener = BasePreparationFormListener(state)
 
         BasicFormSection(
             title = title,
@@ -187,6 +181,10 @@ class PreparationFormState {
     var interpretations = mutableStateListOf<String>()
     var behaviors = mutableStateListOf<String>()
     var actions = mutableStateListOf<String>()
+    val isValid = thoughts.isNotEmpty() && interpretations.isNotEmpty() &&
+        behaviors.isNotEmpty() && actions.isNotEmpty()
+    val isEmpty = thoughts.isEmpty() && interpretations.isEmpty() &&
+        behaviors.isEmpty() && actions.isEmpty()
 }
 
 interface PreparationFormListener {
