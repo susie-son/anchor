@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorIconButton
+import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.DiscardConfirmationDialog
 import com.susieson.anchor.ui.components.FormRatingItem

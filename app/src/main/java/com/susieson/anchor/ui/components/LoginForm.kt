@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.theme.AnchorTheme
 
+const val MinPasswordLength = 6
+
 @Composable
 fun LoginForm(
     email: String,
@@ -42,7 +44,7 @@ fun LoginForm(
     emailEnabled: Boolean = true
 ) {
     val emailError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    val passwordError = password.length in 1..5
+    val passwordError = password.isNotEmpty() && password.length < MinPasswordLength
 
     val isValid = email.isNotEmpty() && password.isNotEmpty() && !emailError && !passwordError
 
@@ -127,7 +129,7 @@ fun PasswordTextField(
         isError = passwordError,
         supportingText = {
             if (passwordError) {
-                Text(stringResource(R.string.login_password_error))
+                Text(stringResource(R.string.login_password_error, MinPasswordLength))
             }
         },
         trailingIcon = {

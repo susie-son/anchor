@@ -30,15 +30,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorFloatingActionButton
 import com.susieson.anchor.ui.components.AnchorIconButton
+import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
+
+const val TimeReloadInterval = 60_000L
 
 @Composable
 fun ExposuresScreen(
@@ -136,7 +138,7 @@ fun ExposureList(
                             }
                         value = formattedTime
                     }
-                    delay(60_000)
+                    delay(TimeReloadInterval)
                 }
             }
 

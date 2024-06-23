@@ -19,8 +19,8 @@ import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
-import com.susieson.anchor.ui.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorIconButton
+import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.CommaSeparatedListSummaryItem
 import com.susieson.anchor.ui.components.LineSeparatedListSummaryItem

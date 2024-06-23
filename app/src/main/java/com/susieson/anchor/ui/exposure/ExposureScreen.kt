@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.AnchorScaffold
+import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.Loading
 
 @Composable
