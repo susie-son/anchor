@@ -27,8 +27,10 @@ import com.susieson.anchor.ui.components.AnchorIconButton
 import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.AuthenticateDialog
+import com.susieson.anchor.ui.components.BaseLoginFormListener
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
+import com.susieson.anchor.ui.components.LoginFormState
 
 @Composable
 fun SettingsScreen(
@@ -94,9 +96,21 @@ fun AnonymousSettings(
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val email by remember { mutableStateOf("") }
+    val password by remember { mutableStateOf("") }
+    val passwordVisible by remember { mutableStateOf(false) }
+
+    val state = LoginFormState(
+        email = email,
+        password = password,
+        passwordVisible = passwordVisible,
+        error = error
+    )
+    val listener = object : BaseLoginFormListener(state) {
+        override fun onSubmit() {
+            onLinkAccount(email, password)
+        }
+    }
 
     Column(modifier = modifier.padding(16.dp)) {
         Card {
@@ -106,14 +120,8 @@ fun AnonymousSettings(
             ) {
                 Text(stringResource(R.string.anonymous_settings_body))
                 LoginForm(
-                    email = email,
-                    password = password,
-                    passwordVisible = passwordVisible,
-                    error = error,
-                    onEmailChange = { email = it },
-                    onPasswordChange = { password = it },
-                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
-                    onSubmit = { onLinkAccount(email, password) },
+                    state = state,
+                    listener = listener,
                     submitButtonText = R.string.login_create_account_button,
                     modifier = Modifier.fillMaxWidth()
                 )

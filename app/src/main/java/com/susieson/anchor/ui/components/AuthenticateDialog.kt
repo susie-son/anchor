@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,8 +24,20 @@ fun AuthenticateDialog(
     onConfirm: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val password by remember { mutableStateOf("") }
+    val passwordVisible by remember { mutableStateOf(false) }
+
+    val state = LoginFormState(
+        email = email,
+        password = password,
+        passwordVisible = passwordVisible,
+        error = error
+    )
+    val listener = object : BaseLoginFormListener(state) {
+        override fun onSubmit() {
+            onConfirm(password)
+        }
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -38,15 +49,8 @@ fun AuthenticateDialog(
             ) {
                 Text(stringResource(R.string.re_authenticate_dialog_body))
                 LoginForm(
-                    email = email,
-                    password = password,
-                    passwordVisible = passwordVisible,
-                    error = error,
-                    emailEnabled = false,
-                    onEmailChange = {},
-                    onPasswordChange = { password = it },
-                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
-                    onSubmit = { onConfirm(password) },
+                    state = state,
+                    listener = listener,
                     submitButtonText = R.string.dialog_confirm,
                     modifier = Modifier.fillMaxWidth()
                 )
