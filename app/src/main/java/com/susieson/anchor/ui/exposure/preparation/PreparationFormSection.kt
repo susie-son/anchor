@@ -81,9 +81,6 @@ data class PreparationFormSectionState(
 abstract class PreparationFormSectionListener(
     state: MutableState<PreparationFormSectionState>
 ) : FormSectionListener<PreparationFormSectionState>(state) {
-    override fun updateState(update: PreparationFormSectionState.() -> PreparationFormSectionState) {
-        state.value = state.value.update()
-    }
     abstract fun onThoughtAdded(thought: String)
     abstract fun onThoughtRemoved(thought: String)
     abstract fun onInterpretationAdded(interpretation: String)

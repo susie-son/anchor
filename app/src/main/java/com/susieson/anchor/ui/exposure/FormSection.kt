@@ -8,5 +8,7 @@ interface FormSectionState {
 }
 
 abstract class FormSectionListener<T : FormSectionState>(val state: MutableState<T>) {
-    abstract fun updateState(update: T.() -> T)
+    fun updateState(update: T.() -> T) {
+        state.value = state.value.update()
+    }
 }
