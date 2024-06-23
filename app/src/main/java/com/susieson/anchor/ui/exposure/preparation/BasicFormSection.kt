@@ -1,6 +1,7 @@
 package com.susieson.anchor.ui.exposure.preparation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -29,7 +30,8 @@ fun BasicFormSection(
                     isError = state.title.isBlank(),
                     imeAction = ImeAction.Next,
                     onValueChange = listener::onTitleChange,
-                    bringIntoViewRequester = bringIntoViewRequester
+                    bringIntoViewRequester = bringIntoViewRequester,
+                    modifier = Modifier.fillMaxWidth()
                 )
             },
             {
@@ -41,7 +43,8 @@ fun BasicFormSection(
                     imeAction = ImeAction.Done,
                     onValueChange = listener::onDescriptionChange,
                     singleLine = false,
-                    bringIntoViewRequester = bringIntoViewRequester
+                    bringIntoViewRequester = bringIntoViewRequester,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         )

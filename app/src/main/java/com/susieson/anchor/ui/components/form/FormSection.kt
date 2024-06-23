@@ -3,6 +3,7 @@ package com.susieson.anchor.ui.components.form
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,7 +30,7 @@ fun LabeledFormSection(
     label: Int,
     @StringRes
     descriptionLabel: Int?,
-    vararg items: @Composable () -> Unit,
+    items: List<@Composable ColumnScope.() -> Unit>,
     modifier: Modifier = Modifier,
 ) {
     Column(

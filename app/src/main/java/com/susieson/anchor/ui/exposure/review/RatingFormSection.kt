@@ -2,6 +2,7 @@ package com.susieson.anchor.ui.exposure.review
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.form.FormRatingItem
 import com.susieson.anchor.ui.components.form.LabeledFormSection
@@ -11,39 +12,43 @@ import com.susieson.anchor.ui.exposure.FormSectionState
 @Composable
 fun RatingFormSection(
     state: RatingFormSectionState,
-    listener: RatingFormSectionListener
+    listener: RatingFormSectionListener,
+    modifier: Modifier = Modifier,
 ) {
     LabeledFormSection(
         label = R.string.review_effectiveness_label,
         descriptionLabel = null,
-        {
-            FormRatingItem(
-                label = R.string.review_experiencing_label,
-                value = state.experiencingRating,
-                onValueChange = listener::onExperiencingRatingChanged,
-            )
-        },
-        {
-            FormRatingItem(
-                label = R.string.review_anchoring_label,
-                value = state.anchoringRating,
-                onValueChange = listener::onAnchoringRatingChanged,
-            )
-        },
-        {
-            FormRatingItem(
-                label = R.string.review_thinking_label,
-                value = state.thinkingRating,
-                onValueChange = listener::onThinkingRatingChanged,
-            )
-        },
-        {
-            FormRatingItem(
-                label = R.string.review_engaging_label,
-                value = state.engagingRating,
-                onValueChange = listener::onEngagingRatingChanged,
-            )
-        }
+        modifier = modifier,
+        items = listOf(
+            {
+                FormRatingItem(
+                    label = R.string.review_experiencing_label,
+                    value = state.experiencingRating,
+                    onValueChange = listener::onExperiencingRatingChanged,
+                )
+            },
+            {
+                FormRatingItem(
+                    label = R.string.review_anchoring_label,
+                    value = state.anchoringRating,
+                    onValueChange = listener::onAnchoringRatingChanged,
+                )
+            },
+            {
+                FormRatingItem(
+                    label = R.string.review_thinking_label,
+                    value = state.thinkingRating,
+                    onValueChange = listener::onThinkingRatingChanged,
+                )
+            },
+            {
+                FormRatingItem(
+                    label = R.string.review_engaging_label,
+                    value = state.engagingRating,
+                    onValueChange = listener::onEngagingRatingChanged,
+                )
+            }
+        )
     )
 }
 

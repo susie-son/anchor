@@ -2,6 +2,8 @@ package com.susieson.anchor.ui.exposure.preparation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -64,18 +66,20 @@ fun PreparationForm(
     )
 
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())
     ) {
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
         BasicFormSection(
             state = basicState.value,
             listener = basicListener,
-            bringIntoViewRequester = bringIntoViewRequester
+            bringIntoViewRequester = bringIntoViewRequester,
+            modifier = Modifier.fillMaxWidth()
         )
         PreparationFormSection(
             state = prepState.value,
             listener = prepListener,
-            bringIntoViewRequester = bringIntoViewRequester
+            bringIntoViewRequester = bringIntoViewRequester,
+            modifier = Modifier.fillMaxWidth()
         )
     }
     DiscardConfirmationDialog(showDiscardConfirmation, onDiscard) { showDiscardConfirmation = it }

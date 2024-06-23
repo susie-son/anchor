@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -74,10 +75,10 @@ fun ExposuresScreen(
     )
 
     when (val state = getExposuresState(exposures)) {
-        is ExposuresState.Loading -> Loading(modifier = modifier)
-        is ExposuresState.Empty -> EmptyExposureList(modifier = modifier)
+        is ExposuresState.Loading -> Loading(modifier = modifier.fillMaxSize())
+        is ExposuresState.Empty -> EmptyExposureList(modifier = modifier.fillMaxSize())
         is ExposuresState.Contained -> ExposureList(
-            modifier = modifier,
+            modifier = modifier.fillMaxSize(),
             exposures = state.exposures,
             onItemClick = onItemSelect
         )

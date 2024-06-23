@@ -49,6 +49,7 @@ fun LoginForm(
             emailError = emailError,
             emailEnabled = emailEnabled,
             onEmailChange = listener::onEmailChange,
+            modifier = Modifier.fillMaxWidth()
         )
         PasswordTextField(
             password = password,
@@ -56,18 +57,20 @@ fun LoginForm(
             passwordVisible = passwordVisible,
             onPasswordChange = listener::onPasswordChange,
             onPasswordVisibleChange = listener::onPasswordVisibleChange,
+            modifier = Modifier.fillMaxWidth()
         )
         error?.let {
             Text(
                 it,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
             )
         }
         Button(
             onClick = listener::onSubmit,
             enabled = isValid,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(submitButtonText))
         }

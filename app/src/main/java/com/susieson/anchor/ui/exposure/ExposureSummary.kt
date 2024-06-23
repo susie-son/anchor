@@ -2,6 +2,7 @@ package com.susieson.anchor.ui.exposure
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,12 +58,13 @@ fun ExposureSummary(
             exposure.updatedAt,
             exposure.title,
             exposure.description,
+            modifier = Modifier.fillMaxWidth()
         )
         exposure.preparation?.let {
-            PreparationSummarySection(it)
+            PreparationSummarySection(it, modifier = Modifier.fillMaxWidth())
         }
         exposure.review?.let {
-            ReviewSummarySection(it)
+            ReviewSummarySection(it, modifier = Modifier.fillMaxWidth())
         }
     }
 }

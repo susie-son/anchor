@@ -3,6 +3,7 @@ package com.susieson.anchor.ui.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -57,7 +58,7 @@ fun SettingsScreen(
     )
 
     when (val state = getUserSettingsState(user, error)) {
-        is UserSettingsState.Loading -> Loading(modifier = modifier)
+        is UserSettingsState.Loading -> Loading(modifier = modifier.fillMaxSize())
         is UserSettingsState.Anonymous -> AnonymousSettings(
             error = state.error,
             onLinkAccount = { email, password ->

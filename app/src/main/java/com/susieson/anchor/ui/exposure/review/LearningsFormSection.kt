@@ -1,9 +1,11 @@
 package com.susieson.anchor.ui.exposure.review
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.form.FormTextField
@@ -16,12 +18,14 @@ import com.susieson.anchor.ui.exposure.FormSectionState
 fun LearningsFormSection(
     state: LearningsFormSectionState,
     listener: LearningsFormSectionListener,
-    bringIntoViewRequester: BringIntoViewRequester
+    bringIntoViewRequester: BringIntoViewRequester,
+    modifier: Modifier = Modifier
 ) {
     LabeledFormSection(
         label = R.string.review_learnings_label,
         descriptionLabel = R.string.review_learnings_body,
-        {
+        modifier = modifier,
+        items = listOf {
             FormTextField(
                 value = state.learnings,
                 label = null,
@@ -30,7 +34,8 @@ fun LearningsFormSection(
                 imeAction = ImeAction.Done,
                 onValueChange = listener::onLearningsChange,
                 singleLine = false,
-                bringIntoViewRequester = bringIntoViewRequester
+                bringIntoViewRequester = bringIntoViewRequester,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     )

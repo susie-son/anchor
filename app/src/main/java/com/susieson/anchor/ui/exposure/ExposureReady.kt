@@ -136,7 +136,7 @@ fun NotificationCard(postNotificationPermission: PermissionState, modifier: Modi
     val context = LocalContext.current
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(

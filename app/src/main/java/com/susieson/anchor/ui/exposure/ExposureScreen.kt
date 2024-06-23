@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,7 +23,7 @@ fun ExposureScreen(
     val exposure by viewModel.getExposure(userId, exposureId).collectAsState(null)
 
     when (val state = getExposureState(exposure)) {
-        is ExposureState.Loading -> Loading(modifier = modifier)
+        is ExposureState.Loading -> Loading(modifier = modifier.fillMaxSize())
         is ExposureState.Draft -> {
             PreparationForm(
                 userId = userId,
