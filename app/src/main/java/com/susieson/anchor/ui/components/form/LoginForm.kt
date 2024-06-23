@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.components
+package com.susieson.anchor.ui.components.form
 
 import android.util.Patterns
 import androidx.annotation.StringRes

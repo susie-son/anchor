@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AnchorScaffold
-import com.susieson.anchor.ui.components.BaseLoginFormListener
-import com.susieson.anchor.ui.components.LoginForm
-import com.susieson.anchor.ui.components.LoginFormState
+import com.susieson.anchor.ui.components.form.BaseLoginFormListener
+import com.susieson.anchor.ui.components.form.LoginForm
+import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun LoginScreen(

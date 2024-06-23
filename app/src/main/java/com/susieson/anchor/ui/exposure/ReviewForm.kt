@@ -1,6 +1,5 @@
 package com.susieson.anchor.ui.exposure
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -19,14 +18,15 @@ import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.AnchorScaffold
-import com.susieson.anchor.ui.components.DiscardConfirmationDialog
-import com.susieson.anchor.ui.components.FormRatingItem
-import com.susieson.anchor.ui.components.FormSection
-import com.susieson.anchor.ui.components.FormSelectFilterItem
-import com.susieson.anchor.ui.components.FormTextField
-import com.susieson.anchor.ui.components.LabeledFormSection
-import com.susieson.anchor.ui.components.LabeledFormTextFieldColumn
-import com.susieson.anchor.ui.components.formTopAppBar
+import com.susieson.anchor.ui.components.form.DiscardConfirmationDialog
+import com.susieson.anchor.ui.components.form.FormBackHandler
+import com.susieson.anchor.ui.components.form.FormRatingItem
+import com.susieson.anchor.ui.components.form.FormSection
+import com.susieson.anchor.ui.components.form.FormSelectFilterItem
+import com.susieson.anchor.ui.components.form.FormTextField
+import com.susieson.anchor.ui.components.form.LabeledFormSection
+import com.susieson.anchor.ui.components.form.LabeledFormTextFieldColumn
+import com.susieson.anchor.ui.components.form.formTopAppBar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -247,22 +247,6 @@ fun ReviewForm(
             }
         )
     }
-
-    if (showDiscardConfirmation) {
-        DiscardConfirmationDialog(
-            onDismiss = { showDiscardConfirmation = false },
-            onConfirm = {
-                showDiscardConfirmation = false
-                onDiscard()
-            }
-        )
-    }
-
-    BackHandler {
-        if (isEmpty) {
-            onDiscard()
-        } else {
-            showDiscardConfirmation = true
-        }
-    }
+    DiscardConfirmationDialog(showDiscardConfirmation, onDiscard) { showDiscardConfirmation = it }
+    FormBackHandler(isEmpty, onDiscard) { showDiscardConfirmation = true }
 }
