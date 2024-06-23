@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,14 +31,7 @@ fun AuthenticateDialog(
 ) {
     if (!show) return
 
-    val state = remember {
-        mutableStateOf(
-            LoginFormState(
-                email = email,
-                error = error
-            )
-        )
-    }
+    val state = remember { mutableStateOf(LoginFormState(email = email)) }
     val form by state
     val listener = object : LoginFormListener(state) {
         override fun onSubmit() {
@@ -62,5 +56,9 @@ fun AuthenticateDialog(
                 )
             }
         }
+    }
+
+    LaunchedEffect(error) {
+        listener.onErrorChange(error)
     }
 }

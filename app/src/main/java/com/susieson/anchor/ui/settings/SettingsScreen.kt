@@ -13,6 +13,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,13 +87,7 @@ fun AnonymousSettings(
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state = remember {
-        mutableStateOf(
-            LoginFormState(
-                error = error
-            )
-        )
-    }
+    val state = remember { mutableStateOf(LoginFormState()) }
     val form by state
     val listener = object : LoginFormListener(state) {
         override fun onSubmit() {
@@ -122,6 +117,10 @@ fun AnonymousSettings(
         ) {
             Text(stringResource(R.string.settings_delete_account_button))
         }
+    }
+
+    LaunchedEffect(error) {
+        listener.onErrorChange(error)
     }
 }
 

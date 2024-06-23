@@ -101,6 +101,9 @@ abstract class LoginFormListener(
     fun onPasswordVisibleChange() {
         updateState { copy(passwordVisible = !passwordVisible) }
     }
+    fun onErrorChange(error: String?) {
+        updateState { copy(error = error) }
+    }
 }
 
 @Preview(showBackground = true)
