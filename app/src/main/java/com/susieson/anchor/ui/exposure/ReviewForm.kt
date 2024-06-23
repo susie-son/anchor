@@ -44,8 +44,8 @@ fun ReviewForm(
     val emotionsState = EmotionFormSectionState()
     val ratingsState = RatingFormSectionState()
 
-    val emotionFormSectionListener = BaseEmotionFormSectionListener(emotionsState)
-    val ratingFormSectionListener = BaseRatingFormSectionListener(ratingsState)
+    val emotionsListener = BaseEmotionFormSectionListener(emotionsState)
+    val ratingsListener = BaseRatingFormSectionListener(ratingsState)
 
     val isValid = emotionsState.isValid && ratingsState.isValid && learnings.isNotBlank()
     val isEmpty = emotionsState.isEmpty && ratingsState.isEmpty && learnings.isBlank()
@@ -93,10 +93,10 @@ fun ReviewForm(
         val bringIntoViewRequester = remember { BringIntoViewRequester() }
         EmotionFormSection(
             emotionsState,
-            emotionFormSectionListener,
+            emotionsListener,
             bringIntoViewRequester
         )
-        RatingFormSection(ratingsState, ratingFormSectionListener)
+        RatingFormSection(ratingsState, ratingsListener)
         LearningsSection(learnings, onLearningsChange = { learnings = it }, bringIntoViewRequester)
     }
     DiscardConfirmationDialog(showDiscardConfirmation, onDiscard) { showDiscardConfirmation = it }

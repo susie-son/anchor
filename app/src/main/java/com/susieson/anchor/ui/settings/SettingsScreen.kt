@@ -96,19 +96,15 @@ fun AnonymousSettings(
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val email by remember { mutableStateOf("") }
-    val password by remember { mutableStateOf("") }
-    val passwordVisible by remember { mutableStateOf(false) }
-
     val state = LoginFormState(
-        email = email,
-        password = password,
-        passwordVisible = passwordVisible,
+        email = "",
+        password = "",
+        passwordVisible = false,
         error = error
     )
     val listener = object : BaseLoginFormListener(state) {
         override fun onSubmit() {
-            onLinkAccount(email, password)
+            onLinkAccount(state.email, state.password)
         }
     }
 
