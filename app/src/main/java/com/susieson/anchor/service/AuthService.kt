@@ -44,16 +44,19 @@ constructor(private val auth: FirebaseAuth) : AuthService {
     }
 
     override suspend fun deleteAccount() {
-        auth.currentUser!!.delete().await()
+        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
+        user.delete().await()
     }
 
     override suspend fun reAuthenticate(email: String, password: String) {
+        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
         val credential = EmailAuthProvider.getCredential(email, password)
-        auth.currentUser!!.reauthenticate(credential).await()
+        user.reauthenticate(credential).await()
     }
 
     override suspend fun linkAccount(email: String, password: String) {
+        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
         val credential = EmailAuthProvider.getCredential(email, password)
-        auth.currentUser!!.linkWithCredential(credential).await()
+        user.linkWithCredential(credential).await()
     }
 }

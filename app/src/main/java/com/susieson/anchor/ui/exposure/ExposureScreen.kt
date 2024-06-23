@@ -5,7 +5,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.AnchorScaffold
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.exposure.preparation.PreparationForm
@@ -22,38 +21,33 @@ fun ExposureScreen(
 ) {
     val exposure by viewModel.getExposure(userId, exposureId).collectAsState(null)
 
-    when (exposure?.status) {
-        null -> {
-            Loading(modifier = modifier)
-        }
-
-        Status.DRAFT -> {
+    when (val state = getExposureState(exposure)) {
+        is ExposureState.Loading -> Loading(modifier = modifier)
+        is ExposureState.Draft -> {
             PreparationForm(
                 userId = userId,
                 exposureId = exposureId,
                 onDiscard = {
                     onNavigateUp()
-                    viewModel.deleteExposure(userId, exposure!!.id)
+                    viewModel.deleteExposure(userId, state.exposureId)
                 },
                 addPreparation = viewModel::addPreparation,
                 setScaffold = setScaffold,
                 modifier = modifier
             )
         }
-
-        Status.READY -> {
+        is ExposureState.Ready -> {
             ExposureReady(
                 userId = userId,
                 exposureId = exposureId,
-                title = exposure!!.title,
+                title = state.title,
                 onNavigateUp = onNavigateUp,
                 markAsInProgress = viewModel::markAsInProgress,
                 setScaffold = setScaffold,
                 modifier = modifier
             )
         }
-
-        Status.IN_PROGRESS -> {
+        is ExposureState.InProgress -> {
             ReviewForm(
                 userId = userId,
                 exposureId = exposureId,
@@ -63,10 +57,9 @@ fun ExposureScreen(
                 modifier = modifier
             )
         }
-
-        Status.COMPLETED -> {
+        is ExposureState.Completed -> {
             ExposureSummary(
-                exposure = exposure!!,
+                exposure = state.exposure,
                 onNavigateUp = onNavigateUp,
                 setScaffold = setScaffold,
                 modifier = modifier

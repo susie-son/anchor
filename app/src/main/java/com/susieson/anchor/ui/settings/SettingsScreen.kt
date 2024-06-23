@@ -40,7 +40,6 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val error by viewModel.error.collectAsState()
-
     val user by viewModel.user.collectAsState(null)
 
     setScaffold(
@@ -56,14 +55,10 @@ fun SettingsScreen(
         )
     )
 
-    if (user == null) {
-        Loading(modifier = modifier)
-        return
-    }
-
-    when (user!!.isAnonymous) {
-        true -> AnonymousSettings(
-            error = error,
+    when (val state = getUserSettingsState(user, error)) {
+        is UserSettingsState.Loading -> Loading(modifier = modifier)
+        is UserSettingsState.Anonymous -> AnonymousSettings(
+            error = state.error,
             onLinkAccount = { email, password ->
                 viewModel.linkAccount(email, password)
                 onNavigateUp()
@@ -71,16 +66,11 @@ fun SettingsScreen(
             onDeleteAccount = viewModel::deleteAccount,
             modifier = modifier
         )
-
-        false -> UserSettings(
-            email = user!!.email!!,
-            error = error,
+        is UserSettingsState.Authenticated -> UserSettings(
+            email = state.email,
+            error = state.error,
             onAuthenticate = { email: String, password: String, action: () -> Unit ->
-                viewModel.reAuthenticate(
-                    email,
-                    password,
-                    action
-                )
+                viewModel.reAuthenticate(email, password, action)
             },
             onLogout = viewModel::logout,
             onDeleteAccount = viewModel::deleteAccount,

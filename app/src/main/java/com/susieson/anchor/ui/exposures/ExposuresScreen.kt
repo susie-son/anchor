@@ -73,14 +73,14 @@ fun ExposuresScreen(
         )
     )
 
-    when {
-        exposures == null -> Loading(modifier = modifier)
-        exposures!!.isNotEmpty() -> ExposureList(
+    when (val state = getExposuresState(exposures)) {
+        is ExposuresState.Loading -> Loading(modifier = modifier)
+        is ExposuresState.Empty -> EmptyExposureList(modifier = modifier)
+        is ExposuresState.Contained -> ExposureList(
             modifier = modifier,
-            exposures = exposures!!,
+            exposures = state.exposures,
             onItemClick = onItemSelect
         )
-        else -> EmptyExposureList(modifier = modifier)
     }
 
     LaunchedEffect(userId) {
