@@ -1,13 +1,12 @@
 name: release
 on:
-  push:
-    branches:
-      - main
-      - 'release/**'
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: Version Name
+        required: true
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,6 +14,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - uses: chkfung/android-version-actions@v1
+        with:
+          gradlePath: app/build.gradle.kts
+          versionCode: ${{ github.run_number }}
+          versionName: ${{ github.event.inputs.versionName }}
       - run: ./gradlew bundleRelease
       - uses: r0adkll/sign-android-release@v1
         with:
@@ -27,3 +31,16 @@ jobs:
         with:
           name: app-bundle
           path: app/build/outputs/bundle/release/app-release.aab
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: app-bundle
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: com.susieson.anchor
+          releaseFiles: ${{ github.workspace }}/app-release.aab
+          track: qa
