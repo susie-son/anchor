@@ -2,15 +2,15 @@ package com.susieson.anchor.model
 
 import com.google.firebase.auth.FirebaseUser
 
-data class AnchorUser(
+data class User(
     val id: String,
     val isAnonymous: Boolean,
     val email: String? = null
 )
 
-fun FirebaseUser?.toAnchorUser(): AnchorUser? {
+fun FirebaseUser?.toUser(): User? {
     if (this == null) return null
-    return AnchorUser(
+    return User(
         id = uid,
         isAnonymous = isAnonymous,
         email = email

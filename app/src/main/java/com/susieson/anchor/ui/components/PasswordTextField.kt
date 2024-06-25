@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.components.form
+package com.susieson.anchor.ui.components
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -18,8 +18,8 @@ import com.susieson.anchor.R
 @Composable
 fun PasswordTextField(
     password: String,
-    passwordError: Boolean,
-    passwordVisible: Boolean,
+    error: Boolean,
+    isPasswordVisible: Boolean,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibleChange: () -> Unit,
     modifier: Modifier = Modifier
@@ -34,17 +34,17 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ),
-        isError = passwordError,
+        isError = error,
         supportingText = {
-            if (passwordError) {
+            if (error) {
                 Text(stringResource(R.string.login_password_error, MinPasswordLength))
             }
         },
         trailingIcon = {
-            IconButton(onClick = onPasswordVisibleChange) {
+            IconButton(onPasswordVisibleChange) {
                 Icon(
                     painterResource(
-                        if (passwordVisible) {
+                        if (isPasswordVisible) {
                             R.drawable.ic_visibility
                         } else {
                             R.drawable.ic_visibility_off
@@ -54,7 +54,7 @@ fun PasswordTextField(
                 )
             }
         },
-        visualTransformation = if (passwordVisible) {
+        visualTransformation = if (isPasswordVisible) {
             VisualTransformation.None
         } else {
             PasswordVisualTransformation()

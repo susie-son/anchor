@@ -16,9 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.form.LoginForm
-import com.susieson.anchor.ui.components.form.LoginFormListener
-import com.susieson.anchor.ui.components.form.LoginFormState
 
 @Composable
 fun AuthenticateDialog(
@@ -26,7 +23,7 @@ fun AuthenticateDialog(
     email: String,
     error: String?,
     onConfirm: (String) -> Unit,
-    onSetShow: (Boolean) -> Unit,
+    onShowChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (!show) return
@@ -39,10 +36,8 @@ fun AuthenticateDialog(
         }
     }
 
-    Dialog(onDismissRequest = { onSetShow(false) }) {
-        Card(
-            modifier = modifier
-        ) {
+    Dialog({ onShowChange(false) }) {
+        Card(modifier) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -51,7 +46,7 @@ fun AuthenticateDialog(
                 LoginForm(
                     state = form,
                     listener = listener,
-                    submitButtonText = R.string.dialog_confirm,
+                    submit = { Text(stringResource(R.string.dialog_confirm)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

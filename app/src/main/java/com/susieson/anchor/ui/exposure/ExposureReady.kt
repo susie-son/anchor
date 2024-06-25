@@ -15,9 +15,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -36,10 +39,8 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorTopAppBar
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ExposureReady(
     onTopBarChange: (@Composable () -> Unit) -> Unit,
@@ -60,15 +61,12 @@ fun ExposureReady(
         }
 
     onTopBarChange {
-        AnchorTopAppBar(
+        CenterAlignedTopAppBar(
             title = { Text(stringResource(R.string.ready_top_bar_title)) },
             navigationIcon = {
-                AnchorIconButton(
-                    onClick = onNavigateUp,
-                    icon = {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
-                    },
-                )
+                IconButton(onNavigateUp) {
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
+                }
             },
         )
     }

@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.components.form
+package com.susieson.anchor.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -10,7 +10,7 @@ import com.susieson.anchor.R
 import com.susieson.anchor.ui.theme.AnchorTheme
 
 @Composable
-fun DiscardConfirmationDialog(
+fun DiscardDialog(
     show: Boolean,
     onDiscard: () -> Unit,
     onSetShow: (Boolean) -> Unit,
@@ -42,7 +42,7 @@ fun DiscardConfirmationDialog(
 @Composable
 private fun DiscardConfirmationDialogPreview() {
     AnchorTheme {
-        DiscardConfirmationDialog(
+        DiscardDialog(
             show = true,
             onSetShow = {},
             onDiscard = {}

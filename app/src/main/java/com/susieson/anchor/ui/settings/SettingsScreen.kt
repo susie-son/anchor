@@ -10,8 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,14 +29,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
-import com.susieson.anchor.ui.components.form.LoginForm
-import com.susieson.anchor.ui.components.form.LoginFormListener
-import com.susieson.anchor.ui.components.form.LoginFormState
+import com.susieson.anchor.ui.components.LoginForm
+import com.susieson.anchor.ui.components.LoginFormListener
+import com.susieson.anchor.ui.components.LoginFormState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onTopBarChange: (@Composable () -> Unit) -> Unit,
@@ -46,18 +48,15 @@ fun SettingsScreen(
     val user by viewModel.user.collectAsState(null)
 
     onTopBarChange {
-        AnchorTopAppBar(
+        CenterAlignedTopAppBar(
             title = { Text(stringResource(R.string.settings_top_bar_title)) },
             navigationIcon = {
-                AnchorIconButton(
-                    onClick = onNavigateUp,
-                    icon = {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            stringResource(R.string.content_description_back)
-                        )
-                    }
-                )
+                IconButton(onNavigateUp) {
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack,
+                        stringResource(R.string.content_description_back)
+                    )
+                }
             }
         )
     }
@@ -112,7 +111,7 @@ fun AnonymousSettings(
                 LoginForm(
                     state = form,
                     listener = listener,
-                    submitButtonText = R.string.login_create_account_button,
+                    submit = { Text(stringResource(R.string.login_create_account_button)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -166,6 +165,6 @@ fun UserSettings(
         onConfirm = { password ->
             onAuthenticate(email, password, sensitiveAction)
         },
-        onSetShow = { showAuthenticateDialog = it },
+        onShowChange = { showAuthenticateDialog = it },
     )
 }

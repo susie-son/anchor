@@ -5,6 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,11 +23,10 @@ import androidx.compose.ui.res.stringResource
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Review
-import com.susieson.anchor.ui.components.form.DiscardConfirmationDialog
-import com.susieson.anchor.ui.components.form.FormBackHandler
-import com.susieson.anchor.ui.components.form.FormTopAppBar
+import com.susieson.anchor.ui.components.DiscardDialog
+import com.susieson.anchor.ui.components.FormBackHandler
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewForm(
     onTopBarChange: (@Composable () -> Unit) -> Unit,
@@ -30,7 +36,7 @@ fun ReviewForm(
     addReview: (String, String, Review) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showDiscardConfirmation by remember { mutableStateOf(false) }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
     val emotionState = remember { mutableStateOf(EmotionFormSectionState()) }
     val ratingState = remember { mutableStateOf(RatingFormSectionState()) }
@@ -70,13 +76,28 @@ fun ReviewForm(
     )
 
     onTopBarChange {
-        FormTopAppBar(
+        CenterAlignedTopAppBar(
             title = { Text(stringResource(R.string.review_top_bar_title)) },
-            isValid = isValid,
-            isEmpty = isEmpty,
-            onDiscard = onDiscard,
-            onShowDiscardConfirmation = { showDiscardConfirmation = true },
-            onActionClick = { addReview(userId, exposureId, review) }
+            navigationIcon = {
+                IconButton({
+                    if (isEmpty) onDiscard() else {
+                        showDiscardDialog = true
+                    }
+                }) {
+                    Icon(Icons.Default.Close, stringResource(R.string.content_description_close))
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = {
+                        addReview(userId, exposureId, review)
+                    },
+                    enabled = isValid
+                ) {
+                    Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
+                }
+            },
+            modifier = modifier,
         )
     }
 
@@ -88,6 +109,6 @@ fun ReviewForm(
         RatingFormSection(ratingForm, ratingsListener)
         LearningsFormSection(learningsForm, learningsListener, bringIntoViewRequester)
     }
-    DiscardConfirmationDialog(showDiscardConfirmation, onDiscard) { showDiscardConfirmation = it }
-    FormBackHandler(isEmpty, onDiscard) { showDiscardConfirmation = true }
+    DiscardDialog(showDiscardDialog, onDiscard) { showDiscardDialog = it }
+    FormBackHandler(isEmpty, onDiscard) { showDiscardDialog = true }
 }

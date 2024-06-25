@@ -3,6 +3,8 @@ package com.susieson.anchor.ui.login
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,11 +18,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.AnchorTopAppBar
-import com.susieson.anchor.ui.components.form.LoginForm
-import com.susieson.anchor.ui.components.form.LoginFormListener
-import com.susieson.anchor.ui.components.form.LoginFormState
+import com.susieson.anchor.ui.components.LoginForm
+import com.susieson.anchor.ui.components.LoginFormListener
+import com.susieson.anchor.ui.components.LoginFormState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onTopBarChange: (@Composable () -> Unit) -> Unit,
@@ -44,7 +46,7 @@ fun LoginScreen(
         }
     }
 
-    onTopBarChange { AnchorTopAppBar() }
+    onTopBarChange { CenterAlignedTopAppBar({ Text(stringResource(R.string.app_name)) }) }
     onFloatingActionButtonChange {}
 
     Column(
@@ -53,7 +55,7 @@ fun LoginScreen(
         LoginForm(
             state = form,
             listener = listener,
-            submitButtonText = R.string.login_button,
+            submit = { Text(stringResource(R.string.login_button)) },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedButton(

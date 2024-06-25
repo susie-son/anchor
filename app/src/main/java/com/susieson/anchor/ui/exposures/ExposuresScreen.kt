@@ -12,8 +12,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,9 +36,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
-import com.susieson.anchor.ui.components.AnchorFloatingActionButton
-import com.susieson.anchor.ui.components.AnchorIconButton
-import com.susieson.anchor.ui.components.AnchorTopAppBar
 import com.susieson.anchor.ui.components.Loading
 import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
@@ -43,6 +44,7 @@ import java.text.DateFormat
 
 const val TimeReloadInterval = 60_000L
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposuresScreen(
     onTopBarChange: (@Composable () -> Unit) -> Unit,
@@ -57,25 +59,26 @@ fun ExposuresScreen(
     val exposures by viewModel.exposures.collectAsState()
 
     onTopBarChange {
-        AnchorTopAppBar(
+        CenterAlignedTopAppBar(
+            title = { Text(stringResource(R.string.app_name)) },
             actions = {
-                AnchorIconButton(
-                    onClick = onSettings,
-                    icon = {
-                        Icon(
-                            Icons.Default.Settings,
-                            stringResource(R.string.content_description_settings)
-                        )
-                    }
-                )
+                IconButton(onSettings) {
+                    Icon(
+                        Icons.Default.Settings,
+                        stringResource(R.string.content_description_settings)
+                    )
+                }
             }
         )
     }
     onFloatingActionButtonChange {
-        AnchorFloatingActionButton(
-            text = { Text(stringResource(R.string.exposures_start_button)) },
-            icon = { Icon(Icons.Default.Add, null) },
-            onClick = { viewModel.addExposure(userId) }
+        ExtendedFloatingActionButton(
+            onClick = { viewModel.addExposure(userId) },
+            content = {
+                Icon(Icons.Default.Add, null)
+                Text(stringResource(R.string.exposures_start_button))
+            },
+            modifier = modifier
         )
     }
 

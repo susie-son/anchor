@@ -1,11 +1,18 @@
 package com.susieson.anchor.ui.exposure.review
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.form.FormRatingItem
-import com.susieson.anchor.ui.components.form.LabeledFormSection
+import com.susieson.anchor.ui.components.LabeledItem
+import com.susieson.anchor.ui.components.SliderWithLabel
 import com.susieson.anchor.ui.exposure.FormSectionListener
 import com.susieson.anchor.ui.exposure.FormSectionState
 
@@ -15,40 +22,88 @@ fun RatingFormSection(
     listener: RatingFormSectionListener,
     modifier: Modifier = Modifier,
 ) {
-    LabeledFormSection(
-        label = R.string.review_effectiveness_label,
-        descriptionLabel = null,
-        modifier = modifier,
-        items = listOf(
-            {
-                FormRatingItem(
-                    label = R.string.review_experiencing_label,
-                    value = state.experiencingRating,
-                    onValueChange = listener::onExperiencingRatingChanged,
+    LabeledItem(
+        label = {
+            Text(
+                text = stringResource(R.string.review_effectiveness_label),
+                style = MaterialTheme.typography.labelLarge
+            )
+        },
+        content = {
+            Column(
+                modifier = modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                LabeledItem(
+                    label = {
+                        Text(
+                            stringResource(R.string.review_experiencing_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (state.experiencingRating == 0f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    content = {
+                        SliderWithLabel(
+                            value = state.experiencingRating,
+                            onValueChange = listener::onExperiencingRatingChanged,
+                            valueRange = 0f..10f,
+                            steps = 9,
+                        )
+                    }
                 )
-            },
-            {
-                FormRatingItem(
-                    label = R.string.review_anchoring_label,
-                    value = state.anchoringRating,
-                    onValueChange = listener::onAnchoringRatingChanged,
+                LabeledItem(
+                    label = {
+                        Text(
+                            stringResource(R.string.review_anchoring_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (state.anchoringRating == 0f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    content = {
+                        SliderWithLabel(
+                            value = state.anchoringRating,
+                            onValueChange = listener::onAnchoringRatingChanged,
+                            valueRange = 0f..10f,
+                            steps = 9,
+                        )
+                    }
                 )
-            },
-            {
-                FormRatingItem(
-                    label = R.string.review_thinking_label,
-                    value = state.thinkingRating,
-                    onValueChange = listener::onThinkingRatingChanged,
+                LabeledItem(
+                    label = {
+                        Text(
+                            stringResource(R.string.review_thinking_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (state.thinkingRating == 0f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    content = {
+                        SliderWithLabel(
+                            value = state.thinkingRating,
+                            onValueChange = listener::onThinkingRatingChanged,
+                            valueRange = 0f..10f,
+                            steps = 9,
+                        )
+                    }
                 )
-            },
-            {
-                FormRatingItem(
-                    label = R.string.review_engaging_label,
-                    value = state.engagingRating,
-                    onValueChange = listener::onEngagingRatingChanged,
+                LabeledItem(
+                    label = {
+                        Text(
+                            stringResource(R.string.review_engaging_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (state.engagingRating == 0f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    content = {
+                        SliderWithLabel(
+                            value = state.engagingRating,
+                            onValueChange = listener::onEngagingRatingChanged,
+                            valueRange = 0f..10f,
+                            steps = 9,
+                        )
+                    }
                 )
             }
-        )
+        }
     )
 }
 

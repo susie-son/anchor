@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.components.form
+package com.susieson.anchor.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -7,13 +7,13 @@ import androidx.compose.runtime.Composable
 fun FormBackHandler(
     isEmpty: Boolean,
     onDiscard: () -> Unit,
-    onShowConfirmation: (Boolean) -> Unit,
+    onShowDiscardDialog: (Boolean) -> Unit,
 ) {
     BackHandler {
         if (isEmpty) {
             onDiscard()
         } else {
-            onShowConfirmation(true)
+            onShowDiscardDialog(true)
         }
     }
 }

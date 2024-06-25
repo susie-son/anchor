@@ -1,9 +1,7 @@
-package com.susieson.anchor.ui.components.form
+package com.susieson.anchor.ui.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -45,61 +43,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LabeledFormTextFieldColumn(
+fun TextFieldColumn(
     texts: List<String>,
-    @StringRes
-    label: Int,
+    bringIntoViewRequester: BringIntoViewRequester,
     onAdd: (String) -> Unit,
     onDelete: (String) -> Unit,
-    bringIntoViewRequester: BringIntoViewRequester,
-    modifier: Modifier = Modifier,
-    @StringRes
-    descriptionLabel: Int? = null
-) {
-    val isError = texts.isEmpty()
-
-    val labelItem: @Composable () -> Unit = {
-        Text(
-            stringResource(label),
-            style = MaterialTheme.typography.labelLarge
-        )
-    }
-    val descriptionItem: @Composable () -> Unit = {
-        descriptionLabel?.let {
-            Text(
-                text = stringResource(it),
-                style = MaterialTheme.typography.bodySmall,
-                color = if (isError) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-            )
-        }
-    }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
-        labelItem()
-        descriptionItem()
-        FormTextFieldColumn(
-            texts = texts,
-            onAdd = onAdd,
-            onDelete = onDelete,
-            bringIntoViewRequester = bringIntoViewRequester
-        )
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun FormTextFieldColumn(
-    texts: List<String>,
-    onAdd: (String) -> Unit,
-    onDelete: (String) -> Unit,
-    bringIntoViewRequester: BringIntoViewRequester,
     modifier: Modifier = Modifier
 ) {
     var field by rememberSaveable { mutableStateOf("") }
@@ -107,22 +55,27 @@ fun FormTextFieldColumn(
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier) {
-        FormAddTextField(field, onAdd, interactionSource, bringIntoViewRequester, coroutineScope) {
-            field = it
-        }
-        FormTextList(texts, onDelete)
+        AddTextField(
+            field = field,
+            bringIntoViewRequester = bringIntoViewRequester,
+            interactionSource = interactionSource,
+            coroutineScope = coroutineScope,
+            onAdd = onAdd,
+            onFieldChange = { field = it }
+        )
+        TextList(texts, onDelete)
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun FormAddTextField(
+private fun AddTextField(
     field: String,
-    onAdd: (String) -> Unit,
-    interactionSource: MutableInteractionSource,
     bringIntoViewRequester: BringIntoViewRequester,
+    interactionSource: MutableInteractionSource,
     coroutineScope: CoroutineScope,
     onFieldChange: (String) -> Unit,
+    onAdd: (String) -> Unit,
 ) {
     val onAddAndClear = {
         if (field.isNotEmpty()) {
@@ -134,17 +87,20 @@ private fun FormAddTextField(
         headlineContent = {
             BasicTextFieldWithDecoration(
                 value = field,
+                bringIntoViewRequester = bringIntoViewRequester,
+                interactionSource = interactionSource,
+                coroutineScope = coroutineScope,
                 onValueChange = onFieldChange,
                 onAddAndClear = onAddAndClear,
-                interactionSource = interactionSource,
-                bringIntoViewRequester = bringIntoViewRequester,
-                coroutineScope = coroutineScope
             )
         },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         trailingContent = {
-            IconButton(onClick = onAddAndClear) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.content_description_add))
+            IconButton(onAddAndClear) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.content_description_add)
+                )
             }
         }
     )
@@ -154,11 +110,11 @@ private fun FormAddTextField(
 @Composable
 private fun BasicTextFieldWithDecoration(
     value: String,
+    bringIntoViewRequester: BringIntoViewRequester,
+    interactionSource: MutableInteractionSource,
+    coroutineScope: CoroutineScope,
     onValueChange: (String) -> Unit,
     onAddAndClear: () -> Unit,
-    interactionSource: MutableInteractionSource,
-    bringIntoViewRequester: BringIntoViewRequester,
-    coroutineScope: CoroutineScope
 ) {
     BasicTextField(
         value = value,
@@ -186,21 +142,24 @@ private fun BasicTextFieldWithDecoration(
             visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
             contentPadding = OutlinedTextFieldDefaults.contentPadding(0.dp),
-            placeholder = { Text(stringResource(R.string.text_field_placeholder)) },
+            placeholder = {},
             container = {}
         )
     }
 }
 
 @Composable
-private fun FormTextList(texts: List<String>, onDelete: (String) -> Unit) {
+private fun TextList(texts: List<String>, onDelete: (String) -> Unit) {
     texts.forEach { text ->
         HorizontalDivider()
         ListItem(
             headlineContent = { Text(text = text) },
             trailingContent = {
-                IconButton(onClick = { onDelete(text) }) {
-                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.content_description_delete))
+                IconButton({ onDelete(text) }) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.content_description_delete)
+                    )
                 }
             }
         )
@@ -210,11 +169,11 @@ private fun FormTextList(texts: List<String>, onDelete: (String) -> Unit) {
 @OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
-private fun FormTextFieldColumnPreview() {
-    FormTextFieldColumn(
+private fun TextFieldColumnPreview() {
+    TextFieldColumn(
         texts = mutableListOf("1", "2", "3"),
+        bringIntoViewRequester = BringIntoViewRequester(),
         onAdd = {},
-        onDelete = {},
-        bringIntoViewRequester = BringIntoViewRequester()
+        onDelete = {}
     )
 }

@@ -55,7 +55,6 @@
     <string name="reminder_notification_text">Remember to stay anchored during your exposure.</string>
     <string name="exposures_no_title">No title</string>
     <string name="exposures_no_description">No description</string>
-    <string name="text_field_placeholder">…</string>
     <string name="content_description_add">Add</string>
     <string name="content_description_delete">Delete</string>
     <string name="content_description_back">Back</string>

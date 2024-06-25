@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
-import com.susieson.anchor.model.AnchorUser
+import com.susieson.anchor.model.User
 import com.susieson.anchor.ui.exposure.ExposureScreen
 import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.login.LoginScreen
@@ -24,8 +24,8 @@ object SettingsNav
 data class ExposureNav(val exposureId: String)
 
 @Composable
-fun AnchorNavHost(
-    user: AnchorUser?,
+fun NavHost(
+    user: User?,
     onTopBarChange: (@Composable () -> Unit) -> Unit,
     onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
     modifier: Modifier = Modifier

@@ -1,13 +1,20 @@
 package com.susieson.anchor.ui.exposure.preparation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.form.FormSection
-import com.susieson.anchor.ui.components.form.LabeledFormTextFieldColumn
+import com.susieson.anchor.ui.components.LabeledItemWithSupporting
+import com.susieson.anchor.ui.components.TextFieldColumn
 import com.susieson.anchor.ui.exposure.FormSectionListener
 import com.susieson.anchor.ui.exposure.FormSectionState
 
@@ -19,49 +26,103 @@ fun PreparationFormSection(
     bringIntoViewRequester: BringIntoViewRequester,
     modifier: Modifier = Modifier
 ) {
-    FormSection(
-        modifier = modifier,
-        items = arrayOf(
-            {
-                LabeledFormTextFieldColumn(
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        LabeledItemWithSupporting(
+            label = {
+                Text(
+                    stringResource(R.string.preparation_thoughts_label),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            },
+            supporting = {
+                Text(
+                    stringResource(R.string.preparation_thoughts_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (state.thoughts.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                )
+            },
+            content = {
+                TextFieldColumn(
                     texts = state.thoughts,
-                    label = R.string.preparation_thoughts_label,
-                    descriptionLabel = R.string.preparation_thoughts_body,
+                    bringIntoViewRequester = bringIntoViewRequester,
                     onAdd = listener::onThoughtAdded,
-                    onDelete = listener::onThoughtRemoved,
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-                LabeledFormTextFieldColumn(
-                    texts = state.interpretations,
-                    label = R.string.preparation_interpretations_label,
-                    descriptionLabel = R.string.preparation_interpretations_body,
-                    onAdd = listener::onInterpretationAdded,
-                    onDelete = listener::onInterpretationRemoved,
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-            },
-            {
-                LabeledFormTextFieldColumn(
-                    texts = state.behaviors,
-                    label = R.string.preparation_behaviors_label,
-                    descriptionLabel = R.string.preparation_behaviors_body,
-                    onAdd = listener::onBehaviorAdded,
-                    onDelete = listener::onBehaviorRemoved,
-                    bringIntoViewRequester = bringIntoViewRequester
-                )
-            },
-            {
-                LabeledFormTextFieldColumn(
-                    texts = state.actions,
-                    label = R.string.preparation_actions_label,
-                    descriptionLabel = R.string.preparation_actions_body,
-                    onAdd = listener::onActionAdded,
-                    onDelete = listener::onActionRemoved,
-                    bringIntoViewRequester = bringIntoViewRequester
+                    onDelete = listener::onThoughtRemoved
                 )
             }
         )
-    )
+        LabeledItemWithSupporting(
+            label = {
+                Text(
+                    stringResource(R.string.preparation_interpretations_label),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            },
+            supporting = {
+                Text(
+                    stringResource(R.string.preparation_interpretations_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (state.interpretations.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                )
+            },
+            content = {
+                TextFieldColumn(
+                    texts = state.interpretations,
+                    bringIntoViewRequester = bringIntoViewRequester,
+                    onAdd = listener::onInterpretationAdded,
+                    onDelete = listener::onInterpretationRemoved
+                )
+            }
+        )
+        LabeledItemWithSupporting(
+            label = {
+                Text(
+                    stringResource(R.string.preparation_behaviors_label),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            },
+            supporting = {
+                Text(
+                    stringResource(R.string.preparation_behaviors_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (state.behaviors.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                )
+            },
+            content = {
+                TextFieldColumn(
+                    texts = state.behaviors,
+                    bringIntoViewRequester = bringIntoViewRequester,
+                    onAdd = listener::onBehaviorAdded,
+                    onDelete = listener::onBehaviorRemoved
+                )
+            }
+        )
+        LabeledItemWithSupporting(
+            label = {
+                Text(
+                    stringResource(R.string.preparation_actions_label),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            },
+            supporting = {
+                Text(
+                    stringResource(R.string.preparation_actions_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (state.actions.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                )
+            },
+            content = {
+                TextFieldColumn(
+                    texts = state.actions,
+                    bringIntoViewRequester = bringIntoViewRequester,
+                    onAdd = listener::onActionAdded,
+                    onDelete = listener::onActionRemoved
+                )
+            }
+        )
+    }
 }
 
 data class PreparationFormSectionState(

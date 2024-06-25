@@ -1,49 +1,58 @@
 package com.susieson.anchor.ui.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun LabeledItem(
-    @StringRes
-    label: Int,
-    isOnSameLine: Boolean,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
-    content: @Composable () -> Unit
+    label: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val labelItem: @Composable (modifier: Modifier) -> Unit = {
-        Text(
-            stringResource(label),
-            style = MaterialTheme.typography.labelLarge,
-            color = color,
-            modifier = it
-        )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+    ) {
+        label()
+        content()
     }
-    if (isOnSameLine) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = modifier
-        ) {
-            labelItem(Modifier.weight(1f))
-            content()
+}
+
+@Composable
+fun SameLineLabeledItem(
+    label: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            label()
         }
-    } else {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-        ) {
-            labelItem(Modifier)
-            content()
-        }
+        content()
     }
+}
+
+@Composable
+fun LabeledItemWithSupporting(
+    label: @Composable () -> Unit,
+    supporting: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LabeledItem(
+        label = label,
+        content = {
+            supporting()
+            content()
+        },
+        modifier = modifier
+    )
 }

@@ -1,6 +1,6 @@
 package com.susieson.anchor.ui.settings
 
-import com.susieson.anchor.model.AnchorUser
+import com.susieson.anchor.model.User
 
 sealed interface UserSettingsState {
     data object Loading : UserSettingsState
@@ -8,7 +8,7 @@ sealed interface UserSettingsState {
     data class Authenticated(val email: String, val error: String?) : UserSettingsState
 }
 
-fun getUserSettingsState(user: AnchorUser?, error: String?): UserSettingsState {
+fun getUserSettingsState(user: User?, error: String?): UserSettingsState {
     return when (user) {
         null -> UserSettingsState.Loading
         else -> {

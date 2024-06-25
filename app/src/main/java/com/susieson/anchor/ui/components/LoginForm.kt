@@ -1,20 +1,21 @@
-package com.susieson.anchor.ui.components.form
+package com.susieson.anchor.ui.components
 
+import android.annotation.SuppressLint
 import android.util.Patterns
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
@@ -28,10 +29,9 @@ const val MinPasswordLength = 6
 fun LoginForm(
     state: LoginFormState,
     listener: LoginFormListener,
-    @StringRes
-    submitButtonText: Int,
+    submit: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    emailEnabled: Boolean = true
+    isEmailEnabled: Boolean = true
 ) {
     val email = state.email
     val password = state.password
@@ -46,25 +46,28 @@ fun LoginForm(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         EmailTextField(
             email = email,
-            emailError = emailError,
-            emailEnabled = emailEnabled,
+            isError = emailError,
+            enabled = isEmailEnabled,
             onEmailChange = listener::onEmailChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
         PasswordTextField(
             password = password,
-            passwordError = passwordError,
-            passwordVisible = passwordVisible,
+            error = passwordError,
+            isPasswordVisible = passwordVisible,
             onPasswordChange = listener::onPasswordChange,
             onPasswordVisibleChange = listener::onPasswordVisibleChange,
             modifier = Modifier.fillMaxWidth()
         )
-        error?.let {
+        if (error != null) {
             Text(
-                it,
+                error,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
             )
         }
         Button(
@@ -72,7 +75,7 @@ fun LoginForm(
             enabled = isValid,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(submitButtonText))
+            submit()
         }
     }
 }
@@ -112,24 +115,21 @@ abstract class LoginFormListener(
 @Preview(showBackground = true)
 @Composable
 private fun LoginFormPreview() {
-    val state = remember {
-        mutableStateOf(
-            LoginFormState(
-                email = "email@example.com",
-                password = "123",
-                passwordVisible = false,
-                error = "There was an error logging in. Please try again."
-            )
-        )
-    }
-    val listener = object : LoginFormListener(state) {
+    val state = LoginFormState(
+        email = "email@example.com",
+        password = "123",
+        passwordVisible = false,
+        error = "There was an error logging in. Please try again."
+    )
+    val listener = @SuppressLint("UnrememberedMutableState")
+    object : LoginFormListener(mutableStateOf(state)) {
         override fun onSubmit() {}
     }
     AnchorTheme {
         LoginForm(
-            state = state.value,
+            state = state,
             listener = listener,
-            submitButtonText = R.string.login_button,
+            submit = { Text(stringResource(R.string.login_button)) },
             modifier = Modifier.fillMaxWidth()
         )
     }

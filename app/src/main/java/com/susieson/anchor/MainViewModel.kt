@@ -2,7 +2,7 @@ package com.susieson.anchor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.susieson.anchor.model.AnchorUser
+import com.susieson.anchor.model.User
 import com.susieson.anchor.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +19,8 @@ constructor(
 
     var isReady = false
 
-    private val _user = MutableStateFlow<AnchorUser?>(null)
-    val user: StateFlow<AnchorUser?> = _user
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
     init {
         viewModelScope.launch {
