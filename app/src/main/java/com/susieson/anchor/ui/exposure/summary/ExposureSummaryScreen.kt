@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.exposure
+package com.susieson.anchor.ui.exposure.summary
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,13 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -31,27 +25,24 @@ import com.susieson.anchor.ui.components.SameLineLabeledItem
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExposureSummary(
-    onTopBarChange: (@Composable () -> Unit) -> Unit,
+fun ExposureSummaryScreen(
     exposure: Exposure,
-    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    onTopBarChange {
-        CenterAlignedTopAppBar(
-            title = { Text(stringResource(R.string.summary_top_bar_title)) },
-            navigationIcon = {
-                IconButton(onNavigateUp) {
-                    Icon(
-                        Icons.AutoMirrored.Default.ArrowBack,
-                        stringResource(R.string.content_description_back)
-                    )
-                }
-            }
-        )
-    }
+//    onTopBarChange {
+//        CenterAlignedTopAppBar(
+//            title = { Text(stringResource(R.string.summary_top_bar_title)) },
+//            navigationIcon = {
+//                IconButton(onNavigateUp) {
+//                    Icon(
+//                        Icons.AutoMirrored.Default.ArrowBack,
+//                        stringResource(R.string.content_description_back)
+//                    )
+//                }
+//            }
+//        )
+//    }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),

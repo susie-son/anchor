@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.exposure
+package com.susieson.anchor.ui.exposure.ready
 
 import android.Manifest
 import android.content.Context
@@ -12,15 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -39,16 +34,14 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
+import com.susieson.anchor.model.Exposure
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ExposureReady(
-    onTopBarChange: (@Composable () -> Unit) -> Unit,
+fun ExposureReadyScreen(
     userId: String,
-    exposureId: String,
-    title: String,
-    onNavigateUp: () -> Unit,
-    markAsInProgress: (String, String, String) -> Unit,
+    exposure: Exposure,
+    viewModel: ExposureReadyViewModel,
     modifier: Modifier = Modifier
 ) {
     val checked = remember { mutableStateListOf(false, false) }
@@ -60,16 +53,16 @@ fun ExposureReady(
             null
         }
 
-    onTopBarChange {
-        CenterAlignedTopAppBar(
-            title = { Text(stringResource(R.string.ready_top_bar_title)) },
-            navigationIcon = {
-                IconButton(onNavigateUp) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
-                }
-            },
-        )
-    }
+//    onTopBarChange {
+//        CenterAlignedTopAppBar(
+//            title = { Text(stringResource(R.string.ready_top_bar_title)) },
+//            navigationIcon = {
+//                IconButton(onNavigateUp) {
+//                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
+//                }
+//            },
+//        )
+//    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -90,7 +83,7 @@ fun ExposureReady(
             onCheckedChange = { index, value -> checked[index] = value }
         )
         FilledTonalButton(
-            onClick = { markAsInProgress(userId, exposureId, title) },
+            onClick = { viewModel.markAsInProgress(userId, exposure.id, exposure.title) },
             enabled = checked.all { it },
             modifier = Modifier.padding(16.dp).fillMaxWidth()
         ) {

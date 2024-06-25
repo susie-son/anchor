@@ -1,4 +1,4 @@
-package com.susieson.anchor.ui.exposure
+package com.susieson.anchor.ui.exposures
 
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status

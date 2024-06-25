@@ -19,9 +19,11 @@ constructor(
 
     private val _exposures = MutableStateFlow<List<Exposure>?>(null)
     private var _exposureId = MutableStateFlow<String?>(null)
+    private val _exposure = MutableStateFlow<Exposure?>(null)
 
     val exposures: StateFlow<List<Exposure>?> = _exposures
     val exposureId: StateFlow<String?> = _exposureId
+    val exposure: StateFlow<Exposure?> = _exposure
 
     fun addExposure(userId: String) {
         viewModelScope.launch {
@@ -37,6 +39,14 @@ constructor(
         viewModelScope.launch {
             storageService.getExposureList(userId).collect {
                 _exposures.value = it
+            }
+        }
+    }
+
+    fun getExposure(userId: String, exposureId: String) {
+        viewModelScope.launch {
+            storageService.getExposure(userId, exposureId).collect {
+                _exposure.value = it
             }
         }
     }
