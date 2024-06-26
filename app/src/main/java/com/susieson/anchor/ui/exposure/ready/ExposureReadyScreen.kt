@@ -7,17 +7,25 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -27,19 +35,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
-import com.susieson.anchor.model.Exposure
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ExposureReadyScreen(
-    exposure: Exposure,
     viewModel: ExposureReadyViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val checked = remember { mutableStateListOf(false, false) }
@@ -51,30 +59,52 @@ fun ExposureReadyScreen(
             null
         }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(32.dp),
-        modifier = modifier.padding(16.dp).verticalScroll(rememberScrollState())
-    ) {
-        postNotificationPermission?.let {
-            if (!it.status.isGranted) {
-                NotificationCard(postNotificationPermission = it)
-            }
-        }
-        Text(
-            stringResource(R.string.ready_description),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        ReadyCheckList(
-            checked = checked,
-            onCheckedChange = { index, value -> checked[index] = value }
-        )
-        FilledTonalButton(
-            onClick = { viewModel.markAsInProgress(exposure.title) },
-            enabled = checked.all { it },
-            modifier = Modifier.padding(16.dp).fillMaxWidth()
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(R.string.ready_top_bar_title)) },
+                navigationIcon = {
+                    IconButton(navController::navigateUp) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            stringResource(R.string.content_description_back)
+                        )
+                    }
+                },
+            )
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(32.dp),
+            modifier = modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Text(stringResource(R.string.ready_confirm_button))
+            postNotificationPermission?.let {
+                if (!it.status.isGranted) {
+                    NotificationCard(postNotificationPermission = it)
+                }
+            }
+            Text(
+                stringResource(R.string.ready_description),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            ReadyCheckList(
+                checked = checked,
+                onCheckedChange = { index, value -> checked[index] = value }
+            )
+            FilledTonalButton(
+                onClick = viewModel::markAsInProgress,
+                enabled = checked.all { it },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.ready_confirm_button))
+            }
         }
     }
 }
@@ -115,7 +145,9 @@ fun NotificationCard(postNotificationPermission: PermissionState, modifier: Modi
     val context = LocalContext.current
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(

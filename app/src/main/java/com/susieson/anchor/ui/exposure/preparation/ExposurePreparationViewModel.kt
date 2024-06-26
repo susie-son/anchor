@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.service.StorageService
 import dagger.assisted.Assisted
@@ -17,14 +18,14 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ExposurePreparationViewModel.Factory::class)
 class ExposurePreparationViewModel @AssistedInject constructor(
-    @Assisted("userId") private val userId: String,
-    @Assisted("exposureId") private val exposureId: String,
+    @Assisted private val userId: String,
+    @Assisted private val exposure: Exposure,
     private val storageService: StorageService,
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(@Assisted("userId") userId: String, @Assisted("exposureId") exposureId: String): ExposurePreparationViewModel
+        fun create(userId: String, exposure: Exposure): ExposurePreparationViewModel
     }
 
     var title by mutableStateOf("")
@@ -36,7 +37,7 @@ class ExposurePreparationViewModel @AssistedInject constructor(
 
     var showDiscardDialog by mutableStateOf(false)
 
-    val isValid = derivedStateOf {
+    val isValid by derivedStateOf {
         title.isNotBlank() && description.isNotBlank()
             && thoughts.isNotEmpty() && interpretations.isNotEmpty()
             && behaviors.isNotEmpty() && actions.isNotEmpty()
@@ -58,13 +59,13 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     fun addPreparation() {
         viewModelScope.launch {
             val preparation = Preparation(thoughts, interpretations, behaviors, actions)
-            storageService.updateExposure(userId, exposureId, title, description, preparation)
+            storageService.updateExposure(userId, exposure.id, title, description, preparation)
         }
     }
 
     fun deleteExposure() {
         viewModelScope.launch {
-            storageService.deleteExposure(userId, exposureId)
+            storageService.deleteExposure(userId, exposure.id)
         }
     }
 

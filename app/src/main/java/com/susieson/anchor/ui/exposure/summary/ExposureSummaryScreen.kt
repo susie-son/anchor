@@ -2,22 +2,30 @@ package com.susieson.anchor.ui.exposure.summary
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.google.firebase.Timestamp
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
-import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.ui.components.LabeledItem
@@ -25,26 +33,45 @@ import com.susieson.anchor.ui.components.SameLineLabeledItem
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposureSummaryScreen(
-    exposure: Exposure,
+    viewModel: ExposureSummaryViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        BasicSummarySection(
-            exposure.updatedAt,
-            exposure.title,
-            exposure.description,
-            modifier = Modifier.fillMaxWidth()
-        )
-        exposure.preparation?.let {
-            PreparationSummarySection(it, modifier = Modifier.fillMaxWidth())
-        }
-        exposure.review?.let {
-            ReviewSummarySection(it, modifier = Modifier.fillMaxWidth())
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(R.string.summary_top_bar_title)) },
+                navigationIcon = {
+                    IconButton(navController::navigateUp) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            stringResource(R.string.content_description_back)
+                        )
+                    }
+                }
+            )
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Column(
+            modifier = modifier.padding(innerPadding).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            BasicSummarySection(
+                viewModel.exposure.updatedAt,
+                viewModel.exposure.title,
+                viewModel.exposure.description,
+                modifier = Modifier.fillMaxWidth()
+            )
+            viewModel.exposure.preparation?.let {
+                PreparationSummarySection(it, modifier = Modifier.fillMaxWidth())
+            }
+            viewModel.exposure.review?.let {
+                ReviewSummarySection(it, modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }

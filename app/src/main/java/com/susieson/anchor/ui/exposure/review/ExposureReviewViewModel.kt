@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
+import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.service.StorageService
 import dagger.assisted.Assisted
@@ -20,14 +21,14 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ExposureReviewViewModel.Factory::class)
 class ExposureReviewViewModel @AssistedInject constructor(
-    @Assisted("userId") private val userId: String,
-    @Assisted("exposureId") private val exposureId: String,
+    @Assisted private val userId: String,
+    @Assisted private val exposure: Exposure,
     private val storageService: StorageService
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(@Assisted("userId") userId: String, @Assisted("exposureId") exposureId: String): ExposureReviewViewModel
+        fun create(userId: String, exposure: Exposure): ExposureReviewViewModel
     }
 
     private var fear by mutableStateOf(false)
@@ -61,7 +62,7 @@ class ExposureReviewViewModel @AssistedInject constructor(
 
     var showDiscardDialog by mutableStateOf(false)
 
-    val isValid = derivedStateOf {
+    val isValid by derivedStateOf {
         emotions.values.contains(true)
                 && thoughts.isNotEmpty() && sensations.isNotEmpty() && behaviors.isNotEmpty()
                 && experiencingRating > 0f && anchoringRating > 0f && thinkingRating > 0f && engagingRating > 0f
@@ -106,7 +107,7 @@ class ExposureReviewViewModel @AssistedInject constructor(
                 engagingRating,
                 learnings
             )
-            storageService.updateExposure(userId, exposureId, review)
+            storageService.updateExposure(userId, exposure.id, review)
         }
     }
 

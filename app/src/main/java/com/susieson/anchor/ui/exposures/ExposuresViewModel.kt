@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ExposuresViewModel.Factory::class)
 class ExposuresViewModel @AssistedInject constructor(
-    @Assisted private val userId: String,
+    @Assisted val userId: String,
     private val storageService: StorageService
 ) : ViewModel() {
 

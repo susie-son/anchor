@@ -1,15 +1,23 @@
 package com.susieson.anchor.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,44 +28,64 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    userId: String,
-    onNavigateUp: () -> Unit,
-    modifier: Modifier = Modifier,
     viewModel: SettingsViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier,
 ) {
     val error by viewModel.error.collectAsState()
     val userState by viewModel.user.collectAsState(null)
 
-    when (val user = userState) {
-        null -> Loading(modifier = modifier.fillMaxSize())
-        else -> {
-            when (user.isAnonymous) {
-                true -> AnonymousSettings(
-                    error = error,
-                    onLinkAccount = { email, password ->
-                        viewModel.linkAccount(email, password)
-                        onNavigateUp()
-                    },
-                    onDeleteAccount = viewModel::deleteAccount,
-                    modifier = modifier
-                )
-                false -> UserSettings(
-                    email = user.email!!,
-                    error = error,
-                    onAuthenticate = { email: String, password: String, action: () -> Unit ->
-                        viewModel.reAuthenticate(email, password, action)
-                    },
-                    onLogout = viewModel::logout,
-                    onDeleteAccount = viewModel::deleteAccount,
-                    modifier = modifier
-                )
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(R.string.settings_top_bar_title)) },
+                navigationIcon = {
+                    IconButton(navController::navigateUp) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            stringResource(R.string.content_description_back)
+                        )
+                    }
+                }
+            )
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Box(Modifier.padding(innerPadding)) {
+            when (val user = userState) {
+                null -> Loading(modifier = modifier.fillMaxSize())
+                else -> {
+                    when (user.isAnonymous) {
+                        true -> AnonymousSettings(
+                            error = error,
+                            onLinkAccount = { email, password ->
+                                viewModel.linkAccount(email, password)
+                                navController.navigateUp()
+                            },
+                            onDeleteAccount = viewModel::deleteAccount,
+                            modifier = modifier
+                        )
+                        false -> UserSettings(
+                            email = user.email!!,
+                            error = error,
+                            onAuthenticate = { email: String, password: String, action: () -> Unit ->
+                                viewModel.reAuthenticate(email, password, action)
+                            },
+                            onLogout = viewModel::logout,
+                            onDeleteAccount = viewModel::deleteAccount,
+                            modifier = modifier
+                        )
+                    }
+                }
             }
         }
     }

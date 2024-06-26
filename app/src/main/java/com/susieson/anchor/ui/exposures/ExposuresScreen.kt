@@ -4,14 +4,24 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,7 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.susieson.anchor.ExposurePreparation
 import com.susieson.anchor.R
+import com.susieson.anchor.Settings
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.Loading
@@ -33,23 +46,54 @@ import java.text.DateFormat
 
 const val TimeReloadInterval = 60_000L
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposuresScreen(
-    onItemSelect: (Exposure) -> Unit,
     viewModel: ExposuresViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val exposuresState by viewModel.exposures.collectAsState()
     val exposures = exposuresState
 
-    when (exposures?.isEmpty()) {
-        null -> Loading(modifier = modifier.fillMaxSize())
-        false -> ExposureList(
-            exposures = exposures,
-            onItemClick = onItemSelect,
-            modifier = modifier.fillMaxSize(),
-        )
-        true -> EmptyExposureList(modifier = modifier.fillMaxSize())
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                actions = {
+                    IconButton({ navController.navigate(Settings) }) {
+                        Icon(
+                            Icons.Default.Settings,
+                            stringResource(R.string.content_description_settings)
+                        )
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { viewModel.addExposure() },
+                content = {
+                    Icon(Icons.Default.Add, null)
+                    Text(stringResource(R.string.exposures_start_button))
+                }
+            )
+        },
+        modifier = modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Box(Modifier.padding(innerPadding)) {
+            when (exposures?.isEmpty()) {
+                null -> Loading(modifier = Modifier.fillMaxSize())
+                false -> ExposureList(
+                    exposures = exposures,
+                    onItemClick = { exposure ->
+                        navController.navigate(ExposurePreparation(viewModel.userId, exposure))
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                true -> EmptyExposureList(modifier = Modifier.fillMaxSize())
+            }
+        }
     }
 }
 
