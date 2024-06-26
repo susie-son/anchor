@@ -1,10 +1,7 @@
 package com.susieson.anchor.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,12 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusTarget
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -38,28 +32,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TextFieldColumn(
     texts: List<String>,
-    bringIntoViewRequester: BringIntoViewRequester,
     onAdd: (String) -> Unit,
     onDelete: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var field by rememberSaveable { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
-    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier) {
         AddTextField(
             field = field,
-            bringIntoViewRequester = bringIntoViewRequester,
             interactionSource = interactionSource,
-            coroutineScope = coroutineScope,
             onAdd = onAdd,
             onFieldChange = { field = it }
         )
@@ -67,13 +54,10 @@ fun TextFieldColumn(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AddTextField(
     field: String,
-    bringIntoViewRequester: BringIntoViewRequester,
     interactionSource: MutableInteractionSource,
-    coroutineScope: CoroutineScope,
     onFieldChange: (String) -> Unit,
     onAdd: (String) -> Unit,
 ) {
@@ -87,9 +71,7 @@ private fun AddTextField(
         headlineContent = {
             BasicTextFieldWithDecoration(
                 value = field,
-                bringIntoViewRequester = bringIntoViewRequester,
                 interactionSource = interactionSource,
-                coroutineScope = coroutineScope,
                 onValueChange = onFieldChange,
                 onAddAndClear = onAddAndClear,
             )
@@ -106,13 +88,11 @@ private fun AddTextField(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BasicTextFieldWithDecoration(
     value: String,
-    bringIntoViewRequester: BringIntoViewRequester,
     interactionSource: MutableInteractionSource,
-    coroutineScope: CoroutineScope,
     onValueChange: (String) -> Unit,
     onAddAndClear: () -> Unit,
 ) {
@@ -124,15 +104,7 @@ private fun BasicTextFieldWithDecoration(
         interactionSource = interactionSource,
         singleLine = true,
         textStyle = TextStyle.Default.copy(color = OutlinedTextFieldDefaults.colors().focusedTextColor),
-        cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
-        modifier = Modifier
-            .bringIntoViewRequester(bringIntoViewRequester)
-            .onFocusChanged {
-                if (it.isFocused) {
-                    coroutineScope.launch { bringIntoViewRequester.bringIntoView() }
-                }
-            }
-            .focusTarget()
+        cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor)
     ) { innerTextField ->
         OutlinedTextFieldDefaults.DecorationBox(
             value = value,
@@ -166,13 +138,11 @@ private fun TextList(texts: List<String>, onDelete: (String) -> Unit) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 private fun TextFieldColumnPreview() {
     TextFieldColumn(
         texts = mutableListOf("1", "2", "3"),
-        bringIntoViewRequester = BringIntoViewRequester(),
         onAdd = {},
         onDelete = {}
     )

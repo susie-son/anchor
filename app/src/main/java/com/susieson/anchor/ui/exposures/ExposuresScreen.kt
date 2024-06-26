@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -34,6 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.ExposurePreparation
+import com.susieson.anchor.ExposureReady
+import com.susieson.anchor.ExposureReview
+import com.susieson.anchor.ExposureSummary
 import com.susieson.anchor.R
 import com.susieson.anchor.Settings
 import com.susieson.anchor.model.Exposure
@@ -55,6 +59,7 @@ fun ExposuresScreen(
 ) {
     val exposuresState by viewModel.exposures.collectAsState()
     val exposures = exposuresState
+    val exposure by viewModel.exposure.collectAsState()
 
     Scaffold(
         topBar = {
@@ -72,7 +77,9 @@ fun ExposuresScreen(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { viewModel.addExposure() },
+                onClick = {
+                    viewModel.addExposure()
+                          },
                 content = {
                     Icon(Icons.Default.Add, null)
                     Text(stringResource(R.string.exposures_start_button))
@@ -87,11 +94,27 @@ fun ExposuresScreen(
                 false -> ExposureList(
                     exposures = exposures,
                     onItemClick = { exposure ->
-                        navController.navigate(ExposurePreparation(viewModel.userId, exposure))
+                        viewModel.onExposureChange(exposure)
                     },
                     modifier = Modifier.fillMaxSize(),
                 )
                 true -> EmptyExposureList(modifier = Modifier.fillMaxSize())
+            }
+        }
+    }
+
+    LaunchedEffect(exposure) {
+        when (val e = exposure) {
+            null -> {}
+            else -> {
+                navController.navigate(
+                    when (e.status) {
+                        Status.DRAFT -> ExposurePreparation(viewModel.userId, e)
+                        Status.READY -> ExposureReady(viewModel.userId, e)
+                        Status.IN_PROGRESS -> ExposureReview(viewModel.userId, e)
+                        Status.COMPLETED -> ExposureSummary(e)
+                    }
+                )
             }
         }
     }

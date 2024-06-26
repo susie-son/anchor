@@ -42,4 +42,8 @@ class ExposuresViewModel @AssistedInject constructor(
             _exposure.value = storageService.addExposure(userId)
         }
     }
+
+    fun onExposureChange(exposure: Exposure) {
+        _exposure.value = exposure
+    }
 }

@@ -1,6 +1,5 @@
 package com.susieson.anchor.ui.exposure.review
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -8,8 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -29,8 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusTarget
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -42,9 +37,8 @@ import com.susieson.anchor.ui.components.LabeledItem
 import com.susieson.anchor.ui.components.LabeledItemWithSupporting
 import com.susieson.anchor.ui.components.SliderWithLabel
 import com.susieson.anchor.ui.components.TextFieldColumn
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ExposureReviewScreen(
     viewModel: ExposureReviewViewModel,
@@ -96,8 +90,6 @@ fun ExposureReviewScreen(
             modifier = modifier.padding(innerPadding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val bringIntoViewRequester = remember { BringIntoViewRequester() }
-
             LabeledItem(
                 label = {
                     Text(
@@ -136,7 +128,6 @@ fun ExposureReviewScreen(
                 content = {
                     TextFieldColumn(
                         texts = thoughts,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onThoughtAdded,
                         onDelete = viewModel::onThoughtRemoved
                     )
@@ -159,7 +150,6 @@ fun ExposureReviewScreen(
                 content = {
                     TextFieldColumn(
                         texts = sensations,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onSensationAdded,
                         onDelete = viewModel::onSensationRemoved
                     )
@@ -182,7 +172,6 @@ fun ExposureReviewScreen(
                 content = {
                     TextFieldColumn(
                         texts = behaviors,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onBehaviorAdded,
                         onDelete = viewModel::onBehaviorRemoved
                     )
@@ -297,20 +286,9 @@ fun ExposureReviewScreen(
                             )
                         },
                         onValueChange = viewModel::onLearningsChange,
-                        modifier = modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .bringIntoViewRequester(bringIntoViewRequester)
-                            .onFocusChanged {
-                                if (it.isFocused) {
-                                    coroutineScope.launch {
-                                        bringIntoViewRequester.bringIntoView()
-                                    }
-                                }
-                            }
-                            .focusTarget(),
                         singleLine = false,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        modifier = modifier.padding(16.dp).fillMaxWidth(),
                     )
                 }
             )

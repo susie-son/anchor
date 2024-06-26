@@ -2,19 +2,18 @@ package com.susieson.anchor.service
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.snapshots
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.model.Status
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface StorageService {
-
-    fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
 
     fun getExposures(userId: String): Flow<List<Exposure>>
 
@@ -59,35 +58,11 @@ constructor(
         return exposureWithId
     }
 
-    override fun getExposure(userId: String, exposureId: String): Flow<Exposure?> = callbackFlow {
-        val listener = exposureDocumentRef(
-            userId,
-            exposureId
-        ).addSnapshotListener { value, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-            if (value != null) {
-                trySend(value.toObject(Exposure::class.java))
-            }
-        }
-        awaitClose { listener.remove() }
-    }
-
-    override fun getExposures(userId: String): Flow<List<Exposure>> = callbackFlow {
-        val listener = exposuresCollectionRef(
-            userId
-        ).addSnapshotListener { value, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-            if (value != null) {
-                trySend(value.toObjects(Exposure::class.java))
-            }
-        }
-        awaitClose { listener.remove() }
+    override fun getExposures(userId: String): Flow<List<Exposure>> {
+        return exposuresCollectionRef(userId)
+            .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
+            .snapshots()
+            .map { it.toObjects(Exposure::class.java) }
     }
 
     override suspend fun updateExposure(

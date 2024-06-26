@@ -1,13 +1,10 @@
 package com.susieson.anchor.ui.exposure.preparation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -23,11 +20,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusTarget
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -37,24 +32,23 @@ import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.FormBackHandler
 import com.susieson.anchor.ui.components.LabeledItemWithSupporting
 import com.susieson.anchor.ui.components.TextFieldColumn
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposurePreparationScreen(
     viewModel: ExposurePreparationViewModel,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val title = remember { viewModel.title }
-    val description = remember { viewModel.description }
+    val title by remember { viewModel.title }
+    val description by remember { viewModel.description }
     val thoughts = remember { viewModel.thoughts }
     val interpretations = remember { viewModel.interpretations }
     val behaviors = remember { viewModel.behaviors }
     val actions = remember { viewModel.actions }
 
-    val isValid = remember { viewModel.isValid }
-    val isEmpty = remember { viewModel.isEmpty }
+    val isValid by remember { viewModel.isValid }
+    val isEmpty by remember { viewModel.isEmpty }
 
     val showDiscardDialog = remember { viewModel.showDiscardDialog }
 
@@ -90,10 +84,6 @@ fun ExposurePreparationScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val bringIntoViewRequester = remember { BringIntoViewRequester() }
-
-            val coroutineScope = rememberCoroutineScope()
-
             OutlinedTextField(
                 value = title,
                 isError = title.isBlank(),
@@ -106,18 +96,8 @@ fun ExposurePreparationScreen(
                     )
                 },
                 onValueChange = viewModel::onTitleChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .bringIntoViewRequester(bringIntoViewRequester)
-                    .onFocusChanged {
-                        if (it.isFocused) {
-                            coroutineScope.launch {
-                                bringIntoViewRequester.bringIntoView()
-                            }
-                        }
-                    }
-                    .focusTarget(),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = description,
@@ -131,19 +111,9 @@ fun ExposurePreparationScreen(
                     )
                 },
                 onValueChange = viewModel::onDescriptionChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .bringIntoViewRequester(bringIntoViewRequester)
-                    .onFocusChanged {
-                        if (it.isFocused) {
-                            coroutineScope.launch {
-                                bringIntoViewRequester.bringIntoView()
-                            }
-                        }
-                    }
-                    .focusTarget(),
                 singleLine = false,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier.fillMaxWidth(),
             )
             LabeledItemWithSupporting(
                 label = {
@@ -166,7 +136,6 @@ fun ExposurePreparationScreen(
                 content = {
                     TextFieldColumn(
                         texts = thoughts,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onThoughtAdded,
                         onDelete = viewModel::onThoughtRemoved
                     )
@@ -193,7 +162,6 @@ fun ExposurePreparationScreen(
                 content = {
                     TextFieldColumn(
                         texts = interpretations,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onInterpretationAdded,
                         onDelete = viewModel::onInterpretationRemoved
                     )
@@ -220,7 +188,6 @@ fun ExposurePreparationScreen(
                 content = {
                     TextFieldColumn(
                         texts = behaviors,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onBehaviorAdded,
                         onDelete = viewModel::onBehaviorRemoved
                     )
@@ -247,7 +214,6 @@ fun ExposurePreparationScreen(
                 content = {
                     TextFieldColumn(
                         texts = actions,
-                        bringIntoViewRequester = bringIntoViewRequester,
                         onAdd = viewModel::onActionAdded,
                         onDelete = viewModel::onActionRemoved
                     )

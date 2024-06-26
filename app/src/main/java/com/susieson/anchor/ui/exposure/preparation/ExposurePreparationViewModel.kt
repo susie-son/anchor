@@ -28,8 +28,8 @@ class ExposurePreparationViewModel @AssistedInject constructor(
         fun create(userId: String, exposure: Exposure): ExposurePreparationViewModel
     }
 
-    var title by mutableStateOf("")
-    var description by mutableStateOf("")
+    var title = mutableStateOf("")
+    var description = mutableStateOf("")
     val thoughts = mutableStateListOf<String>()
     val interpretations = mutableStateListOf<String>()
     val behaviors = mutableStateListOf<String>()
@@ -37,19 +37,19 @@ class ExposurePreparationViewModel @AssistedInject constructor(
 
     var showDiscardDialog by mutableStateOf(false)
 
-    val isValid by derivedStateOf {
-        title.isNotBlank() && description.isNotBlank()
+    val isValid = derivedStateOf {
+        title.value.isNotBlank() && description.value.isNotBlank()
             && thoughts.isNotEmpty() && interpretations.isNotEmpty()
             && behaviors.isNotEmpty() && actions.isNotEmpty()
     }
-    val isEmpty by derivedStateOf {
-        title.isBlank() && description.isBlank()
+    val isEmpty = derivedStateOf {
+        title.value.isBlank() && description.value.isBlank()
             && thoughts.isEmpty() && interpretations.isEmpty()
             && behaviors.isEmpty() && actions.isEmpty()
     }
 
     fun onClose() {
-        if (isEmpty) {
+        if (isEmpty.value) {
             deleteExposure()
         } else {
             showDiscardDialog = true
@@ -59,7 +59,7 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     fun addPreparation() {
         viewModelScope.launch {
             val preparation = Preparation(thoughts, interpretations, behaviors, actions)
-            storageService.updateExposure(userId, exposure.id, title, description, preparation)
+            storageService.updateExposure(userId, exposure.id, title.value, description.value, preparation)
         }
     }
 
@@ -70,11 +70,11 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     }
 
     fun onTitleChange(title: String) {
-        this.title = title
+        this.title.value = title
     }
 
     fun onDescriptionChange(description: String) {
-        this.description = description
+        this.description.value = description
     }
 
     fun onThoughtAdded(thought: String) {
