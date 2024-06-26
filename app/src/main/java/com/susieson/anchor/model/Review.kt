@@ -1,5 +1,11 @@
 package com.susieson.anchor.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Serializable
+@Parcelize
 data class Review(
     val emotions: List<Emotion> = emptyList(),
     val thoughts: List<String> = emptyList(),
@@ -10,7 +16,7 @@ data class Review(
     val thinking: Float = 0f,
     val engaging: Float = 0f,
     val learnings: String = ""
-)
+) : Parcelable
 
 enum class Emotion {
     FEAR,

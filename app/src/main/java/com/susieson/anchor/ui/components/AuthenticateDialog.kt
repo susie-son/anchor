@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,13 +28,8 @@ fun AuthenticateDialog(
 ) {
     if (!show) return
 
-    val state = remember { mutableStateOf(LoginFormState(email = email)) }
-    val form by state
-    val listener = object : LoginFormListener(state) {
-        override fun onSubmit() {
-            onConfirm(form.password)
-        }
-    }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Dialog({ onShowChange(false) }) {
         Card(modifier) {
@@ -44,16 +39,18 @@ fun AuthenticateDialog(
             ) {
                 Text(stringResource(R.string.re_authenticate_dialog_body))
                 LoginForm(
-                    state = form,
-                    listener = listener,
+                    email = email,
+                    password = password,
+                    passwordVisible = passwordVisible,
+                    error = error,
+                    onEmailChange = {},
+                    onPasswordChange = { password = it },
+                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                    onSubmit = { onConfirm(password) },
                     submit = { Text(stringResource(R.string.dialog_confirm)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
-    }
-
-    LaunchedEffect(error) {
-        listener.onErrorChange(error)
     }
 }

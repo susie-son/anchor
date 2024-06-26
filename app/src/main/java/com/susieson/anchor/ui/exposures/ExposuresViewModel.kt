@@ -4,50 +4,42 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.service.StorageService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ExposuresViewModel
-@Inject
-constructor(
+@HiltViewModel(assistedFactory = ExposuresViewModel.Factory::class)
+class ExposuresViewModel @AssistedInject constructor(
+    @Assisted private val userId: String,
     private val storageService: StorageService
 ) : ViewModel() {
 
-    private val _exposures = MutableStateFlow<List<Exposure>?>(null)
-    private var _exposureId = MutableStateFlow<String?>(null)
-    private val _exposure = MutableStateFlow<Exposure?>(null)
+    @AssistedFactory
+    interface Factory {
+        fun create(userId: String): ExposuresViewModel
+    }
 
+    private val _exposures = MutableStateFlow<List<Exposure>?>(null)
     val exposures: StateFlow<List<Exposure>?> = _exposures
-    val exposureId: StateFlow<String?> = _exposureId
+
+    private val _exposure = MutableStateFlow<Exposure?>(null)
     val exposure: StateFlow<Exposure?> = _exposure
 
-    fun addExposure(userId: String) {
+    init {
         viewModelScope.launch {
-            _exposureId.value = storageService.addExposure(userId)
-        }
-    }
-
-    fun resetExposureId() {
-        _exposureId.value = null
-    }
-
-    fun getExposureList(userId: String) {
-        viewModelScope.launch {
-            storageService.getExposureList(userId).collect {
+            storageService.getExposures(userId).collect {
                 _exposures.value = it
             }
         }
     }
 
-    fun getExposure(userId: String, exposureId: String) {
+    fun addExposure() {
         viewModelScope.launch {
-            storageService.getExposure(userId, exposureId).collect {
-                _exposure.value = it
-            }
+            _exposure.value = storageService.addExposure(userId)
         }
     }
 }

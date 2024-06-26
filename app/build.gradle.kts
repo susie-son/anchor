@@ -6,6 +6,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     id("io.gitlab.arturbosch.detekt")
+    id("kotlin-parcelize")
     kotlin("plugin.serialization") version "2.0.0"
 }
 
@@ -114,6 +115,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(kotlin("reflect"))
 
     ksp(libs.hilt.compiler)
 

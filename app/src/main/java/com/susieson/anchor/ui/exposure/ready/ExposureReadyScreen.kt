@@ -14,7 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -36,10 +35,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExposureReadyScreen(
-    userId: String,
     exposure: Exposure,
     viewModel: ExposureReadyViewModel,
     modifier: Modifier = Modifier
@@ -52,17 +50,6 @@ fun ExposureReadyScreen(
         } else {
             null
         }
-
-//    onTopBarChange {
-//        CenterAlignedTopAppBar(
-//            title = { Text(stringResource(R.string.ready_top_bar_title)) },
-//            navigationIcon = {
-//                IconButton(onNavigateUp) {
-//                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
-//                }
-//            },
-//        )
-//    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -83,7 +70,7 @@ fun ExposureReadyScreen(
             onCheckedChange = { index, value -> checked[index] = value }
         )
         FilledTonalButton(
-            onClick = { viewModel.markAsInProgress(userId, exposure.id, exposure.title) },
+            onClick = { viewModel.markAsInProgress(exposure.title) },
             enabled = checked.all { it },
             modifier = Modifier.padding(16.dp).fillMaxWidth()
         ) {

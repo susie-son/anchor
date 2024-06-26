@@ -30,20 +30,6 @@ fun ExposureSummaryScreen(
     exposure: Exposure,
     modifier: Modifier = Modifier
 ) {
-//    onTopBarChange {
-//        CenterAlignedTopAppBar(
-//            title = { Text(stringResource(R.string.summary_top_bar_title)) },
-//            navigationIcon = {
-//                IconButton(onNavigateUp) {
-//                    Icon(
-//                        Icons.AutoMirrored.Default.ArrowBack,
-//                        stringResource(R.string.content_description_back)
-//                    )
-//                }
-//            }
-//        )
-//    }
-
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)

@@ -9,21 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -32,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
@@ -44,66 +33,23 @@ import java.text.DateFormat
 
 const val TimeReloadInterval = 60_000L
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposuresScreen(
-    onTopBarChange: (@Composable () -> Unit) -> Unit,
-    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
-    userId: String,
-    onItemSelect: (String) -> Unit,
-    onSettings: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: ExposuresViewModel = hiltViewModel()
+    onItemSelect: (Exposure) -> Unit,
+    viewModel: ExposuresViewModel,
+    modifier: Modifier = Modifier
 ) {
-    val exposureId by viewModel.exposureId.collectAsState()
-    val exposures by viewModel.exposures.collectAsState()
+    val exposuresState by viewModel.exposures.collectAsState()
+    val exposures = exposuresState
 
-    onTopBarChange {
-        CenterAlignedTopAppBar(
-            title = { Text(stringResource(R.string.app_name)) },
-            actions = {
-                IconButton(onSettings) {
-                    Icon(
-                        Icons.Default.Settings,
-                        stringResource(R.string.content_description_settings)
-                    )
-                }
-            }
-        )
-    }
-    onFloatingActionButtonChange {
-        ExtendedFloatingActionButton(
-            onClick = { viewModel.addExposure(userId) },
-            content = {
-                Icon(Icons.Default.Add, null)
-                Text(stringResource(R.string.exposures_start_button))
-            },
-            modifier = modifier
-        )
-    }
-
-    when (val state = getExposuresState(exposures)) {
-        is ExposuresState.Loading -> Loading(modifier = modifier.fillMaxSize())
-        is ExposuresState.Empty -> EmptyExposureList(modifier = modifier.fillMaxSize())
-        is ExposuresState.Contained -> ExposureList(
+    when (exposures?.isEmpty()) {
+        null -> Loading(modifier = modifier.fillMaxSize())
+        false -> ExposureList(
+            exposures = exposures,
+            onItemClick = onItemSelect,
             modifier = modifier.fillMaxSize(),
-            exposures = state.exposures,
-            onItemClick = onItemSelect
         )
-    }
-
-    LaunchedEffect(userId) {
-        viewModel.getExposureList(userId)
-    }
-
-    DisposableEffect(exposureId) {
-        onDispose {
-            viewModel.resetExposureId()
-        }
-    }
-
-    exposureId?.let {
-        onItemSelect(it)
+        true -> EmptyExposureList(modifier = modifier.fillMaxSize())
     }
 }
 
@@ -128,7 +74,7 @@ fun EmptyExposureList(modifier: Modifier = Modifier) {
 fun ExposureList(
     exposures: List<Exposure>,
     modifier: Modifier = Modifier,
-    onItemClick: (String) -> Unit
+    onItemClick: (Exposure) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(exposures) { exposure ->
@@ -174,7 +120,7 @@ fun ExposureList(
                         }
                     )
                 },
-                modifier = Modifier.clickable { onItemClick(exposure.id) }
+                modifier = Modifier.clickable { onItemClick(exposure) }
             )
             HorizontalDivider()
         }

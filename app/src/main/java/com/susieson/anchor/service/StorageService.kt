@@ -2,8 +2,6 @@ package com.susieson.anchor.service
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.snapshots
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
@@ -11,7 +9,6 @@ import com.susieson.anchor.model.Status
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -19,7 +16,9 @@ interface StorageService {
 
     fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
 
-    suspend fun addExposure(userId: String): String
+    fun getExposures(userId: String): Flow<List<Exposure>>
+
+    suspend fun addExposure(userId: String): Exposure
 
     suspend fun updateExposure(
         userId: String,
@@ -32,8 +31,6 @@ interface StorageService {
     suspend fun updateExposure(userId: String, exposureId: String, review: Review)
 
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
-
-    suspend fun getExposureList(userId: String): Flow<List<Exposure>>
 
     suspend fun deleteExposure(userId: String, exposureId: String)
 }
@@ -51,7 +48,7 @@ constructor(
         exposuresCollectionRef(userId)
             .document(exposureId)
 
-    override suspend fun addExposure(userId: String): String {
+    override suspend fun addExposure(userId: String): Exposure {
         val exposure = Exposure()
         val document =
             exposuresCollectionRef(userId)
@@ -59,7 +56,7 @@ constructor(
                 .await()
         val exposureWithId = exposure.copy(id = document.id, updatedAt = Timestamp.now())
         document.set(exposureWithId).await()
-        return document.id
+        return exposureWithId
     }
 
     override fun getExposure(userId: String, exposureId: String): Flow<Exposure?> = callbackFlow {
@@ -73,6 +70,21 @@ constructor(
             }
             if (value != null) {
                 trySend(value.toObject(Exposure::class.java))
+            }
+        }
+        awaitClose { listener.remove() }
+    }
+
+    override fun getExposures(userId: String): Flow<List<Exposure>> = callbackFlow {
+        val listener = exposuresCollectionRef(
+            userId
+        ).addSnapshotListener { value, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (value != null) {
+                trySend(value.toObjects(Exposure::class.java))
             }
         }
         awaitClose { listener.remove() }
@@ -123,13 +135,6 @@ constructor(
                 Timestamp.now()
             )
             .await()
-    }
-
-    override suspend fun getExposureList(userId: String): Flow<List<Exposure>> {
-        return exposuresCollectionRef(userId)
-            .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
-            .snapshots()
-            .map { it.toObjects(Exposure::class.java) }
     }
 
     override suspend fun deleteExposure(userId: String, exposureId: String) {

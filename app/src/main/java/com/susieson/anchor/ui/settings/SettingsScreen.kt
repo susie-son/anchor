@@ -6,19 +6,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,40 +20,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
-import com.susieson.anchor.ui.components.LoginFormListener
-import com.susieson.anchor.ui.components.LoginFormState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onTopBarChange: (@Composable () -> Unit) -> Unit,
-    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
+    userId: String,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel,
 ) {
     val error by viewModel.error.collectAsState()
     val user by viewModel.user.collectAsState(null)
-
-    onTopBarChange {
-        CenterAlignedTopAppBar(
-            title = { Text(stringResource(R.string.settings_top_bar_title)) },
-            navigationIcon = {
-                IconButton(onNavigateUp) {
-                    Icon(
-                        Icons.AutoMirrored.Default.ArrowBack,
-                        stringResource(R.string.content_description_back)
-                    )
-                }
-            }
-        )
-    }
-    onFloatingActionButtonChange {}
 
     when (val state = getUserSettingsState(user, error)) {
         is UserSettingsState.Loading -> Loading(modifier = modifier.fillMaxSize())
@@ -93,13 +66,9 @@ fun AnonymousSettings(
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state = remember { mutableStateOf(LoginFormState()) }
-    val form by state
-    val listener = object : LoginFormListener(state) {
-        override fun onSubmit() {
-            onLinkAccount(form.email, form.password)
-        }
-    }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(16.dp)) {
         Card {
@@ -109,8 +78,14 @@ fun AnonymousSettings(
             ) {
                 Text(stringResource(R.string.anonymous_settings_body))
                 LoginForm(
-                    state = form,
-                    listener = listener,
+                    email = email,
+                    password = password,
+                    passwordVisible = passwordVisible,
+                    error = error,
+                    onEmailChange = { email = it },
+                    onPasswordChange = { password = it },
+                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                    onSubmit = { onLinkAccount(email, password) },
                     submit = { Text(stringResource(R.string.login_create_account_button)) },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -123,10 +98,6 @@ fun AnonymousSettings(
         ) {
             Text(stringResource(R.string.settings_delete_account_button))
         }
-    }
-
-    LaunchedEffect(error) {
-        listener.onErrorChange(error)
     }
 }
 
