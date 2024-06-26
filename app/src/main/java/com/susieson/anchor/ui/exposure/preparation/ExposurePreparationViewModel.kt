@@ -1,7 +1,10 @@
 package com.susieson.anchor.ui.exposure.preparation
 
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Preparation
@@ -24,54 +27,88 @@ class ExposurePreparationViewModel @AssistedInject constructor(
         fun create(@Assisted("userId") userId: String, @Assisted("exposureId") exposureId: String): ExposurePreparationViewModel
     }
 
-    val basicState = mutableStateOf(BasicFormSectionState())
-    val prepState = mutableStateOf(PreparationFormSectionState())
+    var title by mutableStateOf("")
+    var description by mutableStateOf("")
+    val thoughts = mutableStateListOf<String>()
+    val interpretations = mutableStateListOf<String>()
+    val behaviors = mutableStateListOf<String>()
+    val actions = mutableStateListOf<String>()
 
-    val basicListener = derivedStateOf {
-        BaseBasicFormSectionListener(basicState)
-    }
-    val prepListener = derivedStateOf {
-        BasePreparationFormSectionListener(prepState)
-    }
-
-    val showDiscardDialog = mutableStateOf(false)
+    var showDiscardDialog by mutableStateOf(false)
 
     val isValid = derivedStateOf {
-        basicState.value.isValid && prepState.value.isValid
+        title.isNotBlank() && description.isNotBlank()
+            && thoughts.isNotEmpty() && interpretations.isNotEmpty()
+            && behaviors.isNotEmpty() && actions.isNotEmpty()
     }
-    val isEmpty = derivedStateOf {
-        basicState.value.isEmpty && prepState.value.isEmpty
+    val isEmpty by derivedStateOf {
+        title.isBlank() && description.isBlank()
+            && thoughts.isEmpty() && interpretations.isEmpty()
+            && behaviors.isEmpty() && actions.isEmpty()
     }
 
     fun onClose() {
-        if (isEmpty.value) {
-            deleteExposure(userId, exposureId)
+        if (isEmpty) {
+            deleteExposure()
         } else {
-            setShowDiscardDialog(true)
+            showDiscardDialog = true
         }
-    }
-
-    fun setShowDiscardDialog(show: Boolean) {
-        showDiscardDialog.value = show
     }
 
     fun addPreparation() {
         viewModelScope.launch {
-            val title = basicState.value.title
-            val description = basicState.value.description
-            val thoughts = prepState.value.thoughts
-            val interpretations = prepState.value.interpretations
-            val behaviors = prepState.value.behaviors
-            val actions = prepState.value.actions
             val preparation = Preparation(thoughts, interpretations, behaviors, actions)
-
             storageService.updateExposure(userId, exposureId, title, description, preparation)
         }
     }
 
-    fun deleteExposure(userId: String, exposureId: String) {
+    fun deleteExposure() {
         viewModelScope.launch {
             storageService.deleteExposure(userId, exposureId)
         }
+    }
+
+    fun onTitleChange(title: String) {
+        this.title = title
+    }
+
+    fun onDescriptionChange(description: String) {
+        this.description = description
+    }
+
+    fun onThoughtAdded(thought: String) {
+        thoughts.add(thought)
+    }
+
+    fun onThoughtRemoved(thought: String) {
+        thoughts.remove(thought)
+    }
+
+    fun onInterpretationAdded(interpretation: String) {
+        interpretations.add(interpretation)
+    }
+
+    fun onInterpretationRemoved(interpretation: String) {
+        interpretations.remove(interpretation)
+    }
+
+    fun onBehaviorAdded(behavior: String) {
+        behaviors.add(behavior)
+    }
+
+    fun onBehaviorRemoved(behavior: String) {
+        behaviors.remove(behavior)
+    }
+
+    fun onActionAdded(action: String) {
+        actions.add(action)
+    }
+
+    fun onActionRemoved(action: String) {
+        actions.remove(action)
+    }
+
+    fun onShowDiscardDialogChange(showDiscardDialog: Boolean) {
+        this.showDiscardDialog = showDiscardDialog
     }
 }

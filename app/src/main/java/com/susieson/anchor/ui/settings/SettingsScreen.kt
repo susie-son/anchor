@@ -33,29 +33,33 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
 ) {
     val error by viewModel.error.collectAsState()
-    val user by viewModel.user.collectAsState(null)
+    val userState by viewModel.user.collectAsState(null)
 
-    when (val state = getUserSettingsState(user, error)) {
-        is UserSettingsState.Loading -> Loading(modifier = modifier.fillMaxSize())
-        is UserSettingsState.Anonymous -> AnonymousSettings(
-            error = state.error,
-            onLinkAccount = { email, password ->
-                viewModel.linkAccount(email, password)
-                onNavigateUp()
-            },
-            onDeleteAccount = viewModel::deleteAccount,
-            modifier = modifier
-        )
-        is UserSettingsState.Authenticated -> UserSettings(
-            email = state.email,
-            error = state.error,
-            onAuthenticate = { email: String, password: String, action: () -> Unit ->
-                viewModel.reAuthenticate(email, password, action)
-            },
-            onLogout = viewModel::logout,
-            onDeleteAccount = viewModel::deleteAccount,
-            modifier = modifier
-        )
+    when (val user = userState) {
+        null -> Loading(modifier = modifier.fillMaxSize())
+        else -> {
+            when (user.isAnonymous) {
+                true -> AnonymousSettings(
+                    error = error,
+                    onLinkAccount = { email, password ->
+                        viewModel.linkAccount(email, password)
+                        onNavigateUp()
+                    },
+                    onDeleteAccount = viewModel::deleteAccount,
+                    modifier = modifier
+                )
+                false -> UserSettings(
+                    email = user.email!!,
+                    error = error,
+                    onAuthenticate = { email: String, password: String, action: () -> Unit ->
+                        viewModel.reAuthenticate(email, password, action)
+                    },
+                    onLogout = viewModel::logout,
+                    onDeleteAccount = viewModel::deleteAccount,
+                    modifier = modifier
+                )
+            }
+        }
     }
 }
 

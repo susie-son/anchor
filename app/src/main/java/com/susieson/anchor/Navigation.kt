@@ -127,8 +127,6 @@ fun Navigation(
                 ) { backStackEntry ->
                     val destination: Destination.ExposurePreparation = backStackEntry.toRoute()
                     ExposurePreparationScreen(
-                        userId = destination.userId,
-                        exposure = destination.exposure,
                         onNavigateUp = navController::navigateUp,
                         viewModel = hiltViewModel(
                             creationCallback = { factory: ExposurePreparationViewModel.Factory ->
@@ -161,8 +159,6 @@ fun Navigation(
                 ) { backStackEntry ->
                     val destination: Destination.ExposureReview = backStackEntry.toRoute()
                     ExposureReviewScreen(
-                        userId = destination.userId,
-                        exposure = destination.exposure,
                         onNavigateUp = navController::navigateUp,
                         viewModel = hiltViewModel(
                             creationCallback = { factory: ExposureReviewViewModel.Factory ->
