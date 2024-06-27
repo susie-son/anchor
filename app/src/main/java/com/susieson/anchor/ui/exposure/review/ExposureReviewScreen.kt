@@ -37,6 +37,7 @@ import com.susieson.anchor.ui.components.LabeledItem
 import com.susieson.anchor.ui.components.LabeledItemWithSupporting
 import com.susieson.anchor.ui.components.SliderWithLabel
 import com.susieson.anchor.ui.components.TextFieldColumn
+import com.susieson.anchor.ui.exposure.onClickClose
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -62,41 +63,23 @@ fun ExposureReviewScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.review_top_bar_title)) },
-                navigationIcon = {
-                    IconButton(
-                        {
-                            if (!isEmpty) {
-                                viewModel.onShowDiscardDialogChange(true)
-                            } else {
-                                navController.navigateUp()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            stringResource(R.string.content_description_close)
-                        )
+            ExposureReviewTopBar(
+                onClose = {
+                    onClickClose(isEmpty, navController::navigateUp) {
+                        viewModel.onShowDiscardDialogChange(true)
                     }
                 },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            viewModel.addReview()
-                            navController.navigateUp()
-                        },
-                        enabled = isValid
-                    ) {
-                        Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
-                    }
-                }
+                onDone = {
+                    viewModel.addReview()
+                    navController.navigateUp()
+                },
+                isValid = isValid
             )
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(
-            modifier = modifier.padding(innerPadding).padding(16.dp).verticalScroll(rememberScrollState()),
+            modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             LabeledItem(
@@ -131,7 +114,11 @@ fun ExposureReviewScreen(
                     Text(
                         stringResource(R.string.review_thoughts_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (thoughts.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                        color = if (thoughts.isEmpty()) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
                 },
                 content = {
@@ -153,7 +140,11 @@ fun ExposureReviewScreen(
                     Text(
                         stringResource(R.string.review_sensations_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (sensations.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                        color = if (sensations.isEmpty()) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
                 },
                 content = {
@@ -175,7 +166,11 @@ fun ExposureReviewScreen(
                     Text(
                         stringResource(R.string.review_behaviors_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (behaviors.isEmpty()) { MaterialTheme.colorScheme.error } else { MaterialTheme.colorScheme.onSurface }
+                        color = if (behaviors.isEmpty()) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
                 },
                 content = {
@@ -195,7 +190,7 @@ fun ExposureReviewScreen(
                 },
                 content = {
                     Column(
-                        modifier = modifier.padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         LabeledItem(
@@ -289,15 +284,19 @@ fun ExposureReviewScreen(
                         label = {},
                         placeholder = {},
                         supportingText = {
-                            if (learnings.isBlank()) Text(
-                                stringResource(R.string.review_learnings_error),
-                                color = MaterialTheme.colorScheme.error
-                            )
+                            if (learnings.isBlank()) {
+                                Text(
+                                    stringResource(R.string.review_learnings_error),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
                         },
                         onValueChange = viewModel::onLearningsChange,
                         singleLine = false,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        modifier = modifier.padding(16.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
                     )
                 }
             )
@@ -312,5 +311,35 @@ fun ExposureReviewScreen(
         isEmpty = isEmpty,
         onDiscard = navController::navigateUp,
         onShowDiscardDialog = { viewModel.onShowDiscardDialogChange(true) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ExposureReviewTopBar(
+    onClose: () -> Unit,
+    onDone: () -> Unit,
+    isValid: Boolean,
+    modifier: Modifier = Modifier
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.review_top_bar_title)) },
+        navigationIcon = {
+            IconButton(onClose) {
+                Icon(
+                    Icons.Default.Close,
+                    stringResource(R.string.content_description_close)
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = onDone,
+                enabled = isValid
+            ) {
+                Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
+            }
+        },
+        modifier = modifier
     )
 }

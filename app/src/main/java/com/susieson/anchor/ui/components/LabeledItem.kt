@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LabeledItem(
     label: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -26,8 +26,8 @@ fun LabeledItem(
 @Composable
 fun SameLineLabeledItem(
     label: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -44,8 +44,8 @@ fun SameLineLabeledItem(
 fun LabeledItemWithSupporting(
     label: @Composable () -> Unit,
     supporting: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     LabeledItem(
         label = label,

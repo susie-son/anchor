@@ -1,9 +1,7 @@
 package com.susieson.anchor.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -30,73 +28,92 @@ import androidx.navigation.NavController
 import com.susieson.anchor.Exposures
 import com.susieson.anchor.Login
 import com.susieson.anchor.R
+import com.susieson.anchor.model.User
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
-    val error by viewModel.error.collectAsState()
-    val userState by viewModel.user.collectAsState(null)
+    val error = viewModel.error.collectAsState().value
+    val user = viewModel.user.collectAsState(null).value
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.settings_top_bar_title)) },
-                navigationIcon = {
-                    IconButton(navController::navigateUp) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            stringResource(R.string.content_description_back)
-                        )
-                    }
-                }
-            )
-        },
-        modifier = Modifier.fillMaxSize(),
+        topBar = { SettingsTopBar(navController::navigateUp) },
+        modifier = modifier,
     ) { innerPadding ->
-        Box(Modifier.padding(innerPadding)) {
-            when (val user = userState) {
-                null -> Loading(modifier = modifier.fillMaxSize())
-                else -> {
-                    when (user.isAnonymous) {
-                        true -> AnonymousSettings(
-                            error = error,
-                            onLinkAccount = { email, password ->
-                                viewModel.linkAccount(email, password)
-                                navController.navigateUp()
-                            },
-                            modifier = modifier
-                        )
-                        false -> UserSettings(
-                            email = user.email!!,
-                            error = error,
-                            onAuthenticate = { email: String, password: String, action: () -> Unit ->
-                                viewModel.reAuthenticate(email, password, action)
-                            },
-                            onLogout = {
-                                viewModel.logout()
-                                navController.navigate(Login) {
-                                    popUpTo(Exposures(viewModel.userId)) { inclusive = true }
-                                }
-                            },
-                            onDeleteAccount = {
-                                viewModel.deleteAccount()
-                                navController.navigate(Login) {
-                                    popUpTo(Exposures(viewModel.userId)) { inclusive = true }
-                                }
-                            },
-                            modifier = modifier
-                        )
-                    }
-                }
-            }
+        when (user) {
+            null -> Loading(modifier = Modifier.padding(innerPadding))
+            else -> SettingsContent(
+                user = user,
+                error = error,
+                viewModel = viewModel,
+                navController = navController,
+                modifier = Modifier.padding(innerPadding)
+            )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SettingsTopBar(onNavigateUp: () -> Unit, modifier: Modifier = Modifier) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.settings_top_bar_title)) },
+        navigationIcon = {
+            IconButton(onNavigateUp) {
+                Icon(
+                    Icons.AutoMirrored.Default.ArrowBack,
+                    stringResource(R.string.content_description_back)
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun SettingsContent(
+    user: User,
+    error: String?,
+    viewModel: SettingsViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    when (user.isAnonymous) {
+        true -> AnonymousSettings(
+            error = error,
+            onLinkAccount = { email, password ->
+                viewModel.linkAccount(email, password)
+                navController.navigateUp()
+            },
+            modifier = modifier
+        )
+
+        false -> UserSettings(
+            email = user.email!!,
+            error = error,
+            onAuthenticate = { email, password, action ->
+                viewModel.reAuthenticate(email, password, action)
+            },
+            onLogout = {
+                viewModel.logout()
+                navController.navigate(Login) {
+                    popUpTo(Exposures(viewModel.userId)) { inclusive = true }
+                }
+            },
+            onDeleteAccount = {
+                viewModel.deleteAccount()
+                navController.navigate(Login) {
+                    popUpTo(Exposures(viewModel.userId)) { inclusive = true }
+                }
+            },
+            modifier = modifier
+        )
     }
 }
 
@@ -110,26 +127,24 @@ fun AnonymousSettings(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.padding(16.dp)) {
-        Card {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(stringResource(R.string.anonymous_settings_body))
-                LoginForm(
-                    email = email,
-                    password = password,
-                    passwordVisible = passwordVisible,
-                    error = error,
-                    onEmailChange = { email = it },
-                    onPasswordChange = { password = it },
-                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
-                    onSubmit = { onLinkAccount(email, password) },
-                    submit = { Text(stringResource(R.string.login_create_account_button)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+    Card(modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(stringResource(R.string.anonymous_settings_body))
+            LoginForm(
+                email = email,
+                password = password,
+                passwordVisible = passwordVisible,
+                error = error,
+                onEmailChange = { email = it },
+                onPasswordChange = { password = it },
+                onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                onSubmit = { onLinkAccount(email, password) },
+                submit = { Text(stringResource(R.string.login_create_account_button)) },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -146,7 +161,10 @@ fun UserSettings(
     var showAuthenticateDialog by remember { mutableStateOf(false) }
     var sensitiveAction by remember { mutableStateOf({}) }
 
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Text(stringResource(R.string.user_settings_email_label, email))
         Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.settings_logout_button))

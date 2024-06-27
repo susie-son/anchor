@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 @HiltViewModel(assistedFactory = ExposuresViewModel.Factory::class)
 class ExposuresViewModel @AssistedInject constructor(
     @Assisted val userId: String,
-    private val storageService: StorageService
+    storageService: StorageService
 ) : ViewModel() {
 
     @AssistedFactory

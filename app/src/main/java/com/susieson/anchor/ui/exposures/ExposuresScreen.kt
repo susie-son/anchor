@@ -4,9 +4,7 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -49,70 +47,99 @@ import java.text.DateFormat
 
 const val TimeReloadInterval = 60_000L
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposuresScreen(
     viewModel: ExposuresViewModel,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val exposuresState by viewModel.exposures.collectAsState(null)
+    val exposures = viewModel.exposures.collectAsState(null).value
+
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
-                actions = {
-                    IconButton({ navController.navigate(Settings(viewModel.userId)) }) {
-                        Icon(
-                            Icons.Default.Settings,
-                            stringResource(R.string.content_description_settings)
-                        )
-                    }
-                }
-            )
+            ExposuresTopBar {
+                navController.navigate(Settings(viewModel.userId))
+            }
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    navController.navigate(ExposurePreparation(viewModel.userId))
-                },
-                content = {
-                    Icon(Icons.Default.Add, null)
-                    Text(stringResource(R.string.exposures_start_button))
-                }
-            )
-        },
-        modifier = modifier.fillMaxSize(),
-    ) { innerPadding ->
-        Box(Modifier.padding(innerPadding)) {
-            when (val exposures = exposuresState) {
-                null -> Loading(modifier = Modifier.fillMaxSize())
-                else -> {
-                    when (exposures.isEmpty()) {
-                        true -> EmptyExposureList(modifier = Modifier.fillMaxSize())
-                        false -> ExposureList(
-                            exposures = exposures,
-                            onItemClick = { exposure ->
-                                navController.navigate(
-                                    when (exposure.status) {
-                                        Status.DRAFT -> ExposurePreparation(viewModel.userId)
-                                        Status.READY -> ExposureReady(viewModel.userId, exposure)
-                                        Status.IN_PROGRESS -> ExposureReview(viewModel.userId, exposure)
-                                        Status.COMPLETED -> ExposureSummary(exposure)
-                                    }
-                                )
-                            },
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
-                }
+            ExposuresFloatingActionButton {
+                navController.navigate(ExposurePreparation(viewModel.userId))
             }
+        },
+        modifier = modifier,
+    ) { innerPadding ->
+        when (exposures) {
+            null -> Loading(modifier = Modifier.padding(innerPadding))
+            else -> ExposuresContent(
+                exposures = exposures,
+                onItemClick = { exposure ->
+                    navController.navigate(
+                        when (exposure.status) {
+                            Status.DRAFT -> ExposurePreparation(viewModel.userId)
+                            Status.READY -> ExposureReady(viewModel.userId, exposure)
+                            Status.IN_PROGRESS -> ExposureReview(viewModel.userId, exposure)
+                            Status.COMPLETED -> ExposureSummary(exposure)
+                        }
+                    )
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmptyExposureList(modifier: Modifier = Modifier) {
+private fun ExposuresTopBar(
+    modifier: Modifier = Modifier,
+    onNavigateSettings: () -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.app_name)) },
+        actions = {
+            IconButton(onNavigateSettings) {
+                Icon(
+                    Icons.Default.Settings,
+                    stringResource(R.string.content_description_settings)
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ExposuresFloatingActionButton(
+    modifier: Modifier = Modifier,
+    onNavigateExposure: () -> Unit
+) {
+    ExtendedFloatingActionButton(
+        onClick = onNavigateExposure,
+        modifier = modifier
+    ) {
+        Icon(Icons.Default.Add, null)
+        Text(stringResource(R.string.exposures_start_button))
+    }
+}
+
+@Composable
+private fun ExposuresContent(
+    exposures: List<Exposure>,
+    onItemClick: (Exposure) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (exposures.isEmpty()) {
+        true -> EmptyExposureList(modifier = modifier)
+        false -> ExposureList(
+            exposures = exposures,
+            onItemClick = onItemClick,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun EmptyExposureList(modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
@@ -129,7 +156,7 @@ fun EmptyExposureList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ExposureList(
+private fun ExposureList(
     exposures: List<Exposure>,
     modifier: Modifier = Modifier,
     onItemClick: (Exposure) -> Unit
@@ -137,8 +164,7 @@ fun ExposureList(
     LazyColumn(modifier = modifier) {
         items(exposures) { exposure ->
             val timestamp = exposure.updatedAt
-
-            val time by produceState<String?>(initialValue = null, exposure) {
+            val time by produceState<String?>(null, exposure) {
                 while (true) {
                     if (timestamp == null) {
                         value = null
@@ -158,7 +184,7 @@ fun ExposureList(
             ListItem(
                 overlineContent = {
                     time?.let {
-                        StatusWithTimestamp(
+                        StatusTextWithTimestamp(
                             time = it,
                             status = exposure.status
                         )
@@ -172,9 +198,7 @@ fun ExposureList(
                 supportingContent = {
                     Text(
                         exposure.description.ifBlank {
-                            stringResource(
-                                R.string.exposures_no_description
-                            )
+                            stringResource(R.string.exposures_no_description)
                         }
                     )
                 },
@@ -186,7 +210,11 @@ fun ExposureList(
 }
 
 @Composable
-fun StatusWithTimestamp(time: String, status: Status, modifier: Modifier = Modifier) {
+private fun StatusTextWithTimestamp(
+    time: String,
+    status: Status,
+    modifier: Modifier = Modifier
+) {
     val statusText =
         stringResource(
             when (status) {

@@ -33,7 +33,6 @@ import com.susieson.anchor.ui.components.SameLineLabeledItem
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposureSummaryScreen(
     viewModel: ExposureSummaryViewModel,
@@ -41,23 +40,11 @@ fun ExposureSummaryScreen(
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.summary_top_bar_title)) },
-                navigationIcon = {
-                    IconButton(navController::navigateUp) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            stringResource(R.string.content_description_back)
-                        )
-                    }
-                }
-            )
-        },
-        modifier = Modifier.fillMaxSize(),
+        topBar = { ExposureSummaryTopBar(navController::navigateUp) },
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(
-            modifier = modifier.padding(innerPadding).verticalScroll(rememberScrollState()),
+            modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             BasicSummarySection(
@@ -76,8 +63,28 @@ fun ExposureSummaryScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BasicSummarySection(
+private fun ExposureSummaryTopBar(
+    onNavigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.summary_top_bar_title)) },
+        navigationIcon = {
+            IconButton(onNavigateUp) {
+                Icon(
+                    Icons.AutoMirrored.Default.ArrowBack,
+                    stringResource(R.string.content_description_back)
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun BasicSummarySection(
     updatedAt: Timestamp?,
     title: String,
     description: String,
@@ -110,7 +117,7 @@ fun BasicSummarySection(
 }
 
 @Composable
-fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Modifier) {
+private fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Modifier) {
     OutlinedCard(modifier = modifier.padding(horizontal = 16.dp)) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -177,7 +184,7 @@ fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Mod
 }
 
 @Composable
-fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
+private fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
     val emotions =
         review.emotions.map {
             stringResource(

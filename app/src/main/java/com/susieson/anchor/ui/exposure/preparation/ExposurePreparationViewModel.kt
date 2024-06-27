@@ -34,14 +34,14 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     var showDiscardDialog = mutableStateOf(false)
 
     val isValid = derivedStateOf {
-        title.value.isNotBlank() && description.value.isNotBlank()
-                && thoughts.isNotEmpty() && interpretations.isNotEmpty()
-                && behaviors.isNotEmpty() && actions.isNotEmpty()
+        title.value.isNotBlank() && description.value.isNotBlank() &&
+            thoughts.isNotEmpty() && interpretations.isNotEmpty() &&
+            behaviors.isNotEmpty() && actions.isNotEmpty()
     }
     val isEmpty = derivedStateOf {
-        title.value.isBlank() && description.value.isBlank()
-                && thoughts.isEmpty() && interpretations.isEmpty()
-                && behaviors.isEmpty() && actions.isEmpty()
+        title.value.isBlank() && description.value.isBlank() &&
+            thoughts.isEmpty() && interpretations.isEmpty() &&
+            behaviors.isEmpty() && actions.isEmpty()
     }
 
     fun addPreparation() {

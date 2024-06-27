@@ -2,8 +2,6 @@ package com.susieson.anchor.ui.exposure.preparation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,8 +30,8 @@ import com.susieson.anchor.ui.components.DiscardDialog
 import com.susieson.anchor.ui.components.FormBackHandler
 import com.susieson.anchor.ui.components.LabeledItemWithSupporting
 import com.susieson.anchor.ui.components.TextFieldColumn
+import com.susieson.anchor.ui.exposure.onClickClose
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposurePreparationScreen(
     viewModel: ExposurePreparationViewModel,
@@ -54,45 +52,23 @@ fun ExposurePreparationScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.preparation_top_bar_title)) },
-                navigationIcon = {
-                    IconButton(
-                        {
-                            if (isEmpty) {
-                                navController.navigateUp()
-                            } else {
-                                viewModel.onShowDiscardDialogChange(true)
-                            }
-                        }
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            stringResource(R.string.content_description_close)
-                        )
+            ExposurePreparationTopBar(
+                onClose = {
+                    onClickClose(isEmpty, navController::navigateUp) {
+                        viewModel.onShowDiscardDialogChange(true)
                     }
                 },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            viewModel.addPreparation()
-                            navController.navigateUp()
-                        },
-                        enabled = isValid
-                    ) {
-                        Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
-                    }
-                }
+                onDone = {
+                    viewModel.addPreparation()
+                    navController.navigateUp()
+                },
+                isValid = isValid
             )
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     ) { innerPadding ->
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
@@ -101,14 +77,15 @@ fun ExposurePreparationScreen(
                 label = { Text(stringResource(R.string.preparation_title_label)) },
                 placeholder = {},
                 supportingText = {
-                    if (title.isBlank()) Text(
-                        stringResource(R.string.preparation_title_error),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    if (title.isBlank()) {
+                        Text(
+                            stringResource(R.string.preparation_title_error),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 },
                 onValueChange = viewModel::onTitleChange,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
             OutlinedTextField(
                 value = description,
@@ -116,15 +93,16 @@ fun ExposurePreparationScreen(
                 label = { Text(stringResource(R.string.preparation_description_label)) },
                 placeholder = {},
                 supportingText = {
-                    if (description.isBlank()) Text(
-                        stringResource(R.string.preparation_description_error),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    if (description.isBlank()) {
+                        Text(
+                            stringResource(R.string.preparation_description_error),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 },
                 onValueChange = viewModel::onDescriptionChange,
                 singleLine = false,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
             LabeledItemWithSupporting(
                 label = {
@@ -241,5 +219,32 @@ fun ExposurePreparationScreen(
         isEmpty = isEmpty,
         onDiscard = navController::navigateUp,
         onShowDiscardDialog = { viewModel.onShowDiscardDialogChange(true) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ExposurePreparationTopBar(
+    onClose: () -> Unit,
+    onDone: () -> Unit,
+    isValid: Boolean,
+    modifier: Modifier = Modifier
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.preparation_top_bar_title)) },
+        navigationIcon = {
+            IconButton(onClose) {
+                Icon(
+                    Icons.Default.Close,
+                    stringResource(R.string.content_description_close)
+                )
+            }
+        },
+        actions = {
+            IconButton(onDone, enabled = isValid) {
+                Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
+            }
+        },
+        modifier = modifier
     )
 }

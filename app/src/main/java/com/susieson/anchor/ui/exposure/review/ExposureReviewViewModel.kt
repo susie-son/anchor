@@ -63,18 +63,18 @@ class ExposureReviewViewModel @AssistedInject constructor(
     var showDiscardDialog = mutableStateOf(false)
 
     val isValid = derivedStateOf {
-        emotions.value.values.contains(true)
-                && thoughts.isNotEmpty() && sensations.isNotEmpty() && behaviors.isNotEmpty()
-                && experiencingRating.floatValue > 0f && anchoringRating.floatValue > 0f
-                && thinkingRating.floatValue > 0f && engagingRating.floatValue > 0f
-                && learnings.value.isNotBlank()
+        emotions.value.values.contains(true) &&
+            thoughts.isNotEmpty() && sensations.isNotEmpty() && behaviors.isNotEmpty() &&
+            experiencingRating.floatValue > 0f && anchoringRating.floatValue > 0f &&
+            thinkingRating.floatValue > 0f && engagingRating.floatValue > 0f &&
+            learnings.value.isNotBlank()
     }
     val isEmpty = derivedStateOf {
-        emotions.value.values.all { !it }
-                && thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty()
-                && experiencingRating.floatValue == 0f && anchoringRating.floatValue == 0f
-                && thinkingRating.floatValue == 0f && engagingRating.floatValue == 0f
-                && learnings.value.isBlank()
+        emotions.value.values.all { !it } &&
+            thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty() &&
+            experiencingRating.floatValue == 0f && anchoringRating.floatValue == 0f &&
+            thinkingRating.floatValue == 0f && engagingRating.floatValue == 0f &&
+            learnings.value.isBlank()
     }
 
     fun addReview() {

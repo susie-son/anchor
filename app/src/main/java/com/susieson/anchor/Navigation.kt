@@ -1,5 +1,6 @@
 package com.susieson.anchor
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,7 +52,7 @@ fun Navigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    NavHost(navController, startDestination = Login, modifier = modifier) {
+    NavHost(navController, startDestination = Login, modifier = modifier.fillMaxSize()) {
         composable<Login> {
             LoginScreen(
                 viewModel = hiltViewModel(),

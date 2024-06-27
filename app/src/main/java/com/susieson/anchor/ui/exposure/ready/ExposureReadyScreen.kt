@@ -7,8 +7,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -59,27 +57,14 @@ fun ExposureReadyScreen(
         }
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.ready_top_bar_title)) },
-                navigationIcon = {
-                    IconButton(navController::navigateUp) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            stringResource(R.string.content_description_back)
-                        )
-                    }
-                },
-            )
-        },
-        modifier = Modifier.fillMaxSize(),
+        topBar = { ExposureReadyTopBar(navController::navigateUp) },
+        modifier = modifier,
     ) { innerPadding ->
         Column(
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            modifier = modifier
+            modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             postNotificationPermission?.let {
                 if (!it.status.isGranted) {
@@ -100,10 +85,7 @@ fun ExposureReadyScreen(
                     viewModel.markAsInProgress()
                     navController.navigateUp()
                 },
-                enabled = checked.all { it },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
+                enabled = checked.all { it }
             ) {
                 Text(stringResource(R.string.ready_confirm_button))
             }
@@ -111,13 +93,33 @@ fun ExposureReadyScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReadyCheckList(
+private fun ExposureReadyTopBar(
+    onNavigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.ready_top_bar_title)) },
+        navigationIcon = {
+            IconButton(onNavigateUp) {
+                Icon(
+                    Icons.AutoMirrored.Default.ArrowBack,
+                    stringResource(R.string.content_description_back)
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ReadyCheckList(
     checked: List<Boolean>,
     modifier: Modifier = Modifier,
     onCheckedChange: (Int, Boolean) -> Unit
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         ListItem(
             headlineContent = { Text(stringResource(R.string.ready_check_1)) },
             trailingContent = {
@@ -143,13 +145,14 @@ fun ReadyCheckList(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun NotificationCard(postNotificationPermission: PermissionState, modifier: Modifier = Modifier) {
+private fun NotificationCard(
+    postNotificationPermission: PermissionState,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(modifier) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
@@ -173,7 +176,7 @@ fun NotificationCard(postNotificationPermission: PermissionState, modifier: Modi
     }
 }
 
-fun openAppSettings(context: Context) {
+private fun openAppSettings(context: Context) {
     val intent =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {

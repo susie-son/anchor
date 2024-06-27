@@ -1,8 +1,6 @@
 package com.susieson.anchor.ui.login
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.Exposures
 import com.susieson.anchor.Login
@@ -24,7 +21,6 @@ import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
@@ -46,13 +42,10 @@ fun LoginScreen(
     }
 
     Scaffold(
-        topBar = { CenterAlignedTopAppBar({ Text(stringResource(R.string.app_name)) }) },
-        modifier = modifier.fillMaxSize(),
+        topBar = { LoginTopBar() },
+        modifier = modifier,
     ) { innerPadding ->
-        Column(
-            Modifier
-                .padding(innerPadding)
-                .padding(32.dp)) {
+        Column(Modifier.padding(innerPadding)) {
             when (user?.id) {
                 null -> {
                     LoginForm(
@@ -64,21 +57,26 @@ fun LoginScreen(
                         onPasswordChange = viewModel::onPasswordChange,
                         onPasswordVisibleChange = viewModel::onPasswordVisibleChange,
                         onSubmit = { viewModel.login(email, password) },
-                        submit = { Text(stringResource(R.string.login_button)) },
-                        modifier = Modifier.fillMaxWidth()
+                        submit = { Text(stringResource(R.string.login_button)) }
                     )
-                    OutlinedButton(
-                        onClick = viewModel::createAnonymousAccount,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    OutlinedButton(viewModel::createAnonymousAccount) {
                         Text(stringResource(R.string.login_anonymous_button))
                     }
                 }
 
                 else -> {
-                    Loading(modifier = Modifier.fillMaxSize())
+                    Loading()
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LoginTopBar(modifier: Modifier = Modifier) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(R.string.app_name)) },
+        modifier = modifier
+    )
 }
