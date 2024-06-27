@@ -50,14 +50,22 @@ fun ExposurePreparationScreen(
     val isValid by remember { viewModel.isValid }
     val isEmpty by remember { viewModel.isEmpty }
 
-    val showDiscardDialog = remember { viewModel.showDiscardDialog }
+    val showDiscardDialog by remember { viewModel.showDiscardDialog }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.preparation_top_bar_title)) },
                 navigationIcon = {
-                    IconButton(viewModel::onClose) {
+                    IconButton(
+                        {
+                            if (isEmpty) {
+                                navController.navigateUp()
+                            } else {
+                                viewModel.onShowDiscardDialogChange(true)
+                            }
+                        }
+                    ) {
                         Icon(
                             Icons.Default.Close,
                             stringResource(R.string.content_description_close)
@@ -66,7 +74,10 @@ fun ExposurePreparationScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = viewModel::addPreparation,
+                        onClick = {
+                            viewModel.addPreparation()
+                            navController.navigateUp()
+                        },
                         enabled = isValid
                     ) {
                         Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
@@ -223,18 +234,12 @@ fun ExposurePreparationScreen(
     }
     DiscardDialog(
         show = showDiscardDialog,
-        onDiscard = {
-            navController.navigateUp()
-            viewModel.deleteExposure()
-        },
+        onDiscard = navController::navigateUp,
         onSetShow = viewModel::onShowDiscardDialogChange
     )
     FormBackHandler(
         isEmpty = isEmpty,
-        onDiscard = {
-            navController.navigateUp()
-            viewModel.deleteExposure()
-        },
+        onDiscard = navController::navigateUp,
         onShowDiscardDialog = { viewModel.onShowDiscardDialogChange(true) }
     )
 }

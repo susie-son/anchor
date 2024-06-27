@@ -23,8 +23,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -45,29 +45,35 @@ fun ExposureReviewScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val emotions = remember { viewModel.emotions }
+    val emotions by remember { viewModel.emotions }
     val thoughts = remember { viewModel.thoughts }
     val sensations = remember { viewModel.sensations }
     val behaviors = remember { viewModel.behaviors }
-    val experiencingRating = remember { viewModel.experiencingRating }
-    val anchoringRating = remember { viewModel.anchoringRating }
-    val thinkingRating = remember { viewModel.thinkingRating }
-    val engagingRating = remember { viewModel.engagingRating }
-    val learnings = remember { viewModel.learnings }
+    val experiencingRating by remember { viewModel.experiencingRating }
+    val anchoringRating by remember { viewModel.anchoringRating }
+    val thinkingRating by remember { viewModel.thinkingRating }
+    val engagingRating by remember { viewModel.engagingRating }
+    val learnings by remember { viewModel.learnings }
 
-    val showDiscardDialog = remember { viewModel.showDiscardDialog }
+    val showDiscardDialog by remember { viewModel.showDiscardDialog }
 
-    val isValid = remember { viewModel.isValid }
-    val isEmpty = remember { viewModel.isEmpty }
-
-    val coroutineScope = rememberCoroutineScope()
+    val isValid by remember { viewModel.isValid }
+    val isEmpty by remember { viewModel.isEmpty }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.review_top_bar_title)) },
                 navigationIcon = {
-                    IconButton(viewModel::onClose) {
+                    IconButton(
+                        {
+                            if (!isEmpty) {
+                                viewModel.onShowDiscardDialogChange(true)
+                            } else {
+                                navController.navigateUp()
+                            }
+                        }
+                    ) {
                         Icon(
                             Icons.Default.Close,
                             stringResource(R.string.content_description_close)
@@ -76,7 +82,10 @@ fun ExposureReviewScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = viewModel::addReview,
+                        onClick = {
+                            viewModel.addReview()
+                            navController.navigateUp()
+                        },
                         enabled = isValid
                     ) {
                         Icon(Icons.Default.Done, stringResource(R.string.content_description_done))

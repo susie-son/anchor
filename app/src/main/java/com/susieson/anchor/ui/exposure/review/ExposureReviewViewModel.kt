@@ -38,7 +38,7 @@ class ExposureReviewViewModel @AssistedInject constructor(
     private var shame by mutableStateOf(false)
     private var happiness by mutableStateOf(false)
 
-    val emotions by derivedStateOf {
+    val emotions = derivedStateOf {
         mapOf(
             R.string.review_fear_chip to fear,
             R.string.review_sadness_chip to sadness,
@@ -53,35 +53,28 @@ class ExposureReviewViewModel @AssistedInject constructor(
     val sensations = mutableStateListOf<String>()
     val behaviors = mutableStateListOf<String>()
 
-    var experiencingRating by mutableFloatStateOf(0f)
-    var anchoringRating by mutableFloatStateOf(0f)
-    var thinkingRating by mutableFloatStateOf(0f)
-    var engagingRating by mutableFloatStateOf(0f)
+    var experiencingRating = mutableFloatStateOf(0f)
+    var anchoringRating = mutableFloatStateOf(0f)
+    var thinkingRating = mutableFloatStateOf(0f)
+    var engagingRating = mutableFloatStateOf(0f)
 
-    var learnings by mutableStateOf("")
+    var learnings = mutableStateOf("")
 
-    var showDiscardDialog by mutableStateOf(false)
+    var showDiscardDialog = mutableStateOf(false)
 
-    val isValid by derivedStateOf {
-        emotions.values.contains(true)
+    val isValid = derivedStateOf {
+        emotions.value.values.contains(true)
                 && thoughts.isNotEmpty() && sensations.isNotEmpty() && behaviors.isNotEmpty()
-                && experiencingRating > 0f && anchoringRating > 0f && thinkingRating > 0f && engagingRating > 0f
-                && learnings.isNotBlank()
+                && experiencingRating.floatValue > 0f && anchoringRating.floatValue > 0f
+                && thinkingRating.floatValue > 0f && engagingRating.floatValue > 0f
+                && learnings.value.isNotBlank()
     }
-    val isEmpty by derivedStateOf {
-        emotions.values.all { !it }
+    val isEmpty = derivedStateOf {
+        emotions.value.values.all { !it }
                 && thoughts.isEmpty() && sensations.isEmpty() && behaviors.isEmpty()
-                && experiencingRating == 0f && anchoringRating == 0f && thinkingRating == 0f && engagingRating == 0f
-    }
-
-    fun onClose() {
-        if (!isEmpty) {
-            showDiscardDialog = true
-        }
-    }
-
-    fun onShowDiscardDialogChange(showDiscardDialog: Boolean) {
-        this.showDiscardDialog = showDiscardDialog
+                && experiencingRating.floatValue == 0f && anchoringRating.floatValue == 0f
+                && thinkingRating.floatValue == 0f && engagingRating.floatValue == 0f
+                && learnings.value.isBlank()
     }
 
     fun addReview() {
@@ -101,11 +94,11 @@ class ExposureReviewViewModel @AssistedInject constructor(
                 thoughts,
                 sensations,
                 behaviors,
-                experiencingRating,
-                anchoringRating,
-                thinkingRating,
-                engagingRating,
-                learnings
+                experiencingRating.floatValue,
+                anchoringRating.floatValue,
+                thinkingRating.floatValue,
+                engagingRating.floatValue,
+                learnings.value
             )
             storageService.updateExposure(userId, exposure.id, review)
         }
@@ -159,22 +152,26 @@ class ExposureReviewViewModel @AssistedInject constructor(
     }
 
     fun onExperiencingRatingChanged(rating: Float) {
-        experiencingRating = rating
+        experiencingRating.floatValue = rating
     }
 
     fun onAnchoringRatingChanged(rating: Float) {
-        anchoringRating = rating
+        anchoringRating.floatValue = rating
     }
 
     fun onThinkingRatingChanged(rating: Float) {
-        thinkingRating = rating
+        thinkingRating.floatValue = rating
     }
 
     fun onEngagingRatingChanged(rating: Float) {
-        engagingRating = rating
+        engagingRating.floatValue = rating
     }
 
     fun onLearningsChange(learnings: String) {
-        this.learnings = learnings
+        this.learnings.value = learnings
+    }
+
+    fun onShowDiscardDialogChange(showDiscardDialog: Boolean) {
+        this.showDiscardDialog.value = showDiscardDialog
     }
 }

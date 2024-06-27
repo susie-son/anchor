@@ -1,5 +1,6 @@
 package com.susieson.anchor.ui.exposure.ready
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Exposure
@@ -23,6 +24,12 @@ class ExposureReadyViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(userId: String, exposure: Exposure): ExposureReadyViewModel
+    }
+
+    val checked = mutableStateListOf(false, false)
+
+    fun onCheckedChange(index: Int, value: Boolean) {
+        checked[index] = value
     }
 
     fun markAsInProgress() {

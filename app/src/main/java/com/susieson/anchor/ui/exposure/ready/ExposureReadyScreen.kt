@@ -28,7 +28,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +49,7 @@ fun ExposureReadyScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val checked = remember { mutableStateListOf(false, false) }
+    val checked = remember { viewModel.checked }
 
     val postNotificationPermission =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -94,10 +93,13 @@ fun ExposureReadyScreen(
             )
             ReadyCheckList(
                 checked = checked,
-                onCheckedChange = { index, value -> checked[index] = value }
+                onCheckedChange = { index, value -> viewModel.onCheckedChange(index, value) }
             )
             FilledTonalButton(
-                onClick = viewModel::markAsInProgress,
+                onClick = {
+                    viewModel.markAsInProgress()
+                    navController.navigateUp()
+                },
                 enabled = checked.all { it },
                 modifier = Modifier
                     .padding(16.dp)

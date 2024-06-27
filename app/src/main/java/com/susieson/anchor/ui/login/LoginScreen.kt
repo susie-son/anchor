@@ -10,6 +10,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.Exposures
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +36,12 @@ fun LoginScreen(
     val password by remember { viewModel.password }
     val passwordVisible by remember { viewModel.passwordVisible }
 
+    LaunchedEffect(user) {
+        user?.let {
+            navController.navigate(Exposures(it.id))
+        }
+    }
+
     Scaffold(
         topBar = { CenterAlignedTopAppBar({ Text(stringResource(R.string.app_name)) }) },
         modifier = modifier.fillMaxSize(),
@@ -42,7 +50,7 @@ fun LoginScreen(
             Modifier
                 .padding(innerPadding)
                 .padding(32.dp)) {
-            when (val userId = user?.id) {
+            when (user?.id) {
                 null -> {
                     LoginForm(
                         email = email,
@@ -65,7 +73,7 @@ fun LoginScreen(
                 }
 
                 else -> {
-                    navController.navigate(Exposures(userId))
+                    Loading(modifier = Modifier.fillMaxSize())
                 }
             }
         }

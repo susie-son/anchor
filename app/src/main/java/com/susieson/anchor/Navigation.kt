@@ -34,7 +34,7 @@ data class Exposures(val userId: String)
 object Settings
 
 @Serializable
-data class ExposurePreparation(val userId: String, val exposure: Exposure)
+data class ExposurePreparation(val userId: String)
 
 @Serializable
 data class ExposureReady(val userId: String, val exposure: Exposure)
@@ -81,10 +81,7 @@ fun Navigation(
             ExposurePreparationScreen(
                 viewModel = hiltViewModel(
                     creationCallback = { factory: ExposurePreparationViewModel.Factory ->
-                        factory.create(
-                            userId = destination.userId,
-                            exposure = destination.exposure
-                        )
+                        factory.create(userId = destination.userId)
                     }
                 ),
                 navController = navController

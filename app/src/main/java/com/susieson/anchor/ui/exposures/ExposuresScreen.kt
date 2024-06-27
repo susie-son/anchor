@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -57,10 +56,7 @@ fun ExposuresScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val exposuresState by viewModel.exposures.collectAsState()
-    val exposures = exposuresState
-    val exposure by viewModel.exposure.collectAsState()
-
+    val exposuresState by viewModel.exposures.collectAsState(null)
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -78,8 +74,8 @@ fun ExposuresScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    viewModel.addExposure()
-                          },
+                    navController.navigate(ExposurePreparation(viewModel.userId))
+                },
                 content = {
                     Icon(Icons.Default.Add, null)
                     Text(stringResource(R.string.exposures_start_button))
@@ -89,32 +85,27 @@ fun ExposuresScreen(
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Box(Modifier.padding(innerPadding)) {
-            when (exposures?.isEmpty()) {
+            when (val exposures = exposuresState) {
                 null -> Loading(modifier = Modifier.fillMaxSize())
-                false -> ExposureList(
-                    exposures = exposures,
-                    onItemClick = { exposure ->
-                        viewModel.onExposureChange(exposure)
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                )
-                true -> EmptyExposureList(modifier = Modifier.fillMaxSize())
-            }
-        }
-    }
-
-    LaunchedEffect(exposure) {
-        when (val e = exposure) {
-            null -> {}
-            else -> {
-                navController.navigate(
-                    when (e.status) {
-                        Status.DRAFT -> ExposurePreparation(viewModel.userId, e)
-                        Status.READY -> ExposureReady(viewModel.userId, e)
-                        Status.IN_PROGRESS -> ExposureReview(viewModel.userId, e)
-                        Status.COMPLETED -> ExposureSummary(e)
+                else -> {
+                    when (exposures.isEmpty()) {
+                        true -> EmptyExposureList(modifier = Modifier.fillMaxSize())
+                        false -> ExposureList(
+                            exposures = exposures,
+                            onItemClick = { exposure ->
+                                navController.navigate(
+                                    when (exposure.status) {
+                                        Status.DRAFT -> ExposurePreparation(viewModel.userId)
+                                        Status.READY -> ExposureReady(viewModel.userId, exposure)
+                                        Status.IN_PROGRESS -> ExposureReview(viewModel.userId, exposure)
+                                        Status.COMPLETED -> ExposureSummary(exposure)
+                                    }
+                                )
+                            },
+                            modifier = Modifier.fillMaxSize(),
+                        )
                     }
-                )
+                }
             }
         }
     }
