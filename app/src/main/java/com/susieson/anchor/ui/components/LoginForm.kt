@@ -32,7 +32,7 @@ fun LoginForm(
     onSubmit: () -> Unit,
     submit: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    isEmailEnabled: Boolean = true
+    isEmailReadOnly: Boolean = false
 ) {
     val emailError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
     val passwordError = password.isNotEmpty() && password.length < MinPasswordLength
@@ -42,7 +42,7 @@ fun LoginForm(
         EmailTextField(
             email = email,
             isError = emailError,
-            enabled = isEmailEnabled,
+            readOnly = isEmailReadOnly,
             onEmailChange = onEmailChange,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)

@@ -62,7 +62,7 @@ fun ExposuresScreen(
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
-                    IconButton({ navController.navigate(Settings) }) {
+                    IconButton({ navController.navigate(Settings(viewModel.userId)) }) {
                         Icon(
                             Icons.Default.Settings,
                             stringResource(R.string.content_description_settings)

@@ -4,16 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.FirebaseException
 import com.susieson.anchor.service.AuthService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = SettingsViewModel.Factory::class)
+class SettingsViewModel @AssistedInject constructor(
+    @Assisted val userId: String,
     private val authService: AuthService
 ) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(userId: String): SettingsViewModel
+    }
+
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 

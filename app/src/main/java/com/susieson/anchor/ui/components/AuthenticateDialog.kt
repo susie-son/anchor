@@ -48,6 +48,7 @@ fun AuthenticateDialog(
                     onPasswordVisibleChange = { passwordVisible = !passwordVisible },
                     onSubmit = { onConfirm(password) },
                     submit = { Text(stringResource(R.string.dialog_confirm)) },
+                    isEmailReadOnly = true,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

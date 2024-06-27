@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.Exposures
+import com.susieson.anchor.Login
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
@@ -38,7 +39,9 @@ fun LoginScreen(
 
     LaunchedEffect(user) {
         user?.let {
-            navController.navigate(Exposures(it.id))
+            navController.navigate(Exposures(it.id)) {
+                popUpTo(Login) { inclusive = true }
+            }
         }
     }
 

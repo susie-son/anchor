@@ -3,7 +3,6 @@ package com.susieson.anchor.ui.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.susieson.anchor.Exposures
+import com.susieson.anchor.Login
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.AuthenticateDialog
 import com.susieson.anchor.ui.components.Loading
@@ -71,7 +71,6 @@ fun SettingsScreen(
                                 viewModel.linkAccount(email, password)
                                 navController.navigateUp()
                             },
-                            onDeleteAccount = viewModel::deleteAccount,
                             modifier = modifier
                         )
                         false -> UserSettings(
@@ -80,8 +79,18 @@ fun SettingsScreen(
                             onAuthenticate = { email: String, password: String, action: () -> Unit ->
                                 viewModel.reAuthenticate(email, password, action)
                             },
-                            onLogout = viewModel::logout,
-                            onDeleteAccount = viewModel::deleteAccount,
+                            onLogout = {
+                                viewModel.logout()
+                                navController.navigate(Login) {
+                                    popUpTo(Exposures(viewModel.userId)) { inclusive = true }
+                                }
+                            },
+                            onDeleteAccount = {
+                                viewModel.deleteAccount()
+                                navController.navigate(Login) {
+                                    popUpTo(Exposures(viewModel.userId)) { inclusive = true }
+                                }
+                            },
                             modifier = modifier
                         )
                     }
@@ -95,7 +104,6 @@ fun SettingsScreen(
 fun AnonymousSettings(
     error: String?,
     onLinkAccount: (String, String) -> Unit,
-    onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
@@ -122,13 +130,6 @@ fun AnonymousSettings(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        OutlinedButton(
-            onClick = onDeleteAccount,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.settings_delete_account_button))
         }
     }
 }

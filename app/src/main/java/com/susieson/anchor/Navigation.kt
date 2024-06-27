@@ -21,6 +21,7 @@ import com.susieson.anchor.ui.exposures.ExposuresScreen
 import com.susieson.anchor.ui.exposures.ExposuresViewModel
 import com.susieson.anchor.ui.login.LoginScreen
 import com.susieson.anchor.ui.settings.SettingsScreen
+import com.susieson.anchor.ui.settings.SettingsViewModel
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
@@ -31,7 +32,7 @@ object Login
 data class Exposures(val userId: String)
 
 @Serializable
-object Settings
+data class Settings(val userId: String)
 
 @Serializable
 data class ExposurePreparation(val userId: String)
@@ -68,9 +69,14 @@ fun Navigation(
                 navController = navController
             )
         }
-        composable<Settings> {
+        composable<Settings> { backStackEntry ->
+            val destination: Settings = backStackEntry.toRoute()
             SettingsScreen(
-                viewModel = hiltViewModel(),
+                viewModel = hiltViewModel(
+                    creationCallback = { factory: SettingsViewModel.Factory ->
+                        factory.create(userId = destination.userId)
+                    }
+                ),
                 navController = navController
             )
         }
