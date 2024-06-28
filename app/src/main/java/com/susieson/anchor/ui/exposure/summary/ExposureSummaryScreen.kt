@@ -106,13 +106,15 @@ private fun BasicSummarySection(
         ) {
             updatedAt?.let {
                 val completedAt = DateFormat.getDateInstance().format(it.toDate())
-                LabeledItem({
-                    Text(
-                        text = stringResource(R.string.summary_completed_at_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }) {
+                LabeledItem(
+                    label = {
+                        Text(
+                            text = stringResource(R.string.summary_completed_at_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                ) {
                     Text(completedAt, style = MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -142,7 +144,7 @@ private fun PreparationSummarySection(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items.forEach { (item, label) ->
-                LabeledItem({ LabelText(stringResource(label)) }) {
+                LabeledItem(label = { LabelText(stringResource(label)) }) {
                     item.forEach {
                         BodyText(it)
                     }
@@ -159,7 +161,7 @@ private fun ReviewEmotionsSection(
     sensations: List<String>,
     behaviors: List<String>
 ) {
-    LabeledItem({ LabelText(stringResource(R.string.review_emotions_label)) }) {
+    LabeledItem(label = { LabelText(stringResource(R.string.review_emotions_label)) }) {
         val emotionsList = emotions.map { stringResource(it.label) }
         BodyText(emotionsList.joinToString(", "))
     }
@@ -169,7 +171,7 @@ private fun ReviewEmotionsSection(
         behaviors to R.string.review_behaviors_label
     )
     items.forEach { (item, label) ->
-        LabeledItem({ LabelText(stringResource(label)) }) {
+        LabeledItem(label = { LabelText(stringResource(label)) }) {
             item.forEach {
                 BodyText(it)
             }
@@ -191,7 +193,7 @@ private fun ReviewRatingsSection(
         engaging to R.string.review_engaging_label
     )
     ratings.forEach { (rating, label) ->
-        SameLineLabeledItem({ LabelText(stringResource(label)) }) {
+        SameLineLabeledItem(label = { LabelText(stringResource(label)) }) {
             BodyText(rating.roundToInt().toString())
         }
     }
@@ -199,7 +201,7 @@ private fun ReviewRatingsSection(
 
 @Composable
 private fun ReviewLearningsSection(learnings: String) {
-    LabeledItem({ LabelText(stringResource(R.string.review_learnings_label)) }) {
+    LabeledItem(label = { LabelText(stringResource(R.string.review_learnings_label)) }) {
         BodyText(learnings)
     }
 }

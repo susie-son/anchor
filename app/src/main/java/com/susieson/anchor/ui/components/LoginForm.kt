@@ -23,24 +23,24 @@ const val MinPasswordLength = 6
 fun LoginForm(
     email: String,
     password: String,
-    passwordVisible: Boolean,
-    error: String?,
+    isPasswordVisible: Boolean,
+    errorMessage: String?,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onPasswordVisibleChange: () -> Unit,
+    onTogglePasswordVisibility: () -> Unit,
     onSubmit: () -> Unit,
-    submit: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    isEmailEnabled: Boolean = true
+    isEmailEnabled: Boolean = true,
+    content: @Composable () -> Unit
 ) {
-    val emailError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    val passwordError = password.isNotEmpty() && password.length < MinPasswordLength
-    val isValid = email.isNotEmpty() && password.isNotEmpty() && !emailError && !passwordError
+    val isEmailError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    val isPasswordError = password.isNotEmpty() && password.length < MinPasswordLength
+    val isFormValid = email.isNotEmpty() && password.isNotEmpty() && !isEmailError && !isPasswordError
 
     Column(modifier) {
         EmailTextField(
             email = email,
-            isError = emailError,
+            isError = isEmailError,
             enabled = isEmailEnabled,
             onEmailChange = onEmailChange,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -48,15 +48,15 @@ fun LoginForm(
         )
         PasswordTextField(
             password = password,
-            error = passwordError,
-            isPasswordVisible = passwordVisible,
+            error = isPasswordError,
+            isPasswordVisible = isPasswordVisible,
             onPasswordChange = onPasswordChange,
-            onPasswordVisibleChange = onPasswordVisibleChange,
+            onPasswordVisibleChange = onTogglePasswordVisibility,
             modifier = Modifier.fillMaxWidth()
         )
-        if (error != null) {
+        if (errorMessage != null) {
             Text(
-                error,
+                errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -64,10 +64,10 @@ fun LoginForm(
         }
         Button(
             onClick = onSubmit,
-            enabled = isValid,
+            enabled = isFormValid,
             modifier = Modifier.fillMaxWidth()
         ) {
-            submit()
+            content()
         }
     }
 }
@@ -79,14 +79,15 @@ private fun LoginFormPreview() {
         LoginForm(
             email = "email@example.com",
             password = "123",
-            passwordVisible = false,
-            error = "There was an error logging in. Please try again.",
+            isPasswordVisible = false,
+            errorMessage = "There was an error logging in. Please try again.",
             onEmailChange = {},
             onPasswordChange = {},
-            onPasswordVisibleChange = {},
+            onTogglePasswordVisibility = {},
             onSubmit = {},
-            submit = { Text(stringResource(R.string.login_button)) },
             modifier = Modifier.fillMaxWidth()
-        )
+        ) {
+            Text(stringResource(R.string.login_button))
+        }
     }
 }

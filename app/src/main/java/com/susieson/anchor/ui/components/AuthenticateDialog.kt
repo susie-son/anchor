@@ -40,15 +40,16 @@ fun AuthenticateDialog(
                 LoginForm(
                     email = email,
                     password = password,
-                    passwordVisible = passwordVisible,
-                    error = error,
+                    isPasswordVisible = passwordVisible,
+                    errorMessage = error,
                     onEmailChange = {},
                     onPasswordChange = { password = it },
-                    onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                    onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
                     onSubmit = { onConfirm(password) },
-                    submit = { Text(stringResource(R.string.dialog_confirm)) },
                     isEmailEnabled = false
-                )
+                ) {
+                    Text(stringResource(R.string.dialog_confirm))
+                }
             }
         }
     }

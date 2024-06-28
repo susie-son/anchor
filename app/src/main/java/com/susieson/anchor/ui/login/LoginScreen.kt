@@ -25,7 +25,8 @@ import com.susieson.anchor.ui.components.LoginForm
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
     val user by viewModel.user.collectAsState(null)
     val error by viewModel.error.collectAsState()
@@ -41,30 +42,27 @@ fun LoginScreen(
         }
     }
 
-    Scaffold(
-        topBar = { LoginTopBar() }
-    ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
-            when (user?.id) {
-                null -> {
-                    LoginForm(
-                        email = email,
-                        password = password,
-                        passwordVisible = passwordVisible,
-                        error = error,
-                        onEmailChange = viewModel::onEmailChange,
-                        onPasswordChange = viewModel::onPasswordChange,
-                        onPasswordVisibleChange = viewModel::onPasswordVisibleChange,
-                        onSubmit = { viewModel.login(email, password) },
-                        submit = { Text(stringResource(R.string.login_button)) },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                    )
-                    OutlinedButton(
-                        onClick = viewModel::createAnonymousAccount,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                    ) {
-                        Text(stringResource(R.string.login_anonymous_button))
-                    }
+    Scaffold(modifier, topBar = { LoginTopBar() }) { innerPadding ->
+        Column(Modifier.fillMaxWidth().padding(innerPadding)) {
+            if (user == null) {
+                LoginForm(
+                    email = email,
+                    password = password,
+                    isPasswordVisible = passwordVisible,
+                    errorMessage = error,
+                    onEmailChange = viewModel::onEmailChange,
+                    onPasswordChange = viewModel::onPasswordChange,
+                    onTogglePasswordVisibility = viewModel::onPasswordVisibleChange,
+                    onSubmit = { viewModel.login(email, password) },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Text(stringResource(R.string.login_button))
+                }
+                OutlinedButton(
+                    onClick = viewModel::createAnonymousAccount,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Text(stringResource(R.string.login_anonymous_button))
                 }
             }
         }

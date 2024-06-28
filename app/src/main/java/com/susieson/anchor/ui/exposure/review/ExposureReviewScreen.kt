@@ -135,17 +135,11 @@ private fun ExposureReviewTopBar(
         title = { Text(stringResource(R.string.review_top_bar_title)) },
         navigationIcon = {
             IconButton(onClose) {
-                Icon(
-                    Icons.Default.Close,
-                    stringResource(R.string.content_description_close)
-                )
+                Icon(Icons.Default.Close, stringResource(R.string.content_description_close))
             }
         },
         actions = {
-            IconButton(
-                onClick = onComplete,
-                enabled = isValid
-            ) {
+            IconButton(onComplete, enabled = isValid) {
                 Icon(Icons.Default.Done, stringResource(R.string.content_description_done))
             }
         },
@@ -169,44 +163,39 @@ private fun EmotionsSection(
     onBehaviorRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    data class EmotionItem(
-        val items: List<String>,
+    data class EmotionCategory(
         @StringRes val label: Int,
         @StringRes val body: Int,
+        val items: List<String>,
         val onAdd: (String) -> Unit,
         val onRemove: (String) -> Unit
     )
     val items = listOf(
-        EmotionItem(
-            thoughts,
+        EmotionCategory(
             R.string.review_thoughts_label,
             R.string.review_thoughts_body,
+            thoughts,
             onThoughtAdd,
             onThoughtRemove
         ),
-        EmotionItem(
-            sensations,
+        EmotionCategory(
             R.string.review_sensations_label,
             R.string.review_sensations_body,
+            sensations,
             onSensationAdd,
             onSensationRemove
         ),
-        EmotionItem(
-            behaviors,
+        EmotionCategory(
             R.string.review_behaviors_label,
             R.string.review_behaviors_body,
+            behaviors,
             onBehaviorAdd,
             onBehaviorRemove
         )
     )
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        LabeledItem({ LabelText(stringResource(R.string.review_emotions_label)) }) {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        LabeledItem(label = { LabelText(stringResource(R.string.review_emotions_label)) }) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 emotions.forEach { (emotion, selected) ->
                     FilterChip(
                         selected = selected,
@@ -216,17 +205,12 @@ private fun EmotionsSection(
                 }
             }
         }
-        items.forEach {
-            val item = it.items
-            val label = it.label
-            val body = it.body
-            val add = it.onAdd
-            val remove = it.onRemove
+        items.forEach { category ->
             LabeledItemWithSupporting(
-                label = { LabelText(stringResource(label)) },
-                supporting = { ErrorBodyText(stringResource(body), item.isEmpty()) }
+                label = { LabelText(stringResource(category.label)) },
+                supporting = { ErrorBodyText(stringResource(category.body), category.items.isEmpty()) }
             ) {
-                TextFieldColumn(item, add, remove)
+                TextFieldColumn(category.items, category.onAdd, category.onRemove)
             }
         }
     }
@@ -244,31 +228,27 @@ private fun RatingsSection(
     onEngagingRatingChange: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    data class RatingItem(
-        val rating: Float,
+    data class RatingCategory(
         @StringRes
         val label: Int,
+        val rating: Float,
         val onRatingChange: (Float) -> Unit
     )
     val items = listOf(
-        RatingItem(experiencingRating, R.string.review_experiencing_label, onExperiencingRatingChange),
-        RatingItem(anchoringRating, R.string.review_anchoring_label, onAnchoringRatingChange),
-        RatingItem(thinkingRating, R.string.review_thinking_label, onThinkingRatingChange),
-        RatingItem(engagingRating, R.string.review_engaging_label, onEngagingRatingChange)
+        RatingCategory(R.string.review_experiencing_label, experiencingRating, onExperiencingRatingChange),
+        RatingCategory(R.string.review_anchoring_label, anchoringRating, onAnchoringRatingChange),
+        RatingCategory(R.string.review_thinking_label, thinkingRating, onThinkingRatingChange),
+        RatingCategory(R.string.review_engaging_label, engagingRating, onEngagingRatingChange)
     )
-    LabeledItem(
-        label = { LabelText(stringResource(R.string.review_effectiveness_label)) },
-        modifier = modifier
-    ) {
+    LabeledItem(modifier, label = { LabelText(stringResource(R.string.review_effectiveness_label)) }) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            items.forEach {
-                val rating = it.rating
-                val label = it.label
-                val onRatingChange = it.onRatingChange
-                LabeledItem({ ErrorLabelText(stringResource(label),rating == 0f) }) {
+            items.forEach { category ->
+                LabeledItem(
+                    label = { ErrorLabelText(stringResource(category.label), category.rating == 0f) }
+                ) {
                     SliderWithLabel(
-                        value = rating,
-                        onValueChange = onRatingChange,
+                        value = category.rating,
+                        onValueChange = category.onRatingChange,
                         valueRange = 0f..10f,
                         steps = 9,
                     )
@@ -293,10 +273,7 @@ private fun LearningsSection(
             value = learnings,
             isError = learnings.isBlank(),
             supportingText = {
-                ErrorText(
-                    text = stringResource(R.string.review_learnings_error),
-                    isError = learnings.isBlank()
-                )
+                ErrorText(stringResource(R.string.review_learnings_error), learnings.isBlank())
             },
             onValueChange = onLearningsChange,
             singleLine = false,

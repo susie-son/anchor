@@ -41,7 +41,7 @@ import com.susieson.anchor.R
 fun TextFieldColumn(
     texts: List<String>,
     onAdd: (String) -> Unit,
-    onDelete: (String) -> Unit,
+    onRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var field by rememberSaveable { mutableStateOf("") }
@@ -54,7 +54,7 @@ fun TextFieldColumn(
             onAdd = onAdd,
             onFieldChange = { field = it }
         )
-        TextList(texts, onDelete)
+        TextList(texts, onRemove)
     }
 }
 
@@ -149,6 +149,6 @@ private fun TextFieldColumnPreview() {
     TextFieldColumn(
         texts = mutableListOf("1", "2", "3"),
         onAdd = {},
-        onDelete = {}
+        onRemove = {}
     )
 }

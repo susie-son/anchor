@@ -10,14 +10,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LabeledItem(
-    label: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    label: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         label()
         content()
     }
@@ -25,14 +22,11 @@ fun LabeledItem(
 
 @Composable
 fun SameLineLabeledItem(
-    label: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    label: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
-    ) {
+    Row(modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Box(modifier = Modifier.weight(1f)) {
             label()
         }
@@ -42,17 +36,13 @@ fun SameLineLabeledItem(
 
 @Composable
 fun LabeledItemWithSupporting(
+    modifier: Modifier = Modifier,
     label: @Composable () -> Unit,
     supporting: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    LabeledItem(
-        label = label,
-        content = {
-            supporting()
-            content()
-        },
-        modifier = modifier
-    )
+    LabeledItem(modifier, label) {
+        supporting()
+        content()
+    }
 }

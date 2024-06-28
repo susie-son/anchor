@@ -48,7 +48,9 @@ fun SettingsScreen(
         modifier = modifier,
     ) { innerPadding ->
         when (user) {
-            null -> Loading(modifier = Modifier.fillMaxSize().padding(innerPadding))
+            null -> Loading(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding))
             else -> SettingsContent(
                 user = user,
                 error = error,
@@ -70,10 +72,7 @@ private fun SettingsTopBar(onNavigateUp: () -> Unit, modifier: Modifier = Modifi
         title = { Text(stringResource(R.string.settings_top_bar_title)) },
         navigationIcon = {
             IconButton(onNavigateUp) {
-                Icon(
-                    Icons.AutoMirrored.Default.ArrowBack,
-                    stringResource(R.string.content_description_back)
-                )
+                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
             }
         },
         modifier = modifier
@@ -91,33 +90,33 @@ private fun SettingsContent(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    when (user.isAnonymous) {
-        true -> AnonymousSettings(
+    when {
+        user.isAnonymous -> AnonymousSettings(
             error = error,
-            onLinkAccount = { email, password ->
-                onLinkAccount(email, password)
-            },
+            onLinkAccount = onLinkAccount,
             modifier = modifier.padding(horizontal = 16.dp)
         )
 
-        false -> UserSettings(
+        else -> UserSettings(
             email = user.email!!,
             error = error,
             onAuthenticate = onAuthenticate,
             onLogout = {
                 onLogout()
-                navController.navigate(Login) {
-                    popUpTo(Exposures(user.id)) { inclusive = true }
-                }
+                navigateToLogin(navController, user.id)
             },
             onDeleteAccount = {
                 onDeleteAccount()
-                navController.navigate(Login) {
-                    popUpTo(Exposures(user.id)) { inclusive = true }
-                }
+                navigateToLogin(navController, user.id)
             },
             modifier = modifier.padding(horizontal = 16.dp)
         )
+    }
+}
+
+private fun navigateToLogin(navController: NavController, userId: String) {
+    navController.navigate(Login) {
+        popUpTo(Exposures(userId)) { inclusive = true }
     }
 }
 
@@ -129,7 +128,7 @@ private fun AnonymousSettings(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     Card(modifier) {
         Column(Modifier.padding(16.dp)) {
@@ -140,15 +139,16 @@ private fun AnonymousSettings(
             LoginForm(
                 email = email,
                 password = password,
-                passwordVisible = passwordVisible,
-                error = error,
+                isPasswordVisible = isPasswordVisible,
+                errorMessage = error,
                 onEmailChange = { email = it },
                 onPasswordChange = { password = it },
-                onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                onTogglePasswordVisibility = { isPasswordVisible = !isPasswordVisible },
                 onSubmit = { onLinkAccount(email, password) },
-                submit = { Text(stringResource(R.string.login_create_account_button)) },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Text(stringResource(R.string.login_create_account_button))
+            }
         }
     }
 }
@@ -172,7 +172,7 @@ private fun UserSettings(
     modifier: Modifier = Modifier
 ) {
     var showAuthenticateDialog by remember { mutableStateOf(false) }
-    var sensitiveAction by remember { mutableStateOf({}) }
+    var pendingAction by remember { mutableStateOf({}) }
 
     Column(modifier) {
         Text(
@@ -184,7 +184,7 @@ private fun UserSettings(
         }
         FilledTonalButton(
             onClick = {
-                sensitiveAction = onDeleteAccount
+                pendingAction = onDeleteAccount
                 showAuthenticateDialog = true
             },
             modifier = Modifier.fillMaxWidth()
@@ -197,7 +197,10 @@ private fun UserSettings(
         show = showAuthenticateDialog,
         error = error,
         email = email,
-        onConfirm = { password -> onAuthenticate(email, password, sensitiveAction) },
+        onConfirm = { password ->
+            onAuthenticate(email, password, pendingAction)
+            pendingAction = {}
+        },
         onShowChange = { showAuthenticateDialog = it },
     )
 }

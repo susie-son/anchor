@@ -24,8 +24,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,12 +44,9 @@ import com.susieson.anchor.Settings
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.Loading
-import kotlinx.coroutines.delay
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
-
-const val TimeReloadInterval = 60_000L
 
 @Composable
 fun ExposuresScreen(
@@ -59,11 +57,7 @@ fun ExposuresScreen(
     val exposures = viewModel.exposures.collectAsState(null).value
 
     Scaffold(
-        topBar = {
-            ExposuresTopBar {
-                navController.navigate(Settings(viewModel.userId))
-            }
-        },
+        topBar = { ExposuresTopBar { navController.navigate(Settings(viewModel.userId)) } },
         floatingActionButton = {
             ExposuresFloatingActionButton {
                 navController.navigate(ExposurePreparation(viewModel.userId))
@@ -101,10 +95,7 @@ private fun ExposuresTopBar(
         title = { Text(stringResource(R.string.app_name)) },
         actions = {
             IconButton(onNavigateSettings) {
-                Icon(
-                    Icons.Default.Settings,
-                    stringResource(R.string.content_description_settings)
-                )
+                Icon(Icons.Default.Settings, stringResource(R.string.content_description_settings))
             }
         },
         modifier = modifier
@@ -116,15 +107,9 @@ private fun ExposuresFloatingActionButton(
     modifier: Modifier = Modifier,
     onNavigateExposure: () -> Unit
 ) {
-    ExtendedFloatingActionButton(
-        onClick = onNavigateExposure,
-        modifier = modifier
-    ) {
+    ExtendedFloatingActionButton(onNavigateExposure, modifier = modifier) {
         Icon(Icons.Default.Add, null)
-        Text(
-            text = stringResource(R.string.exposures_start_button),
-            modifier = Modifier.padding(start = 8.dp)
-        )
+        Text(stringResource(R.string.exposures_start_button), modifier = Modifier.padding(start = 8.dp))
     }
 }
 
@@ -134,13 +119,10 @@ private fun ExposuresContent(
     onItemClick: (Exposure) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (exposures.isEmpty()) {
-        true -> EmptyExposureList(modifier = modifier)
-        false -> ExposureList(
-            exposures = exposures,
-            onItemClick = onItemClick,
-            modifier = modifier
-        )
+    if (exposures.isEmpty()) {
+        EmptyExposureList(modifier)
+    } else {
+        ExposureList(exposures, onItemClick, modifier)
     }
 }
 
@@ -153,7 +135,7 @@ private fun EmptyExposureList(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.illustration_sailboat),
-            modifier = Modifier.padding(0.dp, 24.dp),
+            modifier = Modifier.padding(vertical = 24.dp),
             contentDescription = null
         )
         Text(stringResource(R.string.exposures_title), style = MaterialTheme.typography.titleLarge)
@@ -170,49 +152,28 @@ private fun EmptyExposureListPreview() {
 @Composable
 private fun ExposureList(
     exposures: List<Exposure>,
-    modifier: Modifier = Modifier,
-    onItemClick: (Exposure) -> Unit
+    onItemClick: (Exposure) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier) {
         items(exposures) { exposure ->
-            val timestamp = exposure.updatedAt
-            val time by produceState<String?>(null, exposure) {
-                while (true) {
-                    if (timestamp == null) {
-                        value = null
+            val formattedTime by remember {derivedStateOf {
+                exposure.updatedAt?.let { timestamp ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
                     } else {
-                        val formattedTime =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
-                            } else {
-                                DateFormat.getDateTimeInstance().format(timestamp.toDate())
-                            }
-                        value = formattedTime
+                        DateFormat.getDateTimeInstance().format(timestamp.toDate())
                     }
-                    delay(TimeReloadInterval)
                 }
-            }
+            }}
 
             ListItem(
                 overlineContent = {
-                    time?.let {
-                        StatusTextWithTimestamp(
-                            time = it,
-                            status = exposure.status
-                        )
-                    }
+                    formattedTime?.let { StatusTextWithTimestamp(it, exposure.status) }
                 },
-                headlineContent = {
-                    Text(
-                        exposure.title.ifBlank { stringResource(R.string.exposures_no_title) }
-                    )
-                },
+                headlineContent = { Text(exposure.title.ifBlank { stringResource(R.string.exposures_no_title) }) },
                 supportingContent = {
-                    Text(
-                        exposure.description.ifBlank {
-                            stringResource(R.string.exposures_no_description)
-                        }
-                    )
+                    Text(exposure.description.ifBlank { stringResource(R.string.exposures_no_description) })
                 },
                 modifier = Modifier.clickable { onItemClick(exposure) }
             )

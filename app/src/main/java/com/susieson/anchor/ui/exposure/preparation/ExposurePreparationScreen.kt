@@ -145,10 +145,7 @@ private fun BasicSection(
             isError = title.isBlank(),
             label = { Text(stringResource(R.string.preparation_title_label)) },
             supportingText = {
-                ErrorText(
-                    text = stringResource(R.string.preparation_title_error),
-                    isError = title.isBlank()
-                )
+                ErrorText(stringResource(R.string.preparation_title_error), title.isBlank())
             },
             onValueChange = onTitleChange,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -159,10 +156,7 @@ private fun BasicSection(
             isError = description.isBlank(),
             label = { Text(stringResource(R.string.preparation_description_label)) },
             supportingText = {
-                ErrorText(
-                    text = stringResource(R.string.preparation_description_error),
-                    isError = description.isBlank()
-                )
+                ErrorText(stringResource(R.string.preparation_description_error), description.isBlank())
             },
             onValueChange = onDescriptionChange,
             singleLine = false,
@@ -188,56 +182,52 @@ private fun PreparationSection(
     onActionRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    data class PreparationItem(
-        val items: List<String>,
+    data class PreparationCategory(
         @StringRes val label: Int,
+        @StringRes val body: Int,
+        val items: List<String>,
         val onAdd: (String) -> Unit,
         val onRemove: (String) -> Unit
     )
-    val items = listOf(
-        PreparationItem(
-            thoughts,
+    val categories = listOf(
+        PreparationCategory(
             R.string.preparation_thoughts_label,
+            R.string.preparation_thoughts_body,
+            thoughts,
             onThoughtAdd,
             onThoughtRemove
         ),
-        PreparationItem(
-            interpretations,
+        PreparationCategory(
             R.string.preparation_interpretations_label,
+            R.string.preparation_interpretations_body,
+            interpretations,
             onInterpretationAdd,
             onInterpretationRemove
         ),
-        PreparationItem(
-            behaviors,
+        PreparationCategory(
             R.string.preparation_behaviors_label,
+            R.string.preparation_behaviors_body,
+            behaviors,
             onBehaviorAdd,
             onBehaviorRemove
         ),
-        PreparationItem(actions, R.string.preparation_actions_label, onActionAdd, onActionRemove)
+        PreparationCategory(
+            R.string.preparation_actions_label,
+            R.string.preparation_actions_body,
+            actions,
+            onActionAdd,
+            onActionRemove
+        )
     )
-    Column(
-        modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items.forEach {
-            val item = it.items
-            val label = it.label
-            val add = it.onAdd
-            val remove = it.onRemove
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        categories.forEach { category ->
             LabeledItemWithSupporting(
-                label = { LabelText(stringResource(label)) },
+                label = { LabelText(stringResource(category.label)) },
                 supporting = {
-                    ErrorBodyText(
-                        text = stringResource(R.string.preparation_thoughts_body),
-                        isError = item.isEmpty()
-                    )
+                    ErrorBodyText(stringResource(category.body), category.items.isEmpty())
                 }
             ) {
-                TextFieldColumn(
-                    texts = item,
-                    onAdd = add,
-                    onDelete = remove
-                )
+                TextFieldColumn(category.items, category.onAdd, category.onRemove)
             }
         }
     }

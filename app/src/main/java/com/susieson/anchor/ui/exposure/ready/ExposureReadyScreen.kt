@@ -48,7 +48,7 @@ fun ExposureReadyScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val checked = remember { viewModel.checked }
+    val isReadyChecked = remember { viewModel.checked }
 
     val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
@@ -66,22 +66,15 @@ fun ExposureReadyScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            postNotificationPermission?.let {
-                if (!it.status.isGranted) {
-                    NotificationCard(
-                        postNotificationPermission = it,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-            }
+            PostNotificationPermission(postNotificationPermission)
             Text(
                 text = stringResource(R.string.ready_description),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             ReadyCheckList(
-                checked = checked,
-                onCheckedChange = { index, value -> viewModel.onCheckedChange(index, value) },
+                checked = isReadyChecked,
+                onCheckedChange = viewModel::onCheckedChange,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Button(
@@ -89,7 +82,7 @@ fun ExposureReadyScreen(
                     viewModel.markAsInProgress()
                     navController.navigateUp()
                 },
-                enabled = checked.all { it },
+                enabled = isReadyChecked.all { it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ) {
                 Text(stringResource(R.string.ready_confirm_button))
@@ -108,14 +101,21 @@ private fun ExposureReadyTopBar(
         title = { Text(stringResource(R.string.ready_top_bar_title)) },
         navigationIcon = {
             IconButton(onNavigateUp) {
-                Icon(
-                    Icons.AutoMirrored.Default.ArrowBack,
-                    stringResource(R.string.content_description_back)
-                )
+                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.content_description_back))
             }
         },
         modifier = modifier
     )
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun PostNotificationPermission(state: PermissionState?) {
+    state?.let {
+        if (!it.status.isGranted) {
+            NotificationCard(it, modifier = Modifier.padding(horizontal = 16.dp))
+        }
+    }
 }
 
 @Composable
@@ -127,16 +127,12 @@ private fun ReadyCheckList(
     Column(modifier) {
         ListItem(
             headlineContent = { Text(stringResource(R.string.ready_check_1)) },
-            trailingContent = {
-                Checkbox(checked = checked[0], onCheckedChange = { onCheckedChange(0, it) })
-            },
+            trailingContent = { Checkbox(checked[0], onCheckedChange = { onCheckedChange(0, it) }) },
             modifier = Modifier.height(40.dp)
         )
         ListItem(
             headlineContent = { Text(stringResource(R.string.ready_check_2)) },
-            trailingContent = {
-                Checkbox(checked = checked[1], onCheckedChange = { onCheckedChange(1, it) })
-            },
+            trailingContent = { Checkbox(checked[1], onCheckedChange = { onCheckedChange(1, it) }) },
             modifier = Modifier.height(40.dp)
         )
     }
@@ -154,36 +150,52 @@ private fun NotificationCard(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.notification_permission_title),
-                style = MaterialTheme.typography.titleMedium
-            )
+            Text(stringResource(R.string.notification_permission_title), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.notification_permission_description))
-            OutlinedButton(
-                onClick = {
-                    if (postNotificationPermission.status == PermissionStatus.Denied(false)) {
-                        openAppSettings(context)
-                    } else {
-                        postNotificationPermission.launchPermissionRequest()
-                    }
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(stringResource(R.string.notification_permission_button))
-            }
+            NotificationPermissionButton(postNotificationPermission, context, Modifier.align(Alignment.End))
         }
     }
 }
 
-private fun openAppSettings(context: Context) {
-    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun NotificationPermissionButton(
+    postNotificationPermission: PermissionState,
+    context: Context,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = {
+            when (postNotificationPermission.status) {
+                is PermissionStatus.Denied -> {
+                    if ((postNotificationPermission.status as PermissionStatus.Denied).shouldShowRationale) {
+                        postNotificationPermission.launchPermissionRequest()
+                    } else {
+                        openAppSettings(context)
+                    }
+                }
+                else -> {
+                    postNotificationPermission.launchPermissionRequest()
+                }
+            }
         }
-    } else {
-        Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
-            putExtra("app_package", context.packageName)
-            putExtra("app_uid", context.applicationInfo.uid)
+    ) {
+        Text(stringResource(R.string.notification_permission_button))
+    }
+}
+
+private fun openAppSettings(context: Context) {
+    val intent = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            }
+        }
+        else -> {
+            Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
+                putExtra("app_package", context.packageName)
+                putExtra("app_uid", context.applicationInfo.uid)
+            }
         }
     }
     context.startActivity(intent)
