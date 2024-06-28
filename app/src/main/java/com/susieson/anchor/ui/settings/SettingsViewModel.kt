@@ -46,7 +46,7 @@ class SettingsViewModel @AssistedInject constructor(
         }
     }
 
-    fun reAuthenticate(email: String, password: String, action: () -> Unit) {
+    fun authenticate(email: String, password: String, action: () -> Unit) {
         viewModelScope.launch {
             _error.value = null
             try {

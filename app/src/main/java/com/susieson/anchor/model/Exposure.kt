@@ -38,11 +38,10 @@ val ExposureType = object : NavType<Exposure>(
     isNullableAllowed = false
 ) {
     override fun get(bundle: Bundle, key: String): Exposure? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return bundle.getParcelable(key, Exposure::class.java)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            bundle.getParcelable(key, Exposure::class.java)
         } else {
-            @Suppress("DEPRECATION")
-            return bundle.getParcelable(key)
+            bundle.getParcelable(key)
         }
     }
 

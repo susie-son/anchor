@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,8 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.Timestamp
 import com.susieson.anchor.ExposurePreparation
 import com.susieson.anchor.ExposureReady
 import com.susieson.anchor.ExposureReview
@@ -69,7 +72,7 @@ fun ExposuresScreen(
         modifier = modifier,
     ) { innerPadding ->
         when (exposures) {
-            null -> Loading(modifier = Modifier.padding(innerPadding))
+            null -> Loading(modifier = Modifier.fillMaxSize().padding(innerPadding))
             else -> ExposuresContent(
                 exposures = exposures,
                 onItemClick = { exposure ->
@@ -82,7 +85,7 @@ fun ExposuresScreen(
                         }
                     )
                 },
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.fillMaxSize().padding(innerPadding)
             )
         }
     }
@@ -118,7 +121,10 @@ private fun ExposuresFloatingActionButton(
         modifier = modifier
     ) {
         Icon(Icons.Default.Add, null)
-        Text(stringResource(R.string.exposures_start_button))
+        Text(
+            text = stringResource(R.string.exposures_start_button),
+            modifier = Modifier.padding(start = 8.dp)
+        )
     }
 }
 
@@ -153,6 +159,12 @@ private fun EmptyExposureList(modifier: Modifier = Modifier) {
         Text(stringResource(R.string.exposures_title), style = MaterialTheme.typography.titleLarge)
         Text(stringResource(R.string.exposures_body), style = MaterialTheme.typography.bodyLarge)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyExposureListPreview() {
+    EmptyExposureList()
 }
 
 @Composable
@@ -226,4 +238,38 @@ private fun StatusTextWithTimestamp(
             time
         )
     Text(statusText, style = MaterialTheme.typography.bodySmall, modifier = modifier)
+}
+
+@Preview
+@Composable
+private fun ExposureListPreview() {
+    ExposureList(
+        exposures = listOf(
+            Exposure(
+                title = "Title 1",
+                description = "Description 1",
+                status = Status.DRAFT,
+                updatedAt = Timestamp(seconds = 1719603129, nanoseconds = 0)
+            ),
+            Exposure(
+                title = "Title 2",
+                description = "Description 2",
+                status = Status.READY,
+                updatedAt = Timestamp(seconds = 1719603129, nanoseconds = 0)
+            ),
+            Exposure(
+                title = "Title 3",
+                description = "Description 3",
+                status = Status.IN_PROGRESS,
+                updatedAt = Timestamp(seconds = 1719603129, nanoseconds = 0)
+            ),
+            Exposure(
+                title = "Title 4",
+                description = "Description 4",
+                status = Status.COMPLETED,
+                updatedAt = Timestamp(seconds = 1719603129, nanoseconds = 0)
+            )
+        ),
+        onItemClick = {}
+    )
 }

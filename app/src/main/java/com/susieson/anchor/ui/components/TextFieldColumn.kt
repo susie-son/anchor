@@ -1,7 +1,12 @@
 package com.susieson.anchor.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,7 +18,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -43,7 +47,7 @@ fun TextFieldColumn(
     var field by rememberSaveable { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
 
-    Column(modifier = modifier) {
+    Column(modifier) {
         AddTextField(
             field = field,
             interactionSource = interactionSource,
@@ -67,25 +71,26 @@ private fun AddTextField(
             onFieldChange("")
         }
     }
-    ListItem(
-        headlineContent = {
-            BasicTextFieldWithDecoration(
-                value = field,
-                interactionSource = interactionSource,
-                onValueChange = onFieldChange,
-                onAddAndClear = onAddAndClear,
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .height(56.dp)
+    ) {
+        BasicTextFieldWithDecoration(
+            value = field,
+            interactionSource = interactionSource,
+            onValueChange = onFieldChange,
+            onAddAndClear = onAddAndClear,
+            modifier = Modifier.weight(1f)
+        )
+        IconButton(onAddAndClear, modifier = Modifier.fillMaxHeight().padding(end = 16.dp)) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = stringResource(R.string.content_description_add),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        },
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        trailingContent = {
-            IconButton(onAddAndClear) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(R.string.content_description_add)
-                )
-            }
         }
-    )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,16 +100,17 @@ private fun BasicTextFieldWithDecoration(
     interactionSource: MutableInteractionSource,
     onValueChange: (String) -> Unit,
     onAddAndClear: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
         keyboardActions = KeyboardActions(onSend = { onAddAndClear() }),
-        interactionSource = interactionSource,
         singleLine = true,
         textStyle = TextStyle.Default.copy(color = OutlinedTextFieldDefaults.colors().focusedTextColor),
-        cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor)
+        cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
+        modifier = modifier.padding(start = 16.dp),
     ) { innerTextField ->
         OutlinedTextFieldDefaults.DecorationBox(
             value = value,
@@ -114,7 +120,6 @@ private fun BasicTextFieldWithDecoration(
             visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
             contentPadding = OutlinedTextFieldDefaults.contentPadding(0.dp),
-            placeholder = {},
             container = {}
         )
     }
@@ -125,7 +130,7 @@ private fun TextList(texts: List<String>, onDelete: (String) -> Unit) {
     texts.forEach { text ->
         HorizontalDivider()
         ListItem(
-            headlineContent = { Text(text = text) },
+            headlineContent = { Text(text) },
             trailingContent = {
                 IconButton({ onDelete(text) }) {
                     Icon(

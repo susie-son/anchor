@@ -1,6 +1,7 @@
 package com.susieson.anchor.ui.login
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,18 +15,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.Exposures
 import com.susieson.anchor.Login
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navController: NavController,
-    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     val user by viewModel.user.collectAsState(null)
     val error by viewModel.error.collectAsState()
@@ -42,8 +42,7 @@ fun LoginScreen(
     }
 
     Scaffold(
-        topBar = { LoginTopBar() },
-        modifier = modifier,
+        topBar = { LoginTopBar() }
     ) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
             when (user?.id) {
@@ -57,15 +56,15 @@ fun LoginScreen(
                         onPasswordChange = viewModel::onPasswordChange,
                         onPasswordVisibleChange = viewModel::onPasswordVisibleChange,
                         onSubmit = { viewModel.login(email, password) },
-                        submit = { Text(stringResource(R.string.login_button)) }
+                        submit = { Text(stringResource(R.string.login_button)) },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                     )
-                    OutlinedButton(viewModel::createAnonymousAccount) {
+                    OutlinedButton(
+                        onClick = viewModel::createAnonymousAccount,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    ) {
                         Text(stringResource(R.string.login_anonymous_button))
                     }
-                }
-
-                else -> {
-                    Loading()
                 }
             }
         }

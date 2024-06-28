@@ -26,8 +26,9 @@ import androidx.navigation.NavController
 import com.google.firebase.Timestamp
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
-import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
+import com.susieson.anchor.ui.components.BodyText
+import com.susieson.anchor.ui.components.LabelText
 import com.susieson.anchor.ui.components.LabeledItem
 import com.susieson.anchor.ui.components.SameLineLabeledItem
 import java.text.DateFormat
@@ -44,7 +45,9 @@ fun ExposureSummaryScreen(
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             BasicSummarySection(
@@ -54,7 +57,13 @@ fun ExposureSummaryScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             viewModel.exposure.preparation?.let {
-                PreparationSummarySection(it, modifier = Modifier.fillMaxWidth())
+                PreparationSummarySection(
+                    it.thoughts,
+                    it.interpretations,
+                    it.behaviors,
+                    it.actions,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             viewModel.exposure.review?.let {
                 ReviewSummarySection(it, modifier = Modifier.fillMaxWidth())
@@ -97,18 +106,15 @@ private fun BasicSummarySection(
         ) {
             updatedAt?.let {
                 val completedAt = DateFormat.getDateInstance().format(it.toDate())
-                LabeledItem(
-                    label = {
-                        Text(
-                            stringResource(R.string.summary_completed_at_label),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    content = {
-                        Text(completedAt, style = MaterialTheme.typography.bodyMedium)
-                    }
-                )
+                LabeledItem({
+                    Text(
+                        text = stringResource(R.string.summary_completed_at_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }) {
+                    Text(completedAt, style = MaterialTheme.typography.bodyMedium)
+                }
             }
             Text(title, style = MaterialTheme.typography.titleLarge)
             Text(description, style = MaterialTheme.typography.bodyLarge)
@@ -117,224 +123,109 @@ private fun BasicSummarySection(
 }
 
 @Composable
-private fun PreparationSummarySection(preparation: Preparation, modifier: Modifier = Modifier) {
+private fun PreparationSummarySection(
+    thoughts: List<String>,
+    interpretations: List<String>,
+    behaviors: List<String>,
+    actions: List<String>,
+    modifier: Modifier = Modifier
+) {
+    val items = listOf(
+        thoughts to R.string.preparation_thoughts_label,
+        interpretations to R.string.preparation_interpretations_label,
+        behaviors to R.string.preparation_behaviors_label,
+        actions to R.string.preparation_actions_label
+    )
     OutlinedCard(modifier = modifier.padding(horizontal = 16.dp)) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.preparation_thoughts_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    preparation.thoughts.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
+            items.forEach { (item, label) ->
+                LabeledItem({ LabelText(stringResource(label)) }) {
+                    item.forEach {
+                        BodyText(it)
                     }
                 }
-            )
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.preparation_interpretations_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    preparation.interpretations.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            )
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.preparation_behaviors_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    preparation.behaviors.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            )
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.preparation_actions_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    preparation.actions.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            )
+            }
         }
     }
 }
 
 @Composable
-private fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
-    val emotions =
-        review.emotions.map {
-            stringResource(
-                when (it) {
-                    Emotion.FEAR -> R.string.review_fear_chip
-                    Emotion.SADNESS -> R.string.review_sadness_chip
-                    Emotion.ANXIETY -> R.string.review_anxiety_chip
-                    Emotion.GUILT -> R.string.review_guilt_chip
-                    Emotion.SHAME -> R.string.review_shame_chip
-                    Emotion.HAPPINESS -> R.string.review_happiness_chip
-                }
-            )
+private fun ReviewEmotionsSection(
+    emotions: List<Emotion>,
+    thoughts: List<String>,
+    sensations: List<String>,
+    behaviors: List<String>
+) {
+    LabeledItem({ LabelText(stringResource(R.string.review_emotions_label)) }) {
+        val emotionsList = emotions.map { stringResource(it.label) }
+        BodyText(emotionsList.joinToString(", "))
+    }
+    val items = listOf(
+        thoughts to R.string.review_thoughts_label,
+        sensations to R.string.review_sensations_label,
+        behaviors to R.string.review_behaviors_label
+    )
+    items.forEach { (item, label) ->
+        LabeledItem({ LabelText(stringResource(label)) }) {
+            item.forEach {
+                BodyText(it)
+            }
         }
+    }
+}
 
+@Composable
+private fun ReviewRatingsSection(
+    experiencing: Float,
+    anchoring: Float,
+    thinking: Float,
+    engaging: Float
+) {
+    val ratings = listOf(
+        experiencing to R.string.review_experiencing_label,
+        anchoring to R.string.review_anchoring_label,
+        thinking to R.string.review_thinking_label,
+        engaging to R.string.review_engaging_label
+    )
+    ratings.forEach { (rating, label) ->
+        SameLineLabeledItem({ LabelText(stringResource(label)) }) {
+            BodyText(rating.roundToInt().toString())
+        }
+    }
+}
+
+@Composable
+private fun ReviewLearningsSection(learnings: String) {
+    LabeledItem({ LabelText(stringResource(R.string.review_learnings_label)) }) {
+        BodyText(learnings)
+    }
+}
+
+@Composable
+private fun ReviewSummarySection(review: Review, modifier: Modifier = Modifier) {
     OutlinedCard(modifier = modifier.padding(horizontal = 16.dp)) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_emotions_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    Text(
-                        emotions.joinToString(", "),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            )
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_thoughts_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    review.thoughts.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            )
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_sensations_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    review.sensations.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            )
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_behaviors_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    review.behaviors.forEach {
-                        Text(it, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
+            ReviewEmotionsSection(
+                review.emotions,
+                review.thoughts,
+                review.sensations,
+                review.behaviors
             )
             HorizontalDivider(Modifier.padding(8.dp))
-            SameLineLabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_experiencing_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    Text(
-                        review.experiencing.roundToInt().toString(),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            )
-            SameLineLabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_anchoring_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    Text(
-                        review.anchoring.roundToInt().toString(),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            )
-            SameLineLabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_thinking_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    Text(
-                        review.thinking.roundToInt().toString(),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            )
-            SameLineLabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_engaging_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    Text(
-                        review.engaging.roundToInt().toString(),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+            ReviewRatingsSection(
+                review.experiencing,
+                review.anchoring,
+                review.thinking,
+                review.engaging
             )
             HorizontalDivider(Modifier.padding(8.dp))
-            LabeledItem(
-                label = {
-                    Text(
-                        stringResource(R.string.review_learnings_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                content = {
-                    Text(review.learnings, style = MaterialTheme.typography.bodyLarge)
-                }
-            )
+            ReviewLearningsSection(review.learnings)
         }
     }
 }

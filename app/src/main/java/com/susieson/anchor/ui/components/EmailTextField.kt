@@ -12,7 +12,7 @@ import com.susieson.anchor.R
 @Composable
 fun EmailTextField(
     email: String,
-    readOnly: Boolean,
+    enabled: Boolean,
     isError: Boolean,
     onEmailChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -32,7 +32,7 @@ fun EmailTextField(
                 Text(stringResource(R.string.login_email_error))
             }
         },
-        readOnly = readOnly,
+        enabled = enabled,
         modifier = modifier
     )
 }

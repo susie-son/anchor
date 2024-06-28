@@ -15,8 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AnchorTheme {
-                val navController = rememberNavController()
-                Navigation(navController)
+                Navigation(rememberNavController())
             }
         }
     }

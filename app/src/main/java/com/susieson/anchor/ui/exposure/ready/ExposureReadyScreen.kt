@@ -7,17 +7,18 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -40,7 +41,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExposureReadyScreen(
     viewModel: ExposureReadyViewModel,
@@ -49,12 +50,11 @@ fun ExposureReadyScreen(
 ) {
     val checked = remember { viewModel.checked }
 
-    val postNotificationPermission =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            null
-        }
+    val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        null
+    }
 
     Scaffold(
         topBar = { ExposureReadyTopBar(navController::navigateUp) },
@@ -68,24 +68,29 @@ fun ExposureReadyScreen(
         ) {
             postNotificationPermission?.let {
                 if (!it.status.isGranted) {
-                    NotificationCard(postNotificationPermission = it)
+                    NotificationCard(
+                        postNotificationPermission = it,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                 }
             }
             Text(
-                stringResource(R.string.ready_description),
+                text = stringResource(R.string.ready_description),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             ReadyCheckList(
                 checked = checked,
-                onCheckedChange = { index, value -> viewModel.onCheckedChange(index, value) }
+                onCheckedChange = { index, value -> viewModel.onCheckedChange(index, value) },
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
-            FilledTonalButton(
+            Button(
                 onClick = {
                     viewModel.markAsInProgress()
                     navController.navigateUp()
                 },
-                enabled = checked.all { it }
+                enabled = checked.all { it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ) {
                 Text(stringResource(R.string.ready_confirm_button))
             }
@@ -119,24 +124,18 @@ private fun ReadyCheckList(
     modifier: Modifier = Modifier,
     onCheckedChange: (Int, Boolean) -> Unit
 ) {
-    Column(modifier = modifier) {
+    Column(modifier) {
         ListItem(
             headlineContent = { Text(stringResource(R.string.ready_check_1)) },
             trailingContent = {
-                Checkbox(
-                    checked = checked[0],
-                    onCheckedChange = { onCheckedChange(0, it) }
-                )
+                Checkbox(checked = checked[0], onCheckedChange = { onCheckedChange(0, it) })
             },
             modifier = Modifier.height(40.dp)
         )
         ListItem(
             headlineContent = { Text(stringResource(R.string.ready_check_2)) },
             trailingContent = {
-                Checkbox(
-                    checked = checked[1],
-                    onCheckedChange = { onCheckedChange(1, it) }
-                )
+                Checkbox(checked = checked[1], onCheckedChange = { onCheckedChange(1, it) })
             },
             modifier = Modifier.height(40.dp)
         )
@@ -152,11 +151,11 @@ private fun NotificationCard(
     val context = LocalContext.current
     Card(modifier) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                stringResource(R.string.notification_permission_title),
+                text = stringResource(R.string.notification_permission_title),
                 style = MaterialTheme.typography.titleMedium
             )
             Text(stringResource(R.string.notification_permission_description))
@@ -177,16 +176,15 @@ private fun NotificationCard(
 }
 
 private fun openAppSettings(context: Context) {
-    val intent =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-            }
-        } else {
-            Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
-                putExtra("app_package", context.packageName)
-                putExtra("app_uid", context.applicationInfo.uid)
-            }
+    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
         }
+    } else {
+        Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
+            putExtra("app_package", context.packageName)
+            putExtra("app_uid", context.applicationInfo.uid)
+        }
+    }
     context.startActivity(intent)
 }

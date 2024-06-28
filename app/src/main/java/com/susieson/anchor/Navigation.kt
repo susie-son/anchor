@@ -1,10 +1,11 @@
 package com.susieson.anchor
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -24,6 +25,7 @@ import com.susieson.anchor.ui.login.LoginScreen
 import com.susieson.anchor.ui.settings.SettingsScreen
 import com.susieson.anchor.ui.settings.SettingsViewModel
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 @Serializable
@@ -48,96 +50,62 @@ data class ExposureReview(val userId: String, val exposure: Exposure)
 data class ExposureSummary(val exposure: Exposure)
 
 @Composable
-fun Navigation(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    NavHost(navController, startDestination = Login, modifier = modifier.fillMaxSize()) {
+fun Navigation(navController: NavHostController) {
+    NavHost(navController, startDestination = Login) {
         composable<Login> {
-            LoginScreen(
-                viewModel = hiltViewModel(),
-                navController = navController
-            )
+            LoginScreen(hiltViewModel(), navController)
         }
-        composable<Exposures> { backStackEntry ->
-            val destination: Exposures = backStackEntry.toRoute()
-            ExposuresScreen(
-                viewModel = hiltViewModel(
-                    creationCallback = { factory: ExposuresViewModel.Factory ->
-                        factory.create(userId = destination.userId)
-                    }
-                ),
-                navController = navController
+        createComposable<Exposures, ExposuresViewModel, ExposuresViewModel.Factory>(
+            creation = { factory, destination -> factory.create(destination.userId) },
+            screen = { viewModel -> ExposuresScreen(viewModel, navController) }
+        )
+        createComposable<Settings, SettingsViewModel, SettingsViewModel.Factory>(
+            creation = { factory, destination -> factory.create(destination.userId) },
+            screen = { viewModel -> SettingsScreen(viewModel, navController) }
+        )
+        createComposable<ExposurePreparation, ExposurePreparationViewModel, ExposurePreparationViewModel.Factory>(
+            creation = { factory, destination -> factory.create(destination.userId) },
+            screen = { viewModel -> ExposurePreparationScreen(viewModel, navController) }
+        )
+        createComposable<ExposureReady, ExposureReadyViewModel, ExposureReadyViewModel.Factory>(
+            typeMap = mapOf(typeOf<Exposure>() to ExposureType),
+            creation = { factory, destination ->
+                factory.create(
+                    destination.userId,
+                    destination.exposure
+                )
+            },
+            screen = { viewModel -> ExposureReadyScreen(viewModel, navController) }
+        )
+        createComposable<ExposureReview, ExposureReviewViewModel, ExposureReviewViewModel.Factory>(
+            typeMap = mapOf(typeOf<Exposure>() to ExposureType),
+            creation = { factory, destination ->
+                factory.create(
+                    destination.userId,
+                    destination.exposure
+                )
+            },
+            screen = { viewModel -> ExposureReviewScreen(viewModel, navController) }
+        )
+        createComposable<ExposureSummary, ExposureSummaryViewModel, ExposureSummaryViewModel.Factory>(
+            typeMap = mapOf(typeOf<Exposure>() to ExposureType),
+            creation = { factory, destination -> factory.create(destination.exposure) },
+            screen = { viewModel -> ExposureSummaryScreen(viewModel, navController) }
+        )
+    }
+}
+
+inline fun <reified T : Any, reified VM : ViewModel, reified F> NavGraphBuilder.createComposable(
+    typeMap: Map<KType, NavType<*>> = emptyMap(),
+    noinline screen: @Composable (viewModel: VM) -> Unit,
+    noinline creation: (factory: F, destination: T) -> VM
+) {
+    composable<T>(typeMap = typeMap) { backStackEntry ->
+        val destination: T = backStackEntry.toRoute()
+        screen(
+            hiltViewModel(
+                creationCallback = { factory: F -> creation(factory, destination) }
             )
-        }
-        composable<Settings> { backStackEntry ->
-            val destination: Settings = backStackEntry.toRoute()
-            SettingsScreen(
-                viewModel = hiltViewModel(
-                    creationCallback = { factory: SettingsViewModel.Factory ->
-                        factory.create(userId = destination.userId)
-                    }
-                ),
-                navController = navController
-            )
-        }
-        composable<ExposurePreparation>(
-            typeMap = mapOf(typeOf<Exposure>() to ExposureType)
-        ) { backStackEntry ->
-            val destination: ExposurePreparation = backStackEntry.toRoute()
-            ExposurePreparationScreen(
-                viewModel = hiltViewModel(
-                    creationCallback = { factory: ExposurePreparationViewModel.Factory ->
-                        factory.create(userId = destination.userId)
-                    }
-                ),
-                navController = navController
-            )
-        }
-        composable<ExposureReady>(
-            typeMap = mapOf(typeOf<Exposure>() to ExposureType)
-        ) { backStackEntry ->
-            val destination: ExposureReady = backStackEntry.toRoute()
-            ExposureReadyScreen(
-                viewModel = hiltViewModel(
-                    creationCallback = { factory: ExposureReadyViewModel.Factory ->
-                        factory.create(
-                            userId = destination.userId,
-                            exposure = destination.exposure
-                        )
-                    }
-                ),
-                navController = navController
-            )
-        }
-        composable<ExposureReview>(
-            typeMap = mapOf(typeOf<Exposure>() to ExposureType)
-        ) { backStackEntry ->
-            val destination: ExposureReview = backStackEntry.toRoute()
-            ExposureReviewScreen(
-                viewModel = hiltViewModel(
-                    creationCallback = { factory: ExposureReviewViewModel.Factory ->
-                        factory.create(
-                            userId = destination.userId,
-                            exposure = destination.exposure
-                        )
-                    }
-                ),
-                navController = navController
-            )
-        }
-        composable<ExposureSummary>(
-            typeMap = mapOf(typeOf<Exposure>() to ExposureType)
-        ) { backStackEntry ->
-            val destination: ExposureSummary = backStackEntry.toRoute()
-            ExposureSummaryScreen(
-                viewModel = hiltViewModel(
-                    creationCallback = { factory: ExposureSummaryViewModel.Factory ->
-                        factory.create(exposure = destination.exposure)
-                    }
-                ),
-                navController = navController
-            )
-        }
+        )
     }
 }

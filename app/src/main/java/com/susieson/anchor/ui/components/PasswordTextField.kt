@@ -36,9 +36,7 @@ fun PasswordTextField(
         ),
         isError = error,
         supportingText = {
-            if (error) {
-                Text(stringResource(R.string.login_password_error, MinPasswordLength))
-            }
+            if (error) { Text(stringResource(R.string.login_password_error, MinPasswordLength)) }
         },
         trailingIcon = {
             IconButton(onPasswordVisibleChange) {

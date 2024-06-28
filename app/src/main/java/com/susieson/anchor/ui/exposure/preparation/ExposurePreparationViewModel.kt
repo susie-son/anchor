@@ -61,7 +61,7 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     }
 
     fun onThoughtAdded(thought: String) {
-        thoughts.add(thought)
+        thoughts.add(0, thought)
     }
 
     fun onThoughtRemoved(thought: String) {
@@ -69,7 +69,7 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     }
 
     fun onInterpretationAdded(interpretation: String) {
-        interpretations.add(interpretation)
+        interpretations.add(0, interpretation)
     }
 
     fun onInterpretationRemoved(interpretation: String) {
@@ -77,7 +77,7 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     }
 
     fun onBehaviorAdded(behavior: String) {
-        behaviors.add(behavior)
+        behaviors.add(0, behavior)
     }
 
     fun onBehaviorRemoved(behavior: String) {
@@ -85,7 +85,7 @@ class ExposurePreparationViewModel @AssistedInject constructor(
     }
 
     fun onActionAdded(action: String) {
-        actions.add(action)
+        actions.add(0, action)
     }
 
     fun onActionRemoved(action: String) {

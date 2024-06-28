@@ -1,6 +1,8 @@
 package com.susieson.anchor.model
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.susieson.anchor.R
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -18,11 +20,11 @@ data class Review(
     val learnings: String = ""
 ) : Parcelable
 
-enum class Emotion {
-    FEAR,
-    SADNESS,
-    ANXIETY,
-    GUILT,
-    SHAME,
-    HAPPINESS
+enum class Emotion(@StringRes val label: Int) {
+    FEAR(R.string.review_fear_chip),
+    SADNESS(R.string.review_sadness_chip),
+    ANXIETY(R.string.review_anxiety_chip),
+    GUILT(R.string.review_guilt_chip),
+    SHAME(R.string.review_shame_chip),
+    HAPPINESS(R.string.review_happiness_chip)
 }

@@ -1,15 +1,14 @@
 package com.susieson.anchor.ui.components
 
 import android.util.Patterns
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -32,20 +31,20 @@ fun LoginForm(
     onSubmit: () -> Unit,
     submit: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    isEmailReadOnly: Boolean = false
+    isEmailEnabled: Boolean = true
 ) {
     val emailError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
     val passwordError = password.isNotEmpty() && password.length < MinPasswordLength
     val isValid = email.isNotEmpty() && password.isNotEmpty() && !emailError && !passwordError
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier) {
         EmailTextField(
             email = email,
             isError = emailError,
-            readOnly = isEmailReadOnly,
+            enabled = isEmailEnabled,
             onEmailChange = onEmailChange,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            modifier = Modifier.fillMaxWidth()
         )
         PasswordTextField(
             password = password,
@@ -60,9 +59,7 @@ fun LoginForm(
                 error,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
         Button(
