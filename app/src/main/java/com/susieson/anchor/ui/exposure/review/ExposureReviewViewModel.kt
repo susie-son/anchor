@@ -12,6 +12,7 @@ import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.service.StorageService
+import com.susieson.anchor.ui.components.Action
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -88,28 +89,25 @@ class ExposureReviewViewModel @AssistedInject constructor(
         }
     }
 
-    fun onThoughtAdded(thought: String) {
-        thoughts.add(thought)
+    fun onThoughtChange(type: Action, thought: String) {
+        when (type) {
+            Action.ADD -> thoughts.add(0, thought)
+            Action.REMOVE -> thoughts.remove(thought)
+        }
     }
 
-    fun onThoughtRemoved(thought: String) {
-        thoughts.remove(thought)
+    fun onSensationChange(type: Action, sensation: String) {
+        when (type) {
+            Action.ADD -> sensations.add(0, sensation)
+            Action.REMOVE -> sensations.remove(sensation)
+        }
     }
 
-    fun onSensationAdded(sensation: String) {
-        sensations.add(sensation)
-    }
-
-    fun onSensationRemoved(sensation: String) {
-        sensations.remove(sensation)
-    }
-
-    fun onBehaviorAdded(behavior: String) {
-        behaviors.add(behavior)
-    }
-
-    fun onBehaviorRemoved(behavior: String) {
-        behaviors.remove(behavior)
+    fun onBehaviorChange(type: Action, behavior: String) {
+        when (type) {
+            Action.ADD -> behaviors.add(0, behavior)
+            Action.REMOVE -> behaviors.remove(behavior)
+        }
     }
 
     fun onExperiencingRatingChanged(rating: Float) {

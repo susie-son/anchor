@@ -58,6 +58,8 @@ fun TextFieldColumn(
     }
 }
 
+enum class Action { ADD, REMOVE }
+
 @Composable
 private fun AddTextField(
     field: String,

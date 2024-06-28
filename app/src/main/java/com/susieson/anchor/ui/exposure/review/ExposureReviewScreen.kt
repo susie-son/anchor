@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
+import com.susieson.anchor.ui.components.Action
 import com.susieson.anchor.ui.components.BodyText
 import com.susieson.anchor.ui.components.ErrorBodyText
 import com.susieson.anchor.ui.components.ErrorLabelText
@@ -89,12 +90,9 @@ fun ExposureReviewScreen(
                 sensations = sensations,
                 behaviors = behaviors,
                 onEmotionChange = viewModel::onEmotionChanged,
-                onThoughtAdd = viewModel::onThoughtAdded,
-                onThoughtRemove = viewModel::onThoughtRemoved,
-                onSensationAdd = viewModel::onSensationAdded,
-                onSensationRemove = viewModel::onSensationRemoved,
-                onBehaviorAdd = viewModel::onBehaviorAdded,
-                onBehaviorRemove = viewModel::onBehaviorRemoved,
+                onThoughtChange = viewModel::onThoughtChange,
+                onSensationChange = viewModel::onSensationChange,
+                onBehaviorChange = viewModel::onBehaviorChange,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             RatingsSection(
@@ -155,46 +153,39 @@ private fun EmotionsSection(
     sensations: List<String>,
     behaviors: List<String>,
     onEmotionChange: (Emotion) -> Unit,
-    onThoughtAdd: (String) -> Unit,
-    onThoughtRemove: (String) -> Unit,
-    onSensationAdd: (String) -> Unit,
-    onSensationRemove: (String) -> Unit,
-    onBehaviorAdd: (String) -> Unit,
-    onBehaviorRemove: (String) -> Unit,
+    onThoughtChange: (Action, String) -> Unit,
+    onSensationChange: (Action, String) -> Unit,
+    onBehaviorChange: (Action, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     data class EmotionCategory(
         @StringRes val label: Int,
         @StringRes val body: Int,
         val items: List<String>,
-        val onAdd: (String) -> Unit,
-        val onRemove: (String) -> Unit
+        val onChange: (Action, String) -> Unit
     )
     val items = listOf(
         EmotionCategory(
             R.string.review_thoughts_label,
             R.string.review_thoughts_body,
             thoughts,
-            onThoughtAdd,
-            onThoughtRemove
+            onThoughtChange
         ),
         EmotionCategory(
             R.string.review_sensations_label,
             R.string.review_sensations_body,
             sensations,
-            onSensationAdd,
-            onSensationRemove
+            onSensationChange
         ),
         EmotionCategory(
             R.string.review_behaviors_label,
             R.string.review_behaviors_body,
             behaviors,
-            onBehaviorAdd,
-            onBehaviorRemove
+            onBehaviorChange
         )
     )
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        LabeledItem(label = { LabelText(stringResource(R.string.review_emotions_label)) }) {
+        LabeledItem({ LabelText(stringResource(R.string.review_emotions_label)) }) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 emotions.forEach { (emotion, selected) ->
                     FilterChip(
@@ -210,7 +201,11 @@ private fun EmotionsSection(
                 label = { LabelText(stringResource(category.label)) },
                 supporting = { ErrorBodyText(stringResource(category.body), category.items.isEmpty()) }
             ) {
-                TextFieldColumn(category.items, category.onAdd, category.onRemove)
+                TextFieldColumn(
+                    texts = category.items,
+                    onAdd = { category.onChange(Action.ADD, it) },
+                    onRemove = { category.onChange(Action.REMOVE, it) }
+                )
             }
         }
     }
@@ -240,18 +235,22 @@ private fun RatingsSection(
         RatingCategory(R.string.review_thinking_label, thinkingRating, onThinkingRatingChange),
         RatingCategory(R.string.review_engaging_label, engagingRating, onEngagingRatingChange)
     )
-    LabeledItem(modifier, label = { LabelText(stringResource(R.string.review_effectiveness_label)) }) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            items.forEach { category ->
-                LabeledItem(
-                    label = { ErrorLabelText(stringResource(category.label), category.rating == 0f) }
-                ) {
-                    SliderWithLabel(
-                        value = category.rating,
-                        onValueChange = category.onRatingChange,
-                        valueRange = 0f..10f,
-                        steps = 9,
-                    )
+    Column(modifier) {
+        LabeledItem({ LabelText(stringResource(R.string.review_effectiveness_label)) }) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                items.forEach { category ->
+                    LabeledItem(
+                        {
+                            ErrorLabelText(stringResource(category.label), category.rating == 0f)
+                        }
+                    ) {
+                        SliderWithLabel(
+                            value = category.rating,
+                            onValueChange = category.onRatingChange,
+                            valueRange = 0f..10f,
+                            steps = 9,
+                        )
+                    }
                 }
             }
         }

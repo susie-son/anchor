@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.components.Action
 import com.susieson.anchor.ui.components.ErrorBodyText
 import com.susieson.anchor.ui.components.ErrorText
 import com.susieson.anchor.ui.components.FormDiscardHandler
@@ -87,14 +88,10 @@ fun ExposurePreparationScreen(
                 interpretations = interpretations,
                 behaviors = behaviors,
                 actions = actions,
-                onThoughtAdd = viewModel::onThoughtAdded,
-                onThoughtRemove = viewModel::onThoughtRemoved,
-                onInterpretationAdd = viewModel::onInterpretationAdded,
-                onInterpretationRemove = viewModel::onInterpretationRemoved,
-                onBehaviorAdd = viewModel::onBehaviorAdded,
-                onBehaviorRemove = viewModel::onBehaviorRemoved,
-                onActionAdd = viewModel::onActionAdded,
-                onActionRemove = viewModel::onActionRemoved,
+                onThoughtChange = viewModel::onThoughtChange,
+                onInterpretationChange = viewModel::onInterpretationChange,
+                onBehaviorChange = viewModel::onBehaviorChange,
+                onActionChange = viewModel::onActionChange,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
         }
@@ -172,51 +169,42 @@ private fun PreparationSection(
     interpretations: List<String>,
     behaviors: List<String>,
     actions: List<String>,
-    onThoughtAdd: (String) -> Unit,
-    onThoughtRemove: (String) -> Unit,
-    onInterpretationAdd: (String) -> Unit,
-    onInterpretationRemove: (String) -> Unit,
-    onBehaviorAdd: (String) -> Unit,
-    onBehaviorRemove: (String) -> Unit,
-    onActionAdd: (String) -> Unit,
-    onActionRemove: (String) -> Unit,
+    onThoughtChange: (Action, String) -> Unit,
+    onInterpretationChange: (Action, String) -> Unit,
+    onBehaviorChange: (Action, String) -> Unit,
+    onActionChange: (Action, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     data class PreparationCategory(
         @StringRes val label: Int,
         @StringRes val body: Int,
         val items: List<String>,
-        val onAdd: (String) -> Unit,
-        val onRemove: (String) -> Unit
+        val onChange: (Action, String) -> Unit
     )
     val categories = listOf(
         PreparationCategory(
             R.string.preparation_thoughts_label,
             R.string.preparation_thoughts_body,
             thoughts,
-            onThoughtAdd,
-            onThoughtRemove
+            onThoughtChange
         ),
         PreparationCategory(
             R.string.preparation_interpretations_label,
             R.string.preparation_interpretations_body,
             interpretations,
-            onInterpretationAdd,
-            onInterpretationRemove
+            onInterpretationChange
         ),
         PreparationCategory(
             R.string.preparation_behaviors_label,
             R.string.preparation_behaviors_body,
             behaviors,
-            onBehaviorAdd,
-            onBehaviorRemove
+            onBehaviorChange
         ),
         PreparationCategory(
             R.string.preparation_actions_label,
             R.string.preparation_actions_body,
             actions,
-            onActionAdd,
-            onActionRemove
+            onActionChange
         )
     )
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -227,7 +215,11 @@ private fun PreparationSection(
                     ErrorBodyText(stringResource(category.body), category.items.isEmpty())
                 }
             ) {
-                TextFieldColumn(category.items, category.onAdd, category.onRemove)
+                TextFieldColumn(
+                    texts = category.items,
+                    onAdd = { category.onChange(Action.ADD, it) },
+                    onRemove = { category.onChange(Action.REMOVE, it) }
+                )
             }
         }
     }
@@ -252,13 +244,9 @@ private fun PreparationSectionPreview() {
         interpretations = listOf("1", "2", "3"),
         behaviors = listOf("1", "2", "3"),
         actions = listOf("1", "2", "3"),
-        onThoughtAdd = {},
-        onThoughtRemove = {},
-        onInterpretationAdd = {},
-        onInterpretationRemove = {},
-        onBehaviorAdd = {},
-        onBehaviorRemove = {},
-        onActionAdd = {},
-        onActionRemove = {}
+        onThoughtChange = { _, _ -> },
+        onInterpretationChange = { _, _ -> },
+        onBehaviorChange = { _, _ -> },
+        onActionChange = { _, _ -> }
     )
 }

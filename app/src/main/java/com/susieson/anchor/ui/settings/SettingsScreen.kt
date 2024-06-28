@@ -48,9 +48,7 @@ fun SettingsScreen(
         modifier = modifier,
     ) { innerPadding ->
         when (user) {
-            null -> Loading(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding))
+            null -> Loading(Modifier.fillMaxSize().padding(innerPadding))
             else -> SettingsContent(
                 user = user,
                 error = error,

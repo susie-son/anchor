@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.service.StorageService
+import com.susieson.anchor.ui.components.Action
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -60,36 +61,32 @@ class ExposurePreparationViewModel @AssistedInject constructor(
         this.description.value = description
     }
 
-    fun onThoughtAdded(thought: String) {
-        thoughts.add(0, thought)
+    fun onThoughtChange(type: Action, thought: String) {
+        when (type) {
+            Action.ADD -> thoughts.add(0, thought)
+            Action.REMOVE -> thoughts.remove(thought)
+        }
     }
 
-    fun onThoughtRemoved(thought: String) {
-        thoughts.remove(thought)
+    fun onInterpretationChange(type: Action, interpretation: String) {
+        when (type) {
+            Action.ADD -> interpretations.add(0, interpretation)
+            Action.REMOVE -> interpretations.remove(interpretation)
+        }
     }
 
-    fun onInterpretationAdded(interpretation: String) {
-        interpretations.add(0, interpretation)
+    fun onBehaviorChange(type: Action, behavior: String) {
+        when (type) {
+            Action.ADD -> behaviors.add(0, behavior)
+            Action.REMOVE -> behaviors.remove(behavior)
+        }
     }
 
-    fun onInterpretationRemoved(interpretation: String) {
-        interpretations.remove(interpretation)
-    }
-
-    fun onBehaviorAdded(behavior: String) {
-        behaviors.add(0, behavior)
-    }
-
-    fun onBehaviorRemoved(behavior: String) {
-        behaviors.remove(behavior)
-    }
-
-    fun onActionAdded(action: String) {
-        actions.add(0, action)
-    }
-
-    fun onActionRemoved(action: String) {
-        actions.remove(action)
+    fun onActionChange(type: Action, action: String) {
+        when (type) {
+            Action.ADD -> actions.add(0, action)
+            Action.REMOVE -> actions.remove(action)
+        }
     }
 
     fun onShowDiscardDialogChange(showDiscardDialog: Boolean) {

@@ -157,15 +157,17 @@ private fun ExposureList(
 ) {
     LazyColumn(modifier) {
         items(exposures) { exposure ->
-            val formattedTime by remember {derivedStateOf {
-                exposure.updatedAt?.let { timestamp ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
-                    } else {
-                        DateFormat.getDateTimeInstance().format(timestamp.toDate())
+            val formattedTime by remember {
+                derivedStateOf {
+                    exposure.updatedAt?.let { timestamp ->
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            HumanReadable.timeAgo(timestamp.toInstant().toKotlinInstant())
+                        } else {
+                            DateFormat.getDateTimeInstance().format(timestamp.toDate())
+                        }
                     }
                 }
-            }}
+            }
 
             ListItem(
                 overlineContent = {

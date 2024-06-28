@@ -178,7 +178,8 @@ private fun NotificationPermissionButton(
                     postNotificationPermission.launchPermissionRequest()
                 }
             }
-        }
+        },
+        modifier = modifier
     ) {
         Text(stringResource(R.string.notification_permission_button))
     }
