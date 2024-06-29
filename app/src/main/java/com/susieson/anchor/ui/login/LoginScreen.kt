@@ -16,17 +16,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.susieson.anchor.Exposures
-import com.susieson.anchor.Login
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.LoginForm
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
-    navController: NavController,
-    modifier: Modifier = Modifier
+    onNavigateExposures: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val user by viewModel.user.collectAsState(null)
     val error by viewModel.error.collectAsState()
@@ -34,12 +32,10 @@ fun LoginScreen(
     val password by remember { viewModel.password }
     val passwordVisible by remember { viewModel.passwordVisible }
 
+    val navigate = remember { onNavigateExposures }
+
     LaunchedEffect(user) {
-        user?.let {
-            navController.navigate(Exposures(it.id)) {
-                popUpTo(Login) { inclusive = true }
-            }
-        }
+        user?.let { navigate(it.id) }
     }
 
     Scaffold(modifier, topBar = { LoginTopBar() }) { innerPadding ->

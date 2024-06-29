@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.firebase.Timestamp
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
@@ -37,11 +36,11 @@ import kotlin.math.roundToInt
 @Composable
 fun ExposureSummaryScreen(
     viewModel: ExposureSummaryViewModel,
-    navController: NavController,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = { ExposureSummaryTopBar(navController::navigateUp) },
+        topBar = { ExposureSummaryTopBar(onNavigateUp) },
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(

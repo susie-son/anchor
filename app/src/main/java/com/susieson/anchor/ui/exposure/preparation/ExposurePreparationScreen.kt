@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.susieson.anchor.R
 import com.susieson.anchor.ui.components.Action
 import com.susieson.anchor.ui.components.ErrorBodyText
@@ -41,7 +40,7 @@ import com.susieson.anchor.ui.components.onDone
 @Composable
 fun ExposurePreparationScreen(
     viewModel: ExposurePreparationViewModel,
-    navController: NavController,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title by remember { viewModel.title }
@@ -60,10 +59,10 @@ fun ExposurePreparationScreen(
         topBar = {
             ExposurePreparationTopBar(
                 onClose = {
-                    onClose(isEmpty, navController::navigateUp, viewModel::onShowDiscardDialogChange)
+                    onClose(isEmpty, onNavigateUp, viewModel::onShowDiscardDialogChange)
                 },
                 onComplete = {
-                    onDone(viewModel::addPreparation, navController::navigateUp)
+                    onDone(viewModel::addPreparation, onNavigateUp)
                 },
                 isValid = isValid
             )
@@ -99,7 +98,7 @@ fun ExposurePreparationScreen(
     FormDiscardHandler(
         isEmpty = isEmpty,
         showDiscardDialog = showDiscardDialog,
-        onDiscard = navController::navigateUp,
+        onDiscard = onNavigateUp,
         onShowDiscardDialog = viewModel::onShowDiscardDialogChange
     )
 }

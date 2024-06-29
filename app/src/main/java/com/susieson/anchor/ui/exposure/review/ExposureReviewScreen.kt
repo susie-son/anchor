@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Emotion
 import com.susieson.anchor.ui.components.Action
@@ -48,7 +47,7 @@ import com.susieson.anchor.ui.components.onDone
 @Composable
 fun ExposureReviewScreen(
     viewModel: ExposureReviewViewModel,
-    navController: NavController,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val emotions by remember { viewModel.emotions }
@@ -70,9 +69,9 @@ fun ExposureReviewScreen(
         topBar = {
             ExposureReviewTopBar(
                 onClose = {
-                    onClose(isEmpty, navController::navigateUp, viewModel::onShowDiscardDialogChange)
+                    onClose(isEmpty, onNavigateUp, viewModel::onShowDiscardDialogChange)
                 },
-                onComplete = { onDone(viewModel::addReview, navController::navigateUp) },
+                onComplete = { onDone(viewModel::addReview, onNavigateUp) },
                 isValid = isValid
             )
         },
@@ -116,7 +115,7 @@ fun ExposureReviewScreen(
     FormDiscardHandler(
         isEmpty = isEmpty,
         showDiscardDialog = showDiscardDialog,
-        onDiscard = navController::navigateUp,
+        onDiscard = onNavigateUp,
         onShowDiscardDialog = viewModel::onShowDiscardDialogChange
     )
 }

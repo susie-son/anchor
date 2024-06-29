@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
@@ -45,7 +44,7 @@ import com.susieson.anchor.R
 @Composable
 fun ExposureReadyScreen(
     viewModel: ExposureReadyViewModel,
-    navController: NavController,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isReadyChecked = remember { viewModel.checked }
@@ -57,7 +56,7 @@ fun ExposureReadyScreen(
     }
 
     Scaffold(
-        topBar = { ExposureReadyTopBar(navController::navigateUp) },
+        topBar = { ExposureReadyTopBar(onNavigateUp) },
         modifier = modifier,
     ) { innerPadding ->
         Column(
@@ -80,7 +79,7 @@ fun ExposureReadyScreen(
             Button(
                 onClick = {
                     viewModel.markAsInProgress()
-                    navController.navigateUp()
+                    onNavigateUp()
                 },
                 enabled = isReadyChecked.all { it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)

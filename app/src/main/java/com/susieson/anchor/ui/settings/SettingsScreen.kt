@@ -25,9 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.susieson.anchor.Exposures
-import com.susieson.anchor.Login
 import com.susieson.anchor.R
 import com.susieson.anchor.model.User
 import com.susieson.anchor.ui.components.AuthenticateDialog
@@ -37,14 +34,15 @@ import com.susieson.anchor.ui.components.LoginForm
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
-    navController: NavController,
+    onNavigateUp: () -> Unit,
+    onNavigateLogin: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val error = viewModel.error.collectAsState().value
     val user = viewModel.user.collectAsState(null).value
 
     Scaffold(
-        topBar = { SettingsTopBar(navController::navigateUp) },
+        topBar = { SettingsTopBar(onNavigateUp) },
         modifier = modifier,
     ) { innerPadding ->
         when (user) {
@@ -52,11 +50,11 @@ fun SettingsScreen(
             else -> SettingsContent(
                 user = user,
                 error = error,
-                navController = navController,
                 onLinkAccount = viewModel::linkAccount,
                 onAuthenticate = viewModel::authenticate,
                 onLogout = viewModel::logout,
                 onDeleteAccount = viewModel::deleteAccount,
+                onNavigateLogin = onNavigateLogin,
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -85,7 +83,7 @@ private fun SettingsContent(
     onAuthenticate: (String, String, () -> Unit) -> Unit,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
-    navController: NavController,
+    onNavigateLogin: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when {
@@ -101,20 +99,14 @@ private fun SettingsContent(
             onAuthenticate = onAuthenticate,
             onLogout = {
                 onLogout()
-                navigateToLogin(navController, user.id)
+                onNavigateLogin(user.id)
             },
             onDeleteAccount = {
                 onDeleteAccount()
-                navigateToLogin(navController, user.id)
+                onNavigateLogin(user.id)
             },
             modifier = modifier.padding(horizontal = 16.dp)
         )
-    }
-}
-
-private fun navigateToLogin(navController: NavController, userId: String) {
-    navController.navigate(Login) {
-        popUpTo(Exposures(userId)) { inclusive = true }
     }
 }
 

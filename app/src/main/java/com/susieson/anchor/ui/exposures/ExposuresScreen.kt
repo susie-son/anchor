@@ -33,14 +33,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.Timestamp
-import com.susieson.anchor.ExposurePreparation
-import com.susieson.anchor.ExposureReady
-import com.susieson.anchor.ExposureReview
-import com.susieson.anchor.ExposureSummary
 import com.susieson.anchor.R
-import com.susieson.anchor.Settings
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
 import com.susieson.anchor.ui.components.Loading
@@ -50,18 +45,17 @@ import java.text.DateFormat
 
 @Composable
 fun ExposuresScreen(
-    viewModel: ExposuresViewModel,
-    navController: NavController,
-    modifier: Modifier = Modifier
+    onNavigateSettings: (String) -> Unit,
+    onNavigateExposure: (String, Exposure) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ExposuresViewModel = hiltViewModel()
 ) {
     val exposures = viewModel.exposures.collectAsState(null).value
 
     Scaffold(
-        topBar = { ExposuresTopBar { navController.navigate(Settings(viewModel.userId)) } },
+        topBar = { ExposuresTopBar { onNavigateSettings(viewModel.userId) } },
         floatingActionButton = {
-            ExposuresFloatingActionButton {
-                navController.navigate(ExposurePreparation(viewModel.userId))
-            }
+            ExposuresFloatingActionButton { onNavigateExposure(viewModel.userId, Exposure()) }
         },
         modifier = modifier,
     ) { innerPadding ->
@@ -69,16 +63,7 @@ fun ExposuresScreen(
             null -> Loading(modifier = Modifier.fillMaxSize().padding(innerPadding))
             else -> ExposuresContent(
                 exposures = exposures,
-                onItemClick = { exposure ->
-                    navController.navigate(
-                        when (exposure.status) {
-                            Status.DRAFT -> ExposurePreparation(viewModel.userId)
-                            Status.READY -> ExposureReady(viewModel.userId, exposure)
-                            Status.IN_PROGRESS -> ExposureReview(viewModel.userId, exposure)
-                            Status.COMPLETED -> ExposureSummary(exposure)
-                        }
-                    )
-                },
+                onItemClick = { exposure -> onNavigateExposure(viewModel.userId, exposure) },
                 modifier = Modifier.fillMaxSize().padding(innerPadding)
             )
         }
