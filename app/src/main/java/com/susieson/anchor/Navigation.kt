@@ -29,87 +29,93 @@ import kotlinx.serialization.Serializable
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-@Serializable
-object Login
+sealed class Destination {
+    @Serializable
+    data object Login : Destination()
 
-@Serializable
-data class Exposures(val userId: String)
+    @Serializable
+    data class Exposures(val userId: String) : Destination()
 
-@Serializable
-data class Settings(val userId: String)
+    @Serializable
+    data class Settings(val userId: String) : Destination()
 
-@Serializable
-data class ExposurePreparation(val userId: String)
+    @Serializable
+    data class ExposurePreparation(val userId: String) : Destination()
 
-@Serializable
-data class ExposureReady(val userId: String, val exposure: Exposure)
+    @Serializable
+    data class ExposureReady(val userId: String, val exposure: Exposure) : Destination()
 
-@Serializable
-data class ExposureReview(val userId: String, val exposure: Exposure)
+    @Serializable
+    data class ExposureReview(val userId: String, val exposure: Exposure) : Destination()
 
-@Serializable
-data class ExposureSummary(val exposure: Exposure)
+    @Serializable
+    data class ExposureSummary(val exposure: Exposure) : Destination()
+}
 
 @Composable
 fun Navigation(navController: NavHostController) {
-    NavHost(navController, startDestination = Login) {
-        composable<Login> {
+    NavHost(navController, startDestination = Destination.Login) {
+        composable<Destination.Login> {
             LoginScreen(
                 onNavigateExposures = {
-                    navController.navigate(Exposures(it)) {
-                        popUpTo(Login) { inclusive = true }
+                    navController.navigate(Destination.Exposures(it)) {
+                        popUpTo(Destination.Login) { inclusive = true }
                     }
                 }
             )
         }
-        createComposable<Exposures, ExposuresViewModel, ExposuresViewModel.Factory>(
+        createComposable<Destination.Exposures, ExposuresViewModel, ExposuresViewModel.Factory>(
             creation = { factory, destination -> factory.create(destination.userId) },
             screen = { viewModel ->
                 ExposuresScreen(
                     viewModel = viewModel,
-                    onNavigateSettings = { userId -> navController.navigate(Settings(userId)) },
+                    onNavigateSettings = { userId -> navController.navigate(
+                        Destination.Settings(
+                            userId
+                        )
+                    ) },
                     onNavigateExposure = { userId, exposure ->
                         navController.navigate(
                             when (exposure.status) {
-                                Status.DRAFT -> ExposurePreparation(userId)
-                                Status.READY -> ExposureReady(userId, exposure)
-                                Status.IN_PROGRESS -> ExposureReview(userId, exposure)
-                                Status.COMPLETED -> ExposureSummary(exposure)
+                                Status.DRAFT -> Destination.ExposurePreparation(userId)
+                                Status.READY -> Destination.ExposureReady(userId, exposure)
+                                Status.IN_PROGRESS -> Destination.ExposureReview(userId, exposure)
+                                Status.COMPLETED -> Destination.ExposureSummary(exposure)
                             }
                         )
                     }
                 )
             }
         )
-        createComposable<Settings, SettingsViewModel, SettingsViewModel.Factory>(
+        createComposable<Destination.Settings, SettingsViewModel, SettingsViewModel.Factory>(
             creation = { factory, destination -> factory.create(destination.userId) },
             screen = { viewModel ->
                 SettingsScreen(
                     viewModel = viewModel,
                     onNavigateUp = navController::navigateUp,
                     onNavigateLogin = { userId ->
-                        navController.navigate(Login) {
-                            popUpTo(Exposures(userId)) { inclusive = true }
+                        navController.navigate(Destination.Login) {
+                            popUpTo(Destination.Exposures(userId)) { inclusive = true }
                         }
                     }
                 )
             }
         )
-        createComposable<ExposurePreparation, ExposurePreparationViewModel, ExposurePreparationViewModel.Factory>(
+        createComposable<Destination.ExposurePreparation, ExposurePreparationViewModel, ExposurePreparationViewModel.Factory>(
             creation = { factory, destination -> factory.create(destination.userId) },
             screen = { viewModel -> ExposurePreparationScreen(viewModel, navController::navigateUp) }
         )
-        createComposable<ExposureReady, ExposureReadyViewModel, ExposureReadyViewModel.Factory>(
+        createComposable<Destination.ExposureReady, ExposureReadyViewModel, ExposureReadyViewModel.Factory>(
             typeMap = mapOf(typeOf<Exposure>() to ExposureType),
             creation = { factory, destination -> factory.create(destination.userId, destination.exposure) },
             screen = { viewModel -> ExposureReadyScreen(viewModel, navController::navigateUp) }
         )
-        createComposable<ExposureReview, ExposureReviewViewModel, ExposureReviewViewModel.Factory>(
+        createComposable<Destination.ExposureReview, ExposureReviewViewModel, ExposureReviewViewModel.Factory>(
             typeMap = mapOf(typeOf<Exposure>() to ExposureType),
             creation = { factory, destination -> factory.create(destination.userId, destination.exposure) },
             screen = { viewModel -> ExposureReviewScreen(viewModel, navController::navigateUp) }
         )
-        createComposable<ExposureSummary, ExposureSummaryViewModel, ExposureSummaryViewModel.Factory>(
+        createComposable<Destination.ExposureSummary, ExposureSummaryViewModel, ExposureSummaryViewModel.Factory>(
             typeMap = mapOf(typeOf<Exposure>() to ExposureType),
             creation = { factory, destination -> factory.create(destination.exposure) },
             screen = { viewModel -> ExposureSummaryScreen(viewModel, navController::navigateUp) }
