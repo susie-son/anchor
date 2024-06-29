@@ -74,7 +74,7 @@ private fun DiscardDialog(
         onDiscard()
     }
     AlertDialog(
-        text = { Text(stringResource(R.string.discard_dialog_text)) },
+        text = { BodyText(stringResource(R.string.discard_dialog_text)) },
         onDismissRequest = onDismiss,
         confirmButton = { TextButton(onConfirm) { Text(stringResource(R.string.discard_dialog_confirm)) } },
         dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.dialog_dismiss)) } }

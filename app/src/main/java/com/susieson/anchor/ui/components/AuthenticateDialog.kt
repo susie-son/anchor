@@ -33,7 +33,7 @@ fun AuthenticateDialog(
     Dialog({ onShowChange(false) }) {
         Card(modifier) {
             Column(Modifier.padding(24.dp)) {
-                Text(
+                BodyText(
                     text = stringResource(R.string.re_authenticate_dialog_body),
                     modifier = Modifier.padding(bottom = 24.dp)
                 )

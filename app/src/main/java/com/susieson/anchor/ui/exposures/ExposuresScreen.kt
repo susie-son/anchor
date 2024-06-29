@@ -19,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +37,10 @@ import com.google.firebase.Timestamp
 import com.susieson.anchor.R
 import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Status
+import com.susieson.anchor.ui.components.BodyText
+import com.susieson.anchor.ui.components.LabelText
 import com.susieson.anchor.ui.components.Loading
+import com.susieson.anchor.ui.components.TitleText
 import kotlinx.datetime.toKotlinInstant
 import nl.jacobras.humanreadable.HumanReadable
 import java.text.DateFormat
@@ -123,8 +125,8 @@ private fun EmptyExposureList(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(vertical = 24.dp),
             contentDescription = null
         )
-        Text(stringResource(R.string.exposures_title), style = MaterialTheme.typography.titleLarge)
-        Text(stringResource(R.string.exposures_body), style = MaterialTheme.typography.bodyLarge)
+        TitleText(stringResource(R.string.exposures_title))
+        BodyText(stringResource(R.string.exposures_body))
     }
 }
 
@@ -185,7 +187,7 @@ private fun StatusTextWithTimestamp(
             },
             time
         )
-    Text(statusText, style = MaterialTheme.typography.bodySmall, modifier = modifier)
+    LabelText(statusText, modifier = modifier)
 }
 
 @Preview

@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,6 +38,8 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.susieson.anchor.R
+import com.susieson.anchor.ui.components.BodyText
+import com.susieson.anchor.ui.components.TitleText
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -66,9 +67,8 @@ fun ExposureReadyScreen(
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             PostNotificationPermission(postNotificationPermission)
-            Text(
+            BodyText(
                 text = stringResource(R.string.ready_description),
-                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             ReadyCheckList(
@@ -149,8 +149,8 @@ private fun NotificationCard(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(stringResource(R.string.notification_permission_title), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.notification_permission_description))
+            TitleText(stringResource(R.string.notification_permission_title))
+            BodyText(stringResource(R.string.notification_permission_description))
             NotificationPermissionButton(postNotificationPermission, context, Modifier.align(Alignment.End))
         }
     }

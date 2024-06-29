@@ -139,9 +139,9 @@ private fun BasicSection(
         OutlinedTextField(
             value = title,
             isError = title.isBlank(),
-            label = { Text(stringResource(R.string.preparation_title_label)) },
+            label = { LabelText(stringResource(R.string.preparation_title_label)) },
             supportingText = {
-                ErrorText(stringResource(R.string.preparation_title_error), title.isBlank())
+                ErrorText(stringResource(R.string.preparation_title_error), isError = title.isBlank())
             },
             onValueChange = onTitleChange,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -150,9 +150,9 @@ private fun BasicSection(
         OutlinedTextField(
             value = description,
             isError = description.isBlank(),
-            label = { Text(stringResource(R.string.preparation_description_label)) },
+            label = { LabelText(stringResource(R.string.preparation_description_label)) },
             supportingText = {
-                ErrorText(stringResource(R.string.preparation_description_error), description.isBlank())
+                ErrorText(stringResource(R.string.preparation_description_error), isError = description.isBlank())
             },
             onValueChange = onDescriptionChange,
             singleLine = false,

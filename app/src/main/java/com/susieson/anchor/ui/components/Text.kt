@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ErrorText(text: String, isError: Boolean, modifier: Modifier = Modifier) {
+fun ErrorText(text: String, modifier: Modifier = Modifier, isError: Boolean = true) {
     if (isError) {
         Text(text, color = MaterialTheme.colorScheme.error, modifier = modifier)
     }
@@ -48,5 +48,10 @@ fun LabelText(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun BodyText(text: String, modifier: Modifier = Modifier) {
-    Text(text, style = MaterialTheme.typography.bodySmall, modifier = modifier)
+    Text(text, style = MaterialTheme.typography.bodyMedium, modifier = modifier)
+}
+
+@Composable
+fun TitleText(text: String, modifier: Modifier = Modifier) {
+    Text(text, style = MaterialTheme.typography.titleLarge, modifier = modifier)
 }

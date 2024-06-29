@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,7 +37,7 @@ fun SliderWithLabel(
                 modifier = Modifier.offset(y = (-16).dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                LabelText(
                     value.roundToInt().toString(),
                     modifier = Modifier.padding(4.dp)
                 )

@@ -271,7 +271,7 @@ private fun LearningsSection(
             value = learnings,
             isError = learnings.isBlank(),
             supportingText = {
-                ErrorText(stringResource(R.string.review_learnings_error), learnings.isBlank())
+                ErrorText(stringResource(R.string.review_learnings_error), isError = learnings.isBlank())
             },
             onValueChange = onLearningsChange,
             singleLine = false,

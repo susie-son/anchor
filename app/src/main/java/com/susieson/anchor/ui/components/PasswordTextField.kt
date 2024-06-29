@@ -4,7 +4,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -13,6 +12,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import com.susieson.anchor.R
 
 @Composable
@@ -27,7 +27,7 @@ fun PasswordTextField(
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { Text(stringResource(R.string.login_password_label)) },
+        label = { LabelText(stringResource(R.string.login_password_label)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             autoCorrectEnabled = false,
@@ -36,7 +36,7 @@ fun PasswordTextField(
         ),
         isError = error,
         supportingText = {
-            if (error) { Text(stringResource(R.string.login_password_error, MinPasswordLength)) }
+            ErrorText(stringResource(R.string.login_password_error, MinPasswordLength), isError = error)
         },
         trailingIcon = {
             IconButton(onPasswordVisibleChange) {
@@ -58,5 +58,17 @@ fun PasswordTextField(
             PasswordVisualTransformation()
         },
         modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PasswordTextFieldPreview() {
+    PasswordTextField(
+        password = "password",
+        error = false,
+        isPasswordVisible = false,
+        onPasswordChange = {},
+        onPasswordVisibleChange = {}
     )
 }

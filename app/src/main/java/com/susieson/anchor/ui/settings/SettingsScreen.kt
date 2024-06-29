@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.susieson.anchor.R
 import com.susieson.anchor.model.User
 import com.susieson.anchor.ui.components.AuthenticateDialog
+import com.susieson.anchor.ui.components.BodyText
 import com.susieson.anchor.ui.components.Loading
 import com.susieson.anchor.ui.components.LoginForm
 
@@ -122,9 +123,9 @@ private fun AnonymousSettings(
 
     Card(modifier) {
         Column(Modifier.padding(16.dp)) {
-            Text(
+            BodyText(
                 text = stringResource(R.string.anonymous_settings_body),
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
             LoginForm(
                 email = email,
@@ -165,7 +166,7 @@ private fun UserSettings(
     var pendingAction by remember { mutableStateOf({}) }
 
     Column(modifier) {
-        Text(
+        BodyText(
             text = stringResource(R.string.user_settings_email_label, email),
             modifier = Modifier.padding(bottom = 24.dp)
         )

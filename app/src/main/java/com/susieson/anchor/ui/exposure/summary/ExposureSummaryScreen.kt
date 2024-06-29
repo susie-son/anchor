@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import com.susieson.anchor.ui.components.BodyText
 import com.susieson.anchor.ui.components.LabelText
 import com.susieson.anchor.ui.components.LabeledItem
 import com.susieson.anchor.ui.components.SameLineLabeledItem
+import com.susieson.anchor.ui.components.TitleText
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
@@ -105,20 +105,12 @@ private fun BasicSummarySection(
         ) {
             updatedAt?.let {
                 val completedAt = DateFormat.getDateInstance().format(it.toDate())
-                LabeledItem(
-                    {
-                        Text(
-                            text = stringResource(R.string.summary_completed_at_label),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                ) {
-                    Text(completedAt, style = MaterialTheme.typography.bodyMedium)
+                LabeledItem({ LabelText(stringResource(R.string.summary_completed_at_label)) }) {
+                    BodyText(completedAt)
                 }
             }
-            Text(title, style = MaterialTheme.typography.titleLarge)
-            Text(description, style = MaterialTheme.typography.bodyLarge)
+            TitleText(title)
+            BodyText(description)
         }
     }
 }
