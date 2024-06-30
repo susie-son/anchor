@@ -11,5 +11,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 abstract class StorageModule {
     @Binds
-    abstract fun bindStorageService(storageServiceImpl: StorageServiceImpl): StorageService
+    abstract fun bindStorageService(storageService: StorageServiceImpl): StorageService
 }

@@ -58,8 +58,6 @@ fun TextFieldColumn(
     }
 }
 
-enum class Action { ADD, REMOVE }
-
 @Composable
 private fun AddTextField(
     field: String,
@@ -67,7 +65,7 @@ private fun AddTextField(
     onFieldChange: (String) -> Unit,
     onAdd: (String) -> Unit,
 ) {
-    val onAddAndClear = {
+    val addAndClearField = {
         if (field.isNotEmpty()) {
             onAdd(field)
             onFieldChange("")
@@ -82,10 +80,10 @@ private fun AddTextField(
             value = field,
             interactionSource = interactionSource,
             onValueChange = onFieldChange,
-            onAddAndClear = onAddAndClear,
+            onSubmit = addAndClearField,
             modifier = Modifier.weight(1f)
         )
-        IconButton(onAddAndClear, modifier = Modifier.fillMaxHeight().padding(end = 16.dp)) {
+        IconButton(addAndClearField, modifier = Modifier.fillMaxHeight().padding(end = 16.dp)) {
             Icon(
                 Icons.Default.Add,
                 contentDescription = stringResource(R.string.content_description_add),
@@ -101,14 +99,14 @@ private fun BasicTextFieldWithDecoration(
     value: String,
     interactionSource: MutableInteractionSource,
     onValueChange: (String) -> Unit,
-    onAddAndClear: () -> Unit,
+    onSubmit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-        keyboardActions = KeyboardActions(onSend = { onAddAndClear() }),
+        keyboardActions = KeyboardActions(onSend = { onSubmit() }),
         singleLine = true,
         textStyle = TextStyle.Default.copy(color = OutlinedTextFieldDefaults.colors().focusedTextColor),
         cursorBrush = SolidColor(OutlinedTextFieldDefaults.colors().cursorColor),
@@ -128,13 +126,13 @@ private fun BasicTextFieldWithDecoration(
 }
 
 @Composable
-private fun TextList(texts: List<String>, onDelete: (String) -> Unit) {
+private fun TextList(texts: List<String>, onRemove: (String) -> Unit) {
     texts.forEach { text ->
         HorizontalDivider()
         ListItem(
             headlineContent = { Text(text) },
             trailingContent = {
-                IconButton({ onDelete(text) }) {
+                IconButton({ onRemove(text) }) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = stringResource(R.string.content_description_delete)
@@ -145,11 +143,13 @@ private fun TextList(texts: List<String>, onDelete: (String) -> Unit) {
     }
 }
 
+enum class Operation { ADD, REMOVE }
+
 @Preview
 @Composable
 private fun TextFieldColumnPreview() {
     TextFieldColumn(
-        texts = mutableListOf("1", "2", "3"),
+        texts = listOf("1", "2", "3"),
         onAdd = {},
         onRemove = {}
     )

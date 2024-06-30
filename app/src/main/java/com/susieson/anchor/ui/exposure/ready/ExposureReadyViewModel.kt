@@ -26,16 +26,16 @@ class ExposureReadyViewModel @AssistedInject constructor(
         fun create(userId: String, exposure: Exposure): ExposureReadyViewModel
     }
 
-    val checked = mutableStateListOf(false, false)
+    val acceptanceCriteriaChecked = mutableStateListOf(false, false)
 
-    fun onCheckedChange(index: Int, value: Boolean) {
-        checked[index] = value
+    fun onAcceptanceCriteriaCheckedChange(index: Int, value: Boolean) {
+        acceptanceCriteriaChecked[index] = value
     }
 
-    fun markAsInProgress() {
+    fun startExposure() {
         viewModelScope.launch {
             storageService.updateExposure(userId, exposure.id, Status.IN_PROGRESS)
-            notificationService.showReminderNotification(exposure.title, userId, exposure.id)
+            notificationService.showReminderNotification(exposure)
         }
     }
 }

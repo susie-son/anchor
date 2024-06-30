@@ -1,7 +1,6 @@
 package com.susieson.anchor.di
 
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import dagger.Module
 import dagger.Provides
@@ -12,7 +11,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object FirebaseAuthModule {
     @Provides
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return Firebase.auth
-    }
+    fun provideFirebaseAuth() = Firebase.auth
 }

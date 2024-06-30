@@ -4,31 +4,35 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LabeledItem(
-    label: @Composable () -> Unit,
+fun LabeledItemColumn(
+    labelText: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        label()
+        ProvideTextStyle(value = MaterialTheme.typography.labelLarge) {
+            labelText()
+        }
         content()
     }
 }
 
 @Composable
-fun SameLineLabeledItem(
-    label: @Composable () -> Unit,
+fun LabeledItemRow(
+    labelText: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     Row(modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Box(modifier = Modifier.weight(1f)) {
-            label()
+            labelText()
         }
         content()
     }
@@ -36,13 +40,15 @@ fun SameLineLabeledItem(
 
 @Composable
 fun LabeledItemWithSupporting(
-    label: @Composable () -> Unit,
-    supporting: @Composable () -> Unit,
+    labelText: @Composable () -> Unit,
+    supportingText: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    LabeledItem(label, modifier = modifier) {
-        supporting()
+    LabeledItemColumn(labelText, modifier = modifier) {
+        ProvideTextStyle(value = MaterialTheme.typography.bodySmall) {
+            supportingText()
+        }
         content()
     }
 }

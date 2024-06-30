@@ -14,6 +14,7 @@
     <string name="preparation_behaviors_body">List emotional behaviors that might prevent you from fully experiencing the emotions brought up by the exposure.</string>
     <string name="preparation_actions_label">Alternative Actions</string>
     <string name="preparation_actions_body">Identify other behaviors that will allow you to fully engage with the emotions brought up by the exposure.</string>
+    <string name="discard_dialog_title">Discard exposure?"</string>
     <string name="discard_dialog_text">Are you sure you want to discard?</string>
     <string name="discard_dialog_confirm">Discard</string>
     <string name="dialog_dismiss">Cancel</string>
@@ -78,4 +79,5 @@
     <string name="dialog_confirm">Confirm</string>
     <string name="re_authenticate_dialog_body">Please re-enter your credentials to perform this action.</string>
     <string name="anonymous_settings_body">Create an account to save your progress on multiple devices.</string>
+    <string name="review_anger_chip">Anger</string>
 </resources>

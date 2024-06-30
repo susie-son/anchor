@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,7 +24,8 @@ fun SliderWithLabel(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     steps: Int = 0,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..1f
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
+    labelFormatter: (Float) -> String = { it.roundToInt().toString() }
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -32,19 +35,20 @@ fun SliderWithLabel(
         modifier = modifier.padding(vertical = 16.dp),
         interactionSource = interactionSource,
         steps = steps,
+        valueRange = valueRange,
         thumb = {
             Column(
                 modifier = Modifier.offset(y = (-16).dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LabelText(
-                    value.roundToInt().toString(),
+                Text(
+                    text = labelFormatter(value),
+                    style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(4.dp)
                 )
                 SliderDefaults.Thumb(interactionSource)
             }
-        },
-        valueRange = valueRange
+        }
     )
 }
 

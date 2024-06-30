@@ -11,19 +11,17 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface AuthService {
-    val user: Flow<User?>
+    val currentUser: Flow<User?>
     suspend fun createAnonymousAccount()
-    suspend fun authenticate(email: String, password: String)
-    suspend fun signOut()
+    suspend fun signInWithEmailAndPassword(email: String, password: String)
+    fun signOut()
     suspend fun deleteAccount()
-    suspend fun reAuthenticate(email: String, password: String)
-    suspend fun linkAccount(email: String, password: String)
+    suspend fun reauthenticateWithEmailAndPassword(email: String, password: String)
+    suspend fun linkAccountWithEmailAndPassword(email: String, password: String)
 }
 
-class AuthServiceImpl
-@Inject
-constructor(private val auth: FirebaseAuth) : AuthService {
-    override val user: Flow<User?> = callbackFlow {
+class AuthServiceImpl @Inject constructor(private val auth: FirebaseAuth) : AuthService {
+    override val currentUser: Flow<User?> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser?.toUser())
         }
@@ -35,27 +33,27 @@ constructor(private val auth: FirebaseAuth) : AuthService {
         auth.signInAnonymously().await()
     }
 
-    override suspend fun authenticate(email: String, password: String) {
+    override suspend fun signInWithEmailAndPassword(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
-    override suspend fun signOut() {
+    override fun signOut() {
         auth.signOut()
     }
 
     override suspend fun deleteAccount() {
-        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
+        val user = checkNotNull(auth.currentUser) { "cannot delete account: user is unauthenticated" }
         user.delete().await()
     }
 
-    override suspend fun reAuthenticate(email: String, password: String) {
-        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
+    override suspend fun reauthenticateWithEmailAndPassword(email: String, password: String) {
+        val user = checkNotNull(auth.currentUser) { "cannot reauthenticate: user is unauthenticated" }
         val credential = EmailAuthProvider.getCredential(email, password)
         user.reauthenticate(credential).await()
     }
 
-    override suspend fun linkAccount(email: String, password: String) {
-        val user = checkNotNull(auth.currentUser) { "unauthenticated" }
+    override suspend fun linkAccountWithEmailAndPassword(email: String, password: String) {
+        val user = checkNotNull(auth.currentUser) { "cannot link account: user is unauthenticated" }
         val credential = EmailAuthProvider.getCredential(email, password)
         user.linkWithCredential(credential).await()
     }

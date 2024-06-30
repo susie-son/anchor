@@ -2,6 +2,7 @@ package com.susieson.anchor.ui.components
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,20 +17,18 @@ fun EmailTextField(
     isError: Boolean,
     onEmailChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,
-        label = { LabelText(stringResource(R.string.login_email_label)) },
+        label = { Text(stringResource(R.string.login_email_label)) },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email
-        ).merge(keyboardOptions),
+        keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Email),
         isError = isError,
         supportingText = {
             if (isError) {
-                BodyText(stringResource(R.string.login_email_error))
+                Text(stringResource(R.string.login_email_error))
             }
         },
         enabled = enabled,

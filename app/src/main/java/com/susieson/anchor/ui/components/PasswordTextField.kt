@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -18,37 +19,39 @@ import com.susieson.anchor.R
 @Composable
 fun PasswordTextField(
     password: String,
-    error: Boolean,
+    isError: Boolean,
     isPasswordVisible: Boolean,
     onPasswordChange: (String) -> Unit,
-    onPasswordVisibleChange: () -> Unit,
+    onTogglePasswordVisibility: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { LabelText(stringResource(R.string.login_password_label)) },
+        label = { Text(stringResource(R.string.login_password_label)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             autoCorrectEnabled = false,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ),
-        isError = error,
+        isError = isError,
         supportingText = {
-            ErrorText(stringResource(R.string.login_password_error, MinPasswordLength), isError = error)
+            if (isError) {
+                Text(stringResource(R.string.login_password_error, MinPasswordLength))
+            }
         },
         trailingIcon = {
-            IconButton(onPasswordVisibleChange) {
+            IconButton(onClick = onTogglePasswordVisibility) {
                 Icon(
-                    painterResource(
+                    painter = painterResource(
                         if (isPasswordVisible) {
                             R.drawable.ic_visibility
                         } else {
                             R.drawable.ic_visibility_off
                         }
                     ),
-                    null
+                    contentDescription = null
                 )
             }
         },
@@ -66,9 +69,9 @@ fun PasswordTextField(
 private fun PasswordTextFieldPreview() {
     PasswordTextField(
         password = "password",
-        error = false,
+        isError = false,
         isPasswordVisible = false,
         onPasswordChange = {},
-        onPasswordVisibleChange = {}
+        onTogglePasswordVisibility = {}
     )
 }

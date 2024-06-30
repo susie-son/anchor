@@ -14,11 +14,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface StorageService {
-
     fun getExposures(userId: String): Flow<List<Exposure>>
-
     suspend fun addExposure(userId: String): Exposure
-
     suspend fun updateExposure(
         userId: String,
         exposureId: String,
@@ -26,33 +23,21 @@ interface StorageService {
         description: String,
         preparation: Preparation
     )
-
     suspend fun updateExposure(userId: String, exposureId: String, review: Review)
-
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
-
-    suspend fun deleteExposure(userId: String, exposureId: String)
 }
 
-class StorageServiceImpl
-@Inject
-constructor(
-    private val firestore: FirebaseFirestore
-) : StorageService {
+class StorageServiceImpl @Inject constructor(private val firestore: FirebaseFirestore) : StorageService {
     private fun exposuresCollectionRef(userId: String) = firestore.collection(USERS_COLLECTION)
         .document(userId)
         .collection(EXPOSURES_COLLECTION)
 
     private fun exposureDocumentRef(userId: String, exposureId: String) =
-        exposuresCollectionRef(userId)
-            .document(exposureId)
+        exposuresCollectionRef(userId).document(exposureId)
 
     override suspend fun addExposure(userId: String): Exposure {
         val exposure = Exposure()
-        val document =
-            exposuresCollectionRef(userId)
-                .add(exposure)
-                .await()
+        val document = exposuresCollectionRef(userId).add(exposure).await()
         val exposureWithId = exposure.copy(id = document.id, updatedAt = Timestamp.now())
         document.set(exposureWithId).await()
         return exposureWithId
@@ -109,12 +94,6 @@ constructor(
                 UPDATED_AT_FIELD,
                 Timestamp.now()
             )
-            .await()
-    }
-
-    override suspend fun deleteExposure(userId: String, exposureId: String) {
-        exposureDocumentRef(userId, exposureId)
-            .delete()
             .await()
     }
 

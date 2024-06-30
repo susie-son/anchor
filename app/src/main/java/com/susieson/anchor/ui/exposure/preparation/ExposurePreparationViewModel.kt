@@ -1,17 +1,18 @@
 package com.susieson.anchor.ui.exposure.preparation
 
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.service.StorageService
-import com.susieson.anchor.ui.components.Action
+import com.susieson.anchor.ui.components.Operation
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ExposurePreparationViewModel.Factory::class)
@@ -25,71 +26,66 @@ class ExposurePreparationViewModel @AssistedInject constructor(
         fun create(userId: String): ExposurePreparationViewModel
     }
 
-    var title = mutableStateOf("")
-    var description = mutableStateOf("")
-    val thoughts = mutableStateListOf<String>()
-    val interpretations = mutableStateListOf<String>()
-    val behaviors = mutableStateListOf<String>()
-    val actions = mutableStateListOf<String>()
-
-    var showDiscardDialog = mutableStateOf(false)
-
-    val isValid = derivedStateOf {
-        title.value.isNotBlank() && description.value.isNotBlank() &&
-            thoughts.isNotEmpty() && interpretations.isNotEmpty() &&
-            behaviors.isNotEmpty() && actions.isNotEmpty()
-    }
-    val isEmpty = derivedStateOf {
-        title.value.isBlank() && description.value.isBlank() &&
-            thoughts.isEmpty() && interpretations.isEmpty() &&
-            behaviors.isEmpty() && actions.isEmpty()
-    }
+    private val _state = MutableStateFlow(ExposurePreparationState())
+    val state: StateFlow<ExposurePreparationState> = _state.asStateFlow()
 
     fun addPreparation() {
         viewModelScope.launch {
-            val exposure = storageService.addExposure(userId)
-            val preparation = Preparation(thoughts, interpretations, behaviors, actions)
-            storageService.updateExposure(userId, exposure.id, title.value, description.value, preparation)
+            with(state.value) {
+                val exposure = storageService.addExposure(userId)
+                val preparation = Preparation(thoughts, interpretations, behaviors, actions)
+                storageService.updateExposure(userId, exposure.id, title, description, preparation)
+            }
         }
     }
 
-    fun onTitleChange(title: String) {
-        this.title.value = title
+    fun onTitleChanged(title: String) {
+        _state.update { it.copy(title = title) }
     }
 
-    fun onDescriptionChange(description: String) {
-        this.description.value = description
+    fun onDescriptionChanged(description: String) {
+        _state.update { it.copy(description = description) }
     }
 
-    fun onThoughtChange(type: Action, thought: String) {
-        when (type) {
-            Action.ADD -> thoughts.add(0, thought)
-            Action.REMOVE -> thoughts.remove(thought)
+    fun onThoughtChanged(operation: Operation, thought: String) {
+        _state.update { it.copy(thoughts = updateList(it.thoughts, thought, operation)) }
+    }
+
+    fun onInterpretationChanged(operation: Operation, interpretation: String) {
+        _state.update { it.copy(interpretations = updateList(it.interpretations, interpretation, operation)) }
+    }
+
+    fun onBehaviorChanged(operation: Operation, behavior: String) {
+        _state.update { it.copy(behaviors = updateList(it.behaviors, behavior, operation)) }
+    }
+
+    fun onActionChanged(operation: Operation, action: String) {
+        _state.update { it.copy(actions = updateList(it.actions, action, operation)) }
+    }
+
+    fun onShowDiscardDialogChanged(showDiscardDialog: Boolean) {
+        _state.update { it.copy(showDiscardDialog = showDiscardDialog) }
+    }
+
+    private fun <T> updateList(list: List<T>, item: T, operation: Operation): List<T> {
+        return when (operation) {
+            Operation.ADD -> listOf(item) + list
+            Operation.REMOVE -> list.toMutableList().also { it.remove(item) }
         }
     }
+}
 
-    fun onInterpretationChange(type: Action, interpretation: String) {
-        when (type) {
-            Action.ADD -> interpretations.add(0, interpretation)
-            Action.REMOVE -> interpretations.remove(interpretation)
-        }
-    }
-
-    fun onBehaviorChange(type: Action, behavior: String) {
-        when (type) {
-            Action.ADD -> behaviors.add(0, behavior)
-            Action.REMOVE -> behaviors.remove(behavior)
-        }
-    }
-
-    fun onActionChange(type: Action, action: String) {
-        when (type) {
-            Action.ADD -> actions.add(0, action)
-            Action.REMOVE -> actions.remove(action)
-        }
-    }
-
-    fun onShowDiscardDialogChange(showDiscardDialog: Boolean) {
-        this.showDiscardDialog.value = showDiscardDialog
-    }
+data class ExposurePreparationState(
+    val title: String = "",
+    val description: String = "",
+    val thoughts: List<String> = emptyList(),
+    val interpretations: List<String> = emptyList(),
+    val behaviors: List<String> = emptyList(),
+    val actions: List<String> = emptyList(),
+    val showDiscardDialog: Boolean = false
+) {
+    val isEmpty = title.isBlank() && description.isBlank() && thoughts.isEmpty() &&
+        interpretations.isEmpty() && behaviors.isEmpty() && actions.isEmpty()
+    val isValid = title.isNotBlank() && description.isNotBlank() && thoughts.isNotEmpty() &&
+        interpretations.isNotEmpty() && behaviors.isNotEmpty() && actions.isNotEmpty()
 }

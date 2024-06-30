@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,7 +31,7 @@ fun LoginForm(
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
     isEmailEnabled: Boolean = true,
-    content: @Composable () -> Unit
+    submitButtonText: @Composable () -> Unit
 ) {
     val isEmailError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
     val isPasswordError = password.isNotEmpty() && password.length < MinPasswordLength
@@ -47,21 +48,26 @@ fun LoginForm(
         )
         PasswordTextField(
             password = password,
-            error = isPasswordError,
+            isError = isPasswordError,
             isPasswordVisible = isPasswordVisible,
             onPasswordChange = onPasswordChange,
-            onPasswordVisibleChange = onTogglePasswordVisibility,
+            onTogglePasswordVisibility = onTogglePasswordVisibility,
             modifier = Modifier.fillMaxWidth()
         )
-        if (errorMessage != null) {
-            ErrorText(errorMessage, modifier = Modifier.padding(vertical = 8.dp))
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
         }
         Button(
             onClick = onSubmit,
             enabled = isFormValid,
             modifier = Modifier.fillMaxWidth()
         ) {
-            content()
+            submitButtonText()
         }
     }
 }

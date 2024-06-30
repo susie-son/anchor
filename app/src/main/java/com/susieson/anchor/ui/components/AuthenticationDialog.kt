@@ -3,6 +3,7 @@ package com.susieson.anchor.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,24 +18,25 @@ import androidx.compose.ui.window.Dialog
 import com.susieson.anchor.R
 
 @Composable
-fun AuthenticateDialog(
-    show: Boolean,
+fun AuthenticationDialog(
+    showDialog: Boolean,
     email: String,
     error: String?,
     onConfirm: (String) -> Unit,
-    onShowChange: (Boolean) -> Unit,
+    onDismiss: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (!show) return
+    if (!showDialog) return
 
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    Dialog({ onShowChange(false) }) {
+    Dialog(onDismissRequest = { onDismiss(false) }) {
         Card(modifier) {
             Column(Modifier.padding(24.dp)) {
-                BodyText(
+                Text(
                     text = stringResource(R.string.re_authenticate_dialog_body),
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
                 LoginForm(
@@ -46,10 +48,9 @@ fun AuthenticateDialog(
                     onPasswordChange = { password = it },
                     onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
                     onSubmit = { onConfirm(password) },
-                    isEmailEnabled = false
-                ) {
-                    Text(stringResource(R.string.dialog_confirm))
-                }
+                    isEmailEnabled = false,
+                    submitButtonText = { Text(stringResource(R.string.dialog_confirm)) }
+                )
             }
         }
     }
@@ -58,11 +59,11 @@ fun AuthenticateDialog(
 @Preview
 @Composable
 private fun AuthenticateDialogPreview() {
-    AuthenticateDialog(
-        show = true,
+    AuthenticationDialog(
+        showDialog = true,
         email = "email@example.com",
         error = "There was an error. Please try again.",
-        onShowChange = {},
+        onDismiss = {},
         onConfirm = {}
     )
 }
