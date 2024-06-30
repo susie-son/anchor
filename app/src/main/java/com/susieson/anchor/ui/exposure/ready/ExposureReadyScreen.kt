@@ -7,7 +7,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -26,7 +26,7 @@ fun ExposureReadyScreen(
     } else {
         null
     }
-    val acceptanceCriteriaChecked = remember { viewModel.acceptanceCriteriaChecked }
+    val acceptanceCriteriaChecked = rememberSaveable { viewModel.acceptanceCriteriaChecked }
 
     Scaffold(
         topBar = { ExposureReadyTopBar(onNavigateUp) },

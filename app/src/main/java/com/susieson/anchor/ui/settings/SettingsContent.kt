@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -63,9 +64,9 @@ private fun AnonymousSettings(
     onLinkAccount: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     Card(modifier) {
         Column(Modifier.padding(16.dp)) {
@@ -100,7 +101,7 @@ private fun UserSettings(
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showAuthenticateDialog by remember { mutableStateOf(false) }
+    var showAuthenticateDialog by rememberSaveable { mutableStateOf(false) }
     var pendingAction by remember { mutableStateOf({}) }
 
     Card(modifier) {
