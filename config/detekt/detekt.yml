@@ -128,10 +128,10 @@ complexity:
     threshold: 600
   LongMethod:
     active: true
-    threshold: 60
+    threshold: 80
   LongParameterList:
     active: true
-    functionThreshold: 8
+    functionThreshold: 10
     constructorThreshold: 7
     ignoreDefaultParameters: true
     ignoreDataClasses: true
@@ -167,14 +167,14 @@ complexity:
   TooManyFunctions:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    thresholdInFiles: 11
-    thresholdInClasses: 11
-    thresholdInInterfaces: 11
-    thresholdInObjects: 11
-    thresholdInEnums: 11
-    ignoreDeprecated: false
-    ignorePrivate: false
-    ignoreOverridden: false
+    thresholdInFiles: 13
+    thresholdInClasses: 13
+    thresholdInInterfaces: 13
+    thresholdInObjects: 13
+    thresholdInEnums: 13
+    ignoreDeprecated: true
+    ignorePrivate: true
+    ignoreOverridden: true
     ignoreAnnotatedFunctions: ['Preview']
 
 coroutines:

@@ -4,67 +4,59 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.susieson.anchor.R
-import com.susieson.anchor.ui.components.AnchorTopAppBar
-import com.susieson.anchor.ui.components.form.LoginForm
-import com.susieson.anchor.ui.components.form.LoginFormListener
-import com.susieson.anchor.ui.components.form.LoginFormState
+import com.susieson.anchor.ui.components.LoginForm
 
 @Composable
 fun LoginScreen(
-    onTopBarChange: (@Composable () -> Unit) -> Unit,
-    onFloatingActionButtonChange: (@Composable () -> Unit) -> Unit,
+    onNavigateExposures: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val error by viewModel.error.collectAsState()
+    val user by viewModel.user.collectAsState(null)
+    val error by viewModel.error.collectAsState(null)
+    val state by viewModel.state.collectAsState()
 
-    val state = remember {
-        mutableStateOf(
-            LoginFormState(
-                error = error
-            )
-        )
+    val navigate = remember { onNavigateExposures }
+
+    LaunchedEffect(user) {
+        user?.let { navigate(it.id) }
     }
-    val form by state
-    val listener = object : LoginFormListener(state) {
-        override fun onSubmit() {
-            viewModel.login(form.email, form.password)
+
+    Scaffold(modifier, topBar = { LoginTopBar() }) { innerPadding ->
+        Column(Modifier.fillMaxWidth().padding(innerPadding)) {
+            if (user == null) {
+                LoginForm(
+                    email = state.email,
+                    password = state.password,
+                    isPasswordVisible = state.passwordVisible,
+                    errorMessage = error,
+                    onEmailChange = viewModel::onEmailChange,
+                    onPasswordChange = viewModel::onPasswordChange,
+                    onTogglePasswordVisibility = { viewModel.onPasswordVisibleChange(!state.passwordVisible) },
+                    onSubmit = viewModel::login,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Text(stringResource(R.string.login_button))
+                }
+                OutlinedButton(
+                    onClick = viewModel::createAnonymousAccount,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                ) {
+                    Text(stringResource(R.string.login_anonymous_button))
+                }
+            }
         }
-    }
-
-    onTopBarChange { AnchorTopAppBar() }
-    onFloatingActionButtonChange {}
-
-    Column(
-        modifier = modifier.padding(32.dp)
-    ) {
-        LoginForm(
-            state = form,
-            listener = listener,
-            submitButtonText = R.string.login_button,
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedButton(
-            onClick = viewModel::createAnonymousAccount,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.login_anonymous_button))
-        }
-    }
-
-    LaunchedEffect(error) {
-        listener.onErrorChange(error)
     }
 }

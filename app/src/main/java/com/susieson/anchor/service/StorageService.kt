@@ -8,19 +8,14 @@ import com.susieson.anchor.model.Exposure
 import com.susieson.anchor.model.Preparation
 import com.susieson.anchor.model.Review
 import com.susieson.anchor.model.Status
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface StorageService {
-
-    fun getExposure(userId: String, exposureId: String): Flow<Exposure?>
-
-    suspend fun addExposure(userId: String): String
-
+    fun getExposures(userId: String): Flow<List<Exposure>>
+    suspend fun addExposure(userId: String): Exposure
     suspend fun updateExposure(
         userId: String,
         exposureId: String,
@@ -28,54 +23,31 @@ interface StorageService {
         description: String,
         preparation: Preparation
     )
-
     suspend fun updateExposure(userId: String, exposureId: String, review: Review)
-
     suspend fun updateExposure(userId: String, exposureId: String, status: Status)
-
-    suspend fun getExposureList(userId: String): Flow<List<Exposure>>
-
-    suspend fun deleteExposure(userId: String, exposureId: String)
 }
 
-class StorageServiceImpl
-@Inject
-constructor(
-    private val firestore: FirebaseFirestore
-) : StorageService {
+class StorageServiceImpl @Inject constructor(private val firestore: FirebaseFirestore) : StorageService {
     private fun exposuresCollectionRef(userId: String) = firestore.collection(USERS_COLLECTION)
         .document(userId)
         .collection(EXPOSURES_COLLECTION)
 
     private fun exposureDocumentRef(userId: String, exposureId: String) =
-        exposuresCollectionRef(userId)
-            .document(exposureId)
+        exposuresCollectionRef(userId).document(exposureId)
 
-    override suspend fun addExposure(userId: String): String {
+    override suspend fun addExposure(userId: String): Exposure {
         val exposure = Exposure()
-        val document =
-            exposuresCollectionRef(userId)
-                .add(exposure)
-                .await()
+        val document = exposuresCollectionRef(userId).add(exposure).await()
         val exposureWithId = exposure.copy(id = document.id, updatedAt = Timestamp.now())
         document.set(exposureWithId).await()
-        return document.id
+        return exposureWithId
     }
 
-    override fun getExposure(userId: String, exposureId: String): Flow<Exposure?> = callbackFlow {
-        val listener = exposureDocumentRef(
-            userId,
-            exposureId
-        ).addSnapshotListener { value, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-            if (value != null) {
-                trySend(value.toObject(Exposure::class.java))
-            }
-        }
-        awaitClose { listener.remove() }
+    override fun getExposures(userId: String): Flow<List<Exposure>> {
+        return exposuresCollectionRef(userId)
+            .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
+            .snapshots()
+            .map { it.toObjects(Exposure::class.java) }
     }
 
     override suspend fun updateExposure(
@@ -122,19 +94,6 @@ constructor(
                 UPDATED_AT_FIELD,
                 Timestamp.now()
             )
-            .await()
-    }
-
-    override suspend fun getExposureList(userId: String): Flow<List<Exposure>> {
-        return exposuresCollectionRef(userId)
-            .orderBy(CREATED_AT_FIELD, Query.Direction.DESCENDING)
-            .snapshots()
-            .map { it.toObjects(Exposure::class.java) }
-    }
-
-    override suspend fun deleteExposure(userId: String, exposureId: String) {
-        exposureDocumentRef(userId, exposureId)
-            .delete()
             .await()
     }
 

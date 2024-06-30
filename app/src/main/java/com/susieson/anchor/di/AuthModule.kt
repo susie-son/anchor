@@ -11,5 +11,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 abstract class AuthModule {
     @Binds
-    abstract fun bindAuthService(authServiceImpl: AuthServiceImpl): AuthService
+    abstract fun bindAuthService(authService: AuthServiceImpl): AuthService
 }
